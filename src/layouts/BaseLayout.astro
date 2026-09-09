@@ -52,10 +52,11 @@ const navigation = [
 <style is:global>
   :root { --ink: #1f2a24; --paper: #f8f6f0; --sage: #607164; --gold: #b28c48; --line: #dad5c7; --serif: Georgia, 'Times New Roman', serif; --sans: Arial, sans-serif; }
   * { box-sizing: border-box; }
-  @-webkit-keyframes tracking-in-contract { 0% { letter-spacing: 1em; opacity: 0; } 40% { opacity: .6; } 100% { letter-spacing: normal; opacity: 1; } }
-  @keyframes tracking-in-contract { 0% { letter-spacing: 1em; opacity: 0; } 40% { opacity: .6; } 100% { letter-spacing: normal; opacity: 1; } }
-  body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--serif); font-size: 18px; line-height: 1.6; -webkit-animation: tracking-in-contract .8s cubic-bezier(.215,.61,.355,1) both; animation: tracking-in-contract .8s cubic-bezier(.215,.61,.355,1) both; }
-  @media (prefers-reduced-motion: reduce) { body { -webkit-animation: none; animation: none; } }
+  @-webkit-keyframes tracking-in-contract { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+  @keyframes tracking-in-contract { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+  body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--serif); font-size: 18px; line-height: 1.6; }
+  main { -webkit-animation: tracking-in-contract .45s ease-out both; animation: tracking-in-contract .45s ease-out both; }
+  @media (prefers-reduced-motion: reduce) { main { -webkit-animation: none; animation: none; } }
   a { color: inherit; text-decoration: none; }
   .site-header { border-bottom: 1px solid var(--line); }
   .header-inner, .site-footer { width: min(1180px, calc(100% - 48px)); margin: auto; }
