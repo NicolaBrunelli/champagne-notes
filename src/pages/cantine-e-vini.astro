@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { maisonAreas, maisons } from '../data/maisons';
+const areaId = (area: string) => area.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replaceAll(' ', '-');
 ---
 <BaseLayout title="Cantine e vini — Champagne · scritto e redatto da Brunelli Nicola">
   <article class="directory">
@@ -12,11 +13,11 @@ import { maisonAreas, maisons } from '../data/maisons';
     </header>
 
     <div class="directory-nav" aria-label="Aree della Champagne">
-      {maisonAreas.map((area) => <a href={'#' + area.toLowerCase().replaceAll(' ', '-').replaceAll('é','e')}>{area}</a>)}
+      {maisonAreas.map((area) => <a href={'#' + areaId(area)}>{area}</a>)}
     </div>
 
     {maisonAreas.map((area) => (
-      <section id={area.toLowerCase().replaceAll(' ', '-').replaceAll('é','e')}>
+      <section id={areaId(area)}>
         <p class="area-label">Maison</p>
         <h2>{area}</h2>
         <div class="maison-grid">
@@ -55,4 +56,3 @@ import { maisonAreas, maisons } from '../data/maisons';
   .maison-card p{margin:0;color:var(--sage);font:600 10px var(--sans);letter-spacing:.07em;text-transform:uppercase}
   @media(max-width:700px){.directory{width:min(100% - 32px,850px)}.directory-header{padding:65px 0 42px}.directory-header div{font-size:17px}.directory-nav{overflow:auto;flex-wrap:nowrap;white-space:nowrap}.directory-nav a{padding:2px 0}section{padding:52px 0}.maison-grid{grid-template-columns:repeat(2,1fr)}.maison-card{padding:12px}.maison-card h3{font-size:17px;margin-top:12px}.maison-card p{font-size:9px}}
 </style>
-
