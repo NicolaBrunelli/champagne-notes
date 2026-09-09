@@ -78,11 +78,9 @@ Il XX secolo ha definito l'assetto moderno della denominazione attraverso eventi
 
 Il *Metodo Champenoise* (denominato *Metodo Classico* al di fuori della Champagne) si basa sul principio della **doppia fermentazione**: una prima fermentazione del mosto nei tini e una seconda fermentazione del vino direttamente all'interno della bottiglia.
 
-```
-[Vendemmia Manuale] ➔ [Pressatura Soffice & Sfecciatura] ➔ [1ª Fermentazione Alcolica (Vins Clairs)] 
-        ➔ [Assemblaggio (Cuvée)] ➔ [Tirage & 2ª Fermentazione in Bottiglia] ➔ [Affinamento sui Lieviti] 
-        ➔ [Remuage (Pupitres/Gyropalette)] ➔ [Dégorgement (Sboccatura)] ➔ [Dosaggio & Tappatura]
-```
+<div class="method-flow" aria-label="Le fasi del metodo Champenoise">
+  <span>Vendemmia manuale</span><span>Pressatura soffice e sfecciatura</span><span>Prima fermentazione: vins clairs</span><span>Assemblaggio: cuvée</span><span>Tirage e seconda fermentazione in bottiglia</span><span>Affinamento sui lieviti</span><span>Remuage</span><span>Dégorgement</span><span>Dosaggio e tappatura</span>
+</div>
 
 ---
 
@@ -101,15 +99,11 @@ La produzione dello Champagne parte da regole agronomiche estremamente severe:
 ## 2. Vendemmia e Pressatura (*Pressurage*)
 La vendemmia viene effettuata **rigorosamente a mano**; il disciplinare vieta in modo assoluto l'uso di macchine vendemmiatrici per garantire che l'uva arrivi perfettamente integra alla pigiatura.
 
-```
-                4.000 kg di Uva Intera (Un Marc)
-                                │
-                  ┌─────────────┴─────────────┐
-                  ▼                           ▼
-        20,50 hl di Mosto           5,00 hl di Mosto
-             "CUVÉE"                    "TAILLE"
-     (Spremiatura più nobile)     (Frazione successiva)
-```
+<div class="info-grid" aria-label="Frazioni del mosto">
+  <div><strong>4.000 kg di uva intera</strong><span>Un marc</span></div>
+  <div><strong>20,50 hl di mosto</strong><span>Cuvée — la spremitura più nobile</span></div>
+  <div><strong>5,00 hl di mosto</strong><span>Taille — la frazione successiva</span></div>
+</div>
 
 1. **Pesa e Controllo:** All'arrivo nei centri di pigiatura, le uve vengono pesate per singola unità di misura tradizionale, chiamata ***marc*** (equivalente a 4.000 kg di uva intera).
 2. **Torchiatura Soffice:** I grappoli interi vengono pressati immediatamente senza essere diraspati né pigiati (eccezione fatta per i rosé da macerazione). Si utilizzano tradizionalmente presse verticali (*Pressoir Coquard*) o presse pneumatiche da 2.000 a 12.000 kg.
@@ -135,17 +129,12 @@ I succhi limpidi vengono separati per cru, frazione (*cuvée* o *taille*), vitig
 ## 4. L'Arte dell’Assemblaggio (*Blending*)
 Tra gennaio e marzo, i produttori degustano tutti i *vins clairs*. L'assemblaggio consiste nel miscelare vini fermi provenienti da differenti vitigni, cru e annate precedenti (i vini di riserva) per creare la *cuvée* finale che rispecchi il "gusto della Maison" (*Sans Année*).
 
-```
-               ┌────────────────────────────────────────┐
-               │    TIPOLOGIE DI ASSEMBLAGGIO (CUVÉE)   │
-               └───────────────────┬────────────────────┘
-                                   │
-     ┌──────────────────┬──────────┴──────────┬──────────────────┐
-     ▼                  ▼                     ▼                  ▼
-Assemblaggio       Blanc de Blancs       Blanc de Noirs        Champagne Rosé
-Tradizionale       (100% Chardonnay)     (100% Pinot Noir     (Assemblaggio o
-(I 3 vitigni)                            e/o Meunier)           Macerazione)
-```
+<div class="info-grid" aria-label="Tipologie di assemblaggio">
+  <div><strong>Assemblaggio tradizionale</strong><span>I tre vitigni</span></div>
+  <div><strong>Blanc de Blancs</strong><span>100% Chardonnay</span></div>
+  <div><strong>Blanc de Noirs</strong><span>100% Pinot Noir e/o Meunier</span></div>
+  <div><strong>Champagne Rosé</strong><span>Assemblaggio o macerazione</span></div>
+</div>
 
 ### Tipologie di Assemblaggio:
 * **Assemblaggio Tradizionale:** Elaborato con i tre vitigni della regione (*Chardonnay*, *Pinot Noir*, *Meunier*) o con due vitigni dei quali uno deve essere lo Chardonnay.
@@ -170,17 +159,10 @@ Dopo l'assemblaggio, il vino è pronto per la rifermentazione in bottiglia (che 
 ## 6. L'Affinamento sui Lieviti (*Autolisi*)
 Al termine della seconda fermentazione, le cellule di lievito esauste muoiono e si depositano sul fondo della bottiglia. Inizia così il processo di **autolisi dei lieviti**: le cellule si scompongono rilasciando nel vino sostanze nobili (amminoacidi e composti aromatici).
 
-```
-               ┌────────────────────────────────────────┐
-               │     TEMPI DI AFFINAMENTO SUI LIEVITI   │
-               └───────────────────┬────────────────────┘
-                                   │
-                 ┌─────────────────┴─────────────────┐
-                 ▼                                   ▼
-        NON MILLESIMATI                         MILLESIMATI
-  Minimo di legge: 15 mesi               Minimo di legge: 36 mesi
-  (Media produttori: 2-3 anni)           (Media produttori: 4-10+ anni)
-```
+<div class="info-grid" aria-label="Tempi di affinamento sui lieviti">
+  <div><strong>Non millesimati</strong><span>Minimo di legge: 15 mesi · media dei produttori: 2–3 anni</span></div>
+  <div><strong>Millesimati</strong><span>Minimo di legge: 36 mesi · media dei produttori: 4–10+ anni</span></div>
+</div>
 
 Questo lungo contatto dona al vino struttura, cremosità e le tipiche note di crosta di pane, brioche, nocciola, tostature e miele.
 * **Minimi di Legge:**
@@ -212,17 +194,9 @@ Consiste nell'espellere il deposito di lieviti ghiacciato sfruttando la pression
 ### Il *Liqueur d'Expédition*
 La sboccatura comporta la perdita di una piccola quantità di vino. La bottiglia viene quindi rabboccata con il ***liqueur d'expédition*** (o *liqueur de dosage*), una miscela segreta composta da vino di riserva e zucchero di canna (oppure solo vino della stessa partita). La composizione del liquore definisce il cosiddetto *goût maison*.
 
-```
-               ┌────────────────────────────────────────┐
-               │    SCALA DEL DOSAGGIO ZUCCHERINO (UE)  │
-               └───────────────────┬────────────────────┘
-                                   │
- ┌───────────────┬───────────────┬─┴─────────────┬───────────────┬───────────────┐
- ▼               ▼               ▼               ▼               ▼               ▼
-Pas Dosé /      Extra Brut      Brut        Extra Dry           Sec          Demi-Sec /
-Brut Nature     (0-6 g/l)     (< 12 g/l)   (12-17 g/l)     (17-32 g/l)        Doux
-(< 3 g/l)                                                                    (32->50 g/l)
-```
+<div class="dosage-scale" aria-label="Scala del dosaggio zuccherino">
+  <span><strong>Pas Dosé / Brut Nature</strong>&lt; 3 g/l</span><span><strong>Extra Brut</strong>0–6 g/l</span><span><strong>Brut</strong>&lt; 12 g/l</span><span><strong>Extra Dry</strong>12–17 g/l</span><span><strong>Sec</strong>17–32 g/l</span><span><strong>Demi-Sec / Doux</strong>32–&gt;50 g/l</span>
+</div>
 
 In base alla quantità di zucchero aggiunta, lo Champagne si classifica in:
 * **Pas Dosé / Brut Nature / Dosage Zéro:** Meno di 3 g/l (senza zucchero aggiunto).
@@ -240,5 +214,7 @@ La bottiglia viene chiusa con il caratteristico tappo di sughero.
    * *Il corpo (base):* Formato da due rondelle di sughero massiccio incollate, esposte al contatto con il vino.
 2. **Gabbietta (*Muselet*):** Sulla testa del tappo si applica una placchetta metallica (*capsule*) e il tutto viene serrato con la gabbietta in fil di ferro (*muselet*) per impedire che la pressione espella il tappo. Con il tempo, la pressione e la compressione conferiranno al tappo la tipica forma a fungo.
 3. **Riposo Finale ed *Habillage*:** La bottiglia riposa in cantina per alcuni mesi per far amalgamare il *liqueur* col vino. Infine si applica il capsulone di alluminio sul collo e l'etichetta sul corpo della bottiglia.
+
+
 
 

@@ -12,6 +12,17 @@ const { frontmatter } = Astro.props;
 <style>
   .longform{width:min(850px,calc(100% - 48px));margin:auto;padding:95px 0 10px}.eyebrow,.byline{font:700 12px var(--sans);letter-spacing:.13em;text-transform:uppercase}.eyebrow{color:var(--gold);margin:0}.byline{color:var(--sage);margin:16px 0 55px}.longform :global(h1){font-size:clamp(50px,8vw,92px);font-weight:400;line-height:.94;margin:0 0 30px}.longform :global(h2){font-size:clamp(34px,5vw,55px);font-weight:400;line-height:1.06;margin:80px 0 22px;padding-top:18px;border-top:1px solid var(--line)}.longform :global(h3){font-size:28px;font-weight:400;line-height:1.15;margin:50px 0 16px}.longform :global(p),.longform :global(li){font-size:18px}.longform :global(li){margin:8px 0}.longform :global(ul),.longform :global(ol){padding-left:24px}.longform :global(pre){white-space:pre-wrap;overflow:visible;margin:28px 0;padding:0;color:var(--sage);background:transparent;border:0;font:600 14px/1.55 var(--sans);text-align:center}.longform :global(hr){border:0;border-top:1px solid var(--line);margin:60px 0}@media(max-width:650px){.longform{width:min(100% - 32px,850px);padding-top:65px}.longform :global(p),.longform :global(li){font-size:17px}.longform :global(h2){margin-top:55px}.longform :global(pre){font-size:11px;line-height:1.45}}
 </style>
++<style>
+  .longform :global(.method-flow){display:flex;flex-wrap:wrap;gap:9px;margin:32px 0 38px;padding:22px 0;border-block:1px solid var(--line)}
+  .longform :global(.method-flow span){font:700 11px/1.35 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--sage);display:flex;align-items:center;gap:9px}
+  .longform :global(.method-flow span:not(:last-child)::after){content:"→";color:var(--gold);font-size:16px;font-weight:400}
+  .longform :global(.info-grid){display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:var(--line);margin:32px 0 38px;border:1px solid var(--line)}
+  .longform :global(.info-grid div){background:var(--paper);padding:20px}
+  .longform :global(.info-grid strong),.longform :global(.dosage-scale strong){display:block;font:700 12px/1.35 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+  .longform :global(.info-grid span),.longform :global(.dosage-scale span){display:block;margin-top:7px;color:var(--sage);font:600 13px/1.4 var(--sans)}
+  .longform :global(.dosage-scale){display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:32px 0 38px;padding:22px 0;border-block:1px solid var(--line)}
+  @media(max-width:650px){.longform :global(.method-flow){display:block;padding:12px 0}.longform :global(.method-flow span){padding:9px 0}.longform :global(.method-flow span:not(:last-child)::after){content:"↓";margin-left:auto}.longform :global(.dosage-scale){grid-template-columns:1fr 1fr}.longform :global(.info-grid){grid-template-columns:1fr}}
+</style>
 <style>
   .longform :global(pre){white-space:pre-wrap;overflow:visible;margin:28px 0;padding:0;color:var(--sage);background:transparent;border:0;font:600 14px/1.55 var(--sans);text-align:center}
   @media(max-width:650px){.longform :global(pre){font-size:11px;line-height:1.45}}
