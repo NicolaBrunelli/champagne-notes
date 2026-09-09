@@ -12,8 +12,7 @@ const path = Astro.url.pathname;
 const navigation = [
   { href: '/storia-e-metodo', label: 'Storia e metodo' },
   { href: '/territorio', label: 'Territorio' },
-  { href: '/cantine', label: 'Cantine' },
-  { href: '/vini', label: 'Vini' },
+  { href: '/cantine-e-vini', label: 'Cantine e vini' },
 ];
 ---
 
@@ -65,6 +64,7 @@ const navigation = [
   .login-link { border: 1px solid var(--ink); padding: 8px 11px; font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
   .site-footer { border-top: 1px solid var(--line); display: flex; justify-content: space-between; padding: 25px 0 36px; margin-top: 80px; font-family: var(--sans); font-size: 12px; letter-spacing: .04em; }
   .site-footer p { margin: 0; }
+  main #s1, main #s6, main .article > footer { display: none; }
   @media (max-width: 800px) { .header-inner { padding: 15px 0; flex-wrap: wrap; gap: 14px; } nav { order: 3; width: 100%; overflow:auto; } nav ul { width:max-content; gap:18px; } .login-link { margin-left: auto; min-height:38px; display:inline-flex; align-items:center; } }
   @media (max-width: 520px) { .header-inner, .site-footer { width: min(100% - 32px, 1180px); } .brand { font-size: 17px; }.brand-mark{width:29px;height:29px}.login-link{font-size:10px;padding:7px 9px}.site-footer { margin-top: 48px; gap:18px; } }
 </style>
