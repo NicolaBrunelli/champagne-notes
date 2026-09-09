@@ -78,9 +78,6 @@ Il XX secolo ha definito l'assetto moderno della denominazione attraverso eventi
 
 Il *Metodo Champenoise* (denominato *Metodo Classico* al di fuori della Champagne) si basa sul principio della **doppia fermentazione**: una prima fermentazione del mosto nei tini e una seconda fermentazione del vino direttamente all'interno della bottiglia.
 
-<div class="method-flow" aria-label="Le fasi del metodo Champenoise">
-  <span>Vendemmia manuale</span><span>Pressatura soffice e sfecciatura</span><span>Prima fermentazione: vins clairs</span><span>Assemblaggio: cuvée</span><span>Tirage e seconda fermentazione in bottiglia</span><span>Affinamento sui lieviti</span><span>Remuage</span><span>Dégorgement</span><span>Dosaggio e tappatura</span>
-</div>
 
 ---
 
@@ -214,6 +211,8 @@ La bottiglia viene chiusa con il caratteristico tappo di sughero.
    * *Il corpo (base):* Formato da due rondelle di sughero massiccio incollate, esposte al contatto con il vino.
 2. **Gabbietta (*Muselet*):** Sulla testa del tappo si applica una placchetta metallica (*capsule*) e il tutto viene serrato con la gabbietta in fil di ferro (*muselet*) per impedire che la pressione espella il tappo. Con il tempo, la pressione e la compressione conferiranno al tappo la tipica forma a fungo.
 3. **Riposo Finale ed *Habillage*:** La bottiglia riposa in cantina per alcuni mesi per far amalgamare il *liqueur* col vino. Infine si applica il capsulone di alluminio sul collo e l'etichetta sul corpo della bottiglia.
+
+
 
 
 
