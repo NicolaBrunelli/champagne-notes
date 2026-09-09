@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHero from '../components/SectionHero.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+---
+<BaseLayout title="Territorio — Champagne">
+  <SectionHero eyebrow="02 — Luoghi" title="Territorio" text="Paesaggi, villaggi, cru e suoli: la geografia che dà forma alle differenze nello Champagne." />
+  <section class="article-list"><ArticleCard category="In arrivo" title="Una mappa narrativa della Champagne." excerpt="Organizzeremo gli articoli per area, comune e cru, con collegamenti semplici tra le pagine." /></section>
+</BaseLayout>
+<style>.article-list { width: min(760px, calc(100% - 48px)); margin: 0 auto; }</style>

@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Accesso riservato — Champagne">
+  <section class="access">
+    <p>Archivio personale</p>
+    <h1>Accesso riservato</h1>
+    <div class="note">L’accesso sarà attivato esclusivamente tramite invito personale. Collegheremo qui la pagina di ingresso quando verrà pubblicato il sito.</div>
+  </section>
+</BaseLayout>
+<style>
+  .access { width: min(560px, calc(100% - 48px)); margin: auto; padding: 130px 0; text-align: center; }.access > p { color: var(--gold); font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }.access h1 { font-size: clamp(44px, 7vw, 72px); font-weight: 400; line-height: 1; }.note { border-top: 1px solid var(--ink); margin-top: 42px; padding-top: 22px; font-size: 18px; }
+</style>

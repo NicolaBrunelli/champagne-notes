@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHero from '../components/SectionHero.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+---
+<BaseLayout title="Storia e metodo — Champagne">
+  <SectionHero eyebrow="01 — Fondamenti" title="Storia e metodo" text="Le origini della regione, il lavoro in vigna e in cantina, il tempo che trasforma un vino in Champagne." />
+  <section class="article-list"><ArticleCard category="In arrivo" title="Qui troveranno posto i tuoi testi sul metodo classico." excerpt="Ogni pagina potrà affiancare racconto, cronologia, immagini e note tecniche." /></section>
+</BaseLayout>
+<style>.article-list { width: min(760px, calc(100% - 48px)); margin: 0 auto; }</style>
