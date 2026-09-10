@@ -2,16 +2,19 @@
 interface Props { category: string; title: string; excerpt: string; }
 const { category, title, excerpt } = Astro.props;
 ---
+
 <article class="article-card">
   <p>{category}</p>
   <h2>{title}</h2>
-  <div class="rule"></div>
+  <div class="rule" aria-hidden="true"></div>
   <span>{excerpt}</span>
 </article>
+
 <style>
-  .article-card { border-top: 1px solid var(--ink); padding: 18px 0 25px; }
-  p { margin: 0 0 34px; color: var(--sage); font-family: var(--sans); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-  h2 { margin: 0; font-size: 29px; font-weight: 400; line-height: 1.16; }
-  .rule { width: 32px; border-top: 1px solid var(--gold); margin: 22px 0 14px; }
-  span { color: #566159; font-size: 16px; line-height: 1.45; }
+  .article-card { padding: 25px 0 30px; border-top: 1px solid var(--line); }
+  p { margin: 0 0 38px; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .13em; text-transform: uppercase; }
+  h2 { max-width: 430px; margin: 0; color: var(--ink); font: 500 37px/1 var(--display); letter-spacing: -.02em; }
+  .rule { width: 42px; margin: 25px 0 16px; border-top: 1px solid var(--gold); }
+  span { display: block; max-width: 440px; color: var(--sage); font: 400 17px/1.6 var(--serif); }
+  @media (max-width: 650px) { h2 { font-size: 32px; } }
 </style>

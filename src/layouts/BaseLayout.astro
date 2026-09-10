@@ -5,8 +5,8 @@ interface Props {
 }
 
 const {
-  title = 'Champagne — Appunti personali · scritto e redatto da Brunelli Nicola',
-  description = 'Un archivio personale dedicato allo Champagne.',
+  title = 'Lo Champagne, con calma — Brunelli Nicola',
+  description = 'Un archivio personale dedicato allo Champagne, alla vigna e al terroir.',
 } = Astro.props;
 const path = Astro.url.pathname;
 const navigation = [
@@ -22,14 +22,17 @@ const navigation = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet" />
     <title>{title}</title>
   </head>
   <body>
     <header class="site-header">
       <div class="header-inner">
-        <a class="brand" href="/" aria-label="Champagne, pagina iniziale">
-          <span class="brand-mark">C</span>
-          <span>Champagne</span>
+        <a class="brand" href="/" aria-label="Lo Champagne, con calma — pagina iniziale">
+          <span class="brand-mark">LC</span>
+          <span class="brand-name">Lo Champagne,<i> con calma</i></span>
         </a>
         <nav aria-label="Navigazione principale">
           <ul>
@@ -38,38 +41,114 @@ const navigation = [
             ))}
           </ul>
         </nav>
-        <a class="login-link" href="/accesso">Accesso riservato</a>
+        <a class="login-link" href="/accesso">Archivio privato</a>
       </div>
     </header>
     <main><slot /></main>
     <footer class="site-footer">
-      <p>Champagne — archivio personale</p>
-      <a href="/accesso">Area riservata</a>
+      <p>Lo Champagne, con calma <span>·</span> Brunelli Nicola</p>
+      <p>Appunti di vigna, craie e vino</p>
     </footer>
   </body>
 </html>
 
 <style is:global>
-  :root { --ink: #1f2a24; --paper: #f8f6f0; --sage: #607164; --gold: #b28c48; --line: #dad5c7; --serif: Georgia, 'Times New Roman', serif; --sans: Arial, sans-serif; }
+  :root {
+    --craie: #f3f0e8;
+    --calcaire: #d9d4c8;
+    --ink: #20342b;
+    --paper: var(--craie);
+    --sage: #66745f;
+    --terre: #926a43;
+    --gold: #8a652c;
+    --line: rgba(32, 52, 43, .18);
+    --display: 'Cormorant Garamond', Georgia, serif;
+    --serif: 'Source Serif 4', Georgia, serif;
+    --sans: 'DM Sans', Arial, sans-serif;
+  }
+
   * { box-sizing: border-box; }
-  @-webkit-keyframes tracking-in-contract { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
-  @keyframes tracking-in-contract { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
-  body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--serif); font-size: 18px; line-height: 1.6; }
-  main { -webkit-animation: tracking-in-contract .45s ease-out both; animation: tracking-in-contract .45s ease-out both; }
-  @media (prefers-reduced-motion: reduce) { main { -webkit-animation: none; animation: none; } }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(rgba(32, 52, 43, .027) .7px, transparent .8px),
+      radial-gradient(rgba(146, 106, 67, .022) .7px, transparent .8px);
+    background-position: 0 0, 7px 9px;
+    background-size: 13px 13px, 19px 19px;
+    font-family: var(--serif);
+    font-size: 18px;
+    line-height: 1.68;
+  }
   a { color: inherit; text-decoration: none; }
-  .site-header { border-bottom: 1px solid var(--line); }
+  main { min-height: 70vh; animation: page-reveal .55s both cubic-bezier(.2,.65,.3,1); }
+  @keyframes page-reveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .site-header { position: relative; z-index: 2; border-bottom: 1px solid var(--line); background: rgba(243, 240, 232, .82); backdrop-filter: blur(10px); }
   .header-inner, .site-footer { width: min(1180px, calc(100% - 48px)); margin: auto; }
-  .header-inner { min-height: 88px; display: flex; align-items: center; gap: 34px; }
-  .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 22px; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
-  .brand-mark { border: 1px solid var(--gold); border-radius: 50%; display: grid; place-items: center; width: 32px; height: 32px; color: var(--gold); font-size: 19px; }
-  nav { margin-left: auto; } nav ul { display: flex; flex-wrap: wrap; gap: 22px; list-style: none; margin: 0; padding: 0; }
-  nav a { font-family: var(--sans); font-size: 12px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; } nav a[aria-current='page'], nav a:hover { color: var(--gold); }
-  .login-link { border: 1px solid var(--ink); padding: 8px 11px; font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
-  .site-footer { border-top: 1px solid var(--line); display: flex; justify-content: space-between; padding: 25px 0 36px; margin-top: 80px; font-family: var(--sans); font-size: 12px; letter-spacing: .04em; }
-  .site-footer p { margin: 0; }
+  .header-inner { min-height: 82px; display: flex; align-items: center; gap: 32px; }
+  .brand { display: inline-flex; align-items: center; gap: 12px; min-width: 0; white-space: nowrap; }
+  .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font: 700 9px var(--sans); letter-spacing: .04em; }
+  .brand-name { font: 500 21px/1 var(--display); letter-spacing: -.01em; }
+  .brand-name i { color: var(--terre); font-weight: 400; }
+  nav { margin-left: auto; } nav ul { display: flex; flex-wrap: wrap; gap: 24px; list-style: none; margin: 0; padding: 0; }
+  nav a, .login-link { font: 600 10px var(--sans); letter-spacing: .11em; text-transform: uppercase; }
+  nav a { position: relative; padding: 8px 0; }
+  nav a::after { content: ''; position: absolute; right: 0; bottom: 2px; left: 0; height: 1px; background: var(--gold); transform: scaleX(0); transform-origin: right; transition: transform .28s ease; }
+  nav a:hover, nav a[aria-current='page'] { color: var(--terre); }
+  nav a:hover::after, nav a[aria-current='page']::after { transform: scaleX(1); transform-origin: left; }
+  .login-link { padding: 9px 11px; border: 1px solid var(--line); color: var(--terre); transition: background .25s ease, color .25s ease, border-color .25s ease; }
+  .login-link:hover { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+  .site-footer { display: flex; justify-content: space-between; gap: 24px; padding: 30px 0 38px; margin-top: 100px; border-top: 1px solid var(--line); color: var(--sage); font: 600 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  .site-footer p { margin: 0; } .site-footer span { color: var(--gold); }
   main #s1, main #s6, main .article > footer { display: none; }
-  main .map { margin: 56px 0 0; } main .map img { display: block; width: 100%; max-width: 720px; margin: auto; border: 1px solid var(--line); } main .map figcaption { display: block; max-width: 720px; margin: 10px auto 0; color: var(--sage); font: 600 11px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
-  @media (max-width: 800px) { .header-inner { padding: 15px 0; flex-wrap: wrap; gap: 14px; } nav { order: 3; width: 100%; overflow:auto; } nav ul { width:max-content; gap:18px; } .login-link { margin-left: auto; min-height:38px; display:inline-flex; align-items:center; } }
-  @media (max-width: 520px) { .header-inner, .site-footer { width: min(100% - 32px, 1180px); } .brand { font-size: 17px; }.brand-mark{width:29px;height:29px}.login-link{font-size:10px;padding:7px 9px}.site-footer { margin-top: 48px; gap:18px; } }
+  main .map { margin: 52px 0 0; padding: 14px; background: rgba(255,255,255,.28); border: 1px solid var(--line); }
+  main .map img { display: block; width: 100%; max-width: 720px; margin: auto; filter: saturate(.75) contrast(.97); transition: filter .4s ease, transform .5s ease; }
+  main .map:hover img { filter: saturate(1) contrast(1); transform: scale(1.006); }
+  main .map figcaption { display: block; max-width: 720px; margin: 12px auto 0; color: var(--terre); font: 600 10px var(--sans); letter-spacing: .11em; text-transform: uppercase; }
+
+  /* Territorio: stessa griglia e stesso linguaggio delle pagine editoriali. */
+  .article { width: min(850px, calc(100% - 48px)) !important; margin: auto !important; }
+  .article > header { max-width: none !important; margin: 0 !important; padding: 105px 0 54px !important; text-align: left !important; }
+  .article > header > p, .article section > b { color: var(--gold) !important; font: 700 10px var(--sans) !important; letter-spacing: .13em !important; text-transform: uppercase !important; }
+  .article > header > p { margin: 0 !important; }
+  .article > header small { display: block !important; margin: 16px 0 54px !important; color: var(--sage) !important; font: 600 10px var(--sans) !important; letter-spacing: .13em !important; text-transform: uppercase !important; }
+  .article h1 { margin: 0 0 28px !important; color: var(--ink) !important; font: 500 clamp(56px, 8vw, 98px)/.9 var(--display) !important; letter-spacing: -.035em !important; }
+  .article header div { max-width: 670px !important; font: 400 20px/1.48 var(--serif) !important; }
+  .article nav { display: flex !important; gap: 18px !important; flex-wrap: wrap !important; justify-content: flex-start !important; padding: 16px 0 !important; border-block: 1px solid var(--line) !important; }
+  .article nav a { font: 600 10px var(--sans) !important; letter-spacing: .1em !important; text-transform: uppercase !important; }
+  .article section { padding: 72px 0 !important; border-bottom: 1px solid var(--line) !important; }
+  .article h2 { max-width: 700px !important; margin: 12px 0 24px !important; color: var(--ink) !important; font: 500 clamp(38px, 5vw, 58px)/.98 var(--display) !important; letter-spacing: -.025em !important; }
+  .article section > p { max-width: 740px !important; font: 400 18px/1.7 var(--serif) !important; }
+  .article .cards, .article .places { gap: 0 !important; margin-top: 38px !important; }
+  .article .cards aside, .article .places article { padding: 22px 0 !important; border-top: 1px solid var(--line) !important; }
+  .article .cards h3, .article .places h3 { margin: 0 0 8px !important; font: 500 30px/1 var(--display) !important; }
+  .article .cards em { color: var(--terre) !important; font: 600 10px var(--sans) !important; letter-spacing: .1em !important; text-transform: uppercase !important; }
+  .article .cards p, .article .places p { font: 400 17px/1.62 var(--serif) !important; }
+  .article .note { padding: 23px 26px !important; background: rgba(217, 212, 200, .48) !important; border-left: 2px solid var(--gold) !important; font: 400 17px/1.62 var(--serif) !important; }
+
+  @media (max-width: 900px) {
+    .header-inner { min-height: auto; padding: 14px 0; flex-wrap: wrap; gap: 13px; }
+    nav { order: 3; width: 100%; overflow-x: auto; } nav ul { width: max-content; gap: 20px; }
+    .login-link { margin-left: auto; }
+  }
+  @media (max-width: 650px) {
+    body { font-size: 17px; }
+    .header-inner, .site-footer, .article { width: min(100% - 32px, 1180px) !important; }
+    .brand-name { font-size: 18px; } .brand-mark { width: 30px; height: 30px; }
+    .site-footer { flex-direction: column; margin-top: 64px; }
+    .article > header { padding: 68px 0 44px !important; }
+    .article > header small { margin-bottom: 44px !important; }
+    .article header div { font-size: 18px !important; }
+    .article nav { overflow-x: auto !important; flex-wrap: nowrap !important; white-space: nowrap; scrollbar-width: none; }
+    .article nav::-webkit-scrollbar { display: none; }
+    .article section { padding: 56px 0 !important; }
+    .article section > p { font-size: 17px !important; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
 </style>
