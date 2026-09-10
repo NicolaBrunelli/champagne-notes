@@ -6,6 +6,8 @@ export interface Maison {
   logo?: string;
   /** Added as each official source is verified. Never infer a website URL. */
   website?: string;
+  /** Official white logo supplied by the producer, shown on an ink background. */
+  logoTone?: 'light-on-dark';
 }
 
 export const maisonAreas: MaisonArea[] = ['Côte des Blancs', 'Vallée de la Marne', 'Montagne de Reims', 'Côte des Bar'];
@@ -22,22 +24,194 @@ export const maisons: Maison[] = [
   {
     "name": "Petit & Bajan",
     "area": "Côte des Blancs",
-    "website": "https://www.champagne-petit-bajan.fr/"
+    "website": "https://champagne-petit-et-bajan.fr/",
+    "logo": "https://champagne-petit-et-bajan.fr/images/logo-black.png"
   },
   {
     "name": "Lanson",
     "area": "Montagne de Reims",
-    "website": "https://www.lanson.com/"
+    "website": "https://www.lanson.com/",
+    "logo": "https://lanson.com/cdn/shop/files/logo.svg?v=1711461687&width=600"
   },
   {
     "name": "Piollot",
     "area": "Côte des Bar",
-    "website": "https://www.champagne-piollot.com/"
+    "website": "https://www.piollot.com/",
+    "logo": "https://www.piollot.com/content/uploads/2021/11/LOGO-21.png"
   },
   {
     "name": "Trudon",
     "area": "Vallée de la Marne",
-    "website": "https://www.champagne-trudon.com/"
+    "website": "https://www.champagne-trudon.com/",
+    "logo": "https://www.champagne-trudon.com/www/img/logo-trudon.png"
+  },
+  {
+    "name": "André Robert",
+    "area": "Côte des Blancs",
+    "website": "https://champagne-andre-robert.com/",
+    "logo": "https://champagne-andre-robert.com/wp-content/uploads/2026/06/andre-robert-logo-header-800px.webp"
+  },
+  {
+    "name": "Bliard-Moriset",
+    "area": "Côte des Blancs",
+    "website": "https://www.champagne-bliard-moriset.fr/accueil/",
+    "logo": "https://www.champagne-bliard-moriset.fr/wp-content/uploads/2020/04/logotype-champagne-bliard-moriset-le-mesnil-sur-oger-2020.png"
+  },
+  {
+    "name": "Duval-Leroy",
+    "area": "Côte des Blancs",
+    "website": "https://www.duval-leroy.com/",
+    "logo": "https://www.duval-leroy.com/wp-content/uploads/2024/04/logo_newsletter.png"
+  },
+  {
+    "name": "J. L. Vergnon",
+    "area": "Côte des Blancs",
+    "website": "https://champagne-jl-vergnon.com/",
+    "logo": "https://champagne-jl-vergnon.com/wp-content/themes/champagnevergnon2-0/img/Badge-home-2.svg"
+  },
+  {
+    "name": "Launois Père et Fils",
+    "area": "Côte des Blancs",
+    "website": "https://www.champagne-launois.fr/",
+    "logo": "https://www.champagne-launois.fr/wp-content/uploads/2018/04/logo-v2.png"
+  },
+  {
+    "name": "Le Brun de Neuville",
+    "area": "Côte des Blancs",
+    "website": "https://www.lebrundeneuville.fr/fr",
+    "logo": "https://www.lebrundeneuville.fr/sites/all/themes/framework/img/logo.png"
+  },
+  {
+    "name": "Le Mesnil",
+    "area": "Côte des Blancs",
+    "website": "https://champagnelemesnil.com/",
+    "logo": "https://champagnelemesnil.com/cdn/shop/files/logo-upr.png?height=100&v=1771862423"
+  },
+  {
+    "name": "Philippe Gonet",
+    "area": "Côte des Blancs",
+    "website": "https://www.champagne-philippe-gonet.com/",
+    "logo": "https://www.champagne-philippe-gonet.com/wp-content/uploads/2023/05/logo-blanc.svg",
+    "logoTone": "light-on-dark"
+  },
+  {
+    "name": "Pierre Moncuit",
+    "area": "Côte des Blancs",
+    "website": "https://www.pierre-moncuit.fr/",
+    "logo": "https://www.pierre-moncuit.fr/sites/default/files/Logo1.png"
+  },
+  {
+    "name": "Champagne Chapuy",
+    "area": "Côte des Blancs",
+    "website": "https://www.champagne-chapuy.com/",
+    "logo": "https://www.champagne-chapuy.com/wp-content/uploads/2024/02/logo-1.png"
+  },
+  {
+    "name": "Doyard",
+    "area": "Côte des Blancs",
+    "website": "https://champagnedoyard.fr/",
+    "logo": "https://champagnedoyard.fr/wp-content/uploads/2017/08/logo_doyard.jpg"
+  },
+  {
+    "name": "Doyard-Mahé",
+    "area": "Côte des Blancs",
+    "website": "https://www.champagnedoyard-mahe.com/",
+    "logo": "https://www.champagnedoyard-mahe.com/images/d2969655d80432b1.png"
+  },
+  {
+    "name": "A.D. Coutelas",
+    "area": "Vallée de la Marne",
+    "website": "https://champagne-adcoutelas.com/",
+    "logo": "https://champagne-adcoutelas.com/wp-content/uploads/2023/11/logo-blanc.png",
+    "logoTone": "light-on-dark"
+  },
+  {
+    "name": "Alfred Gratien",
+    "area": "Vallée de la Marne",
+    "website": "https://www.alfredgratien.com/",
+    "logo": "https://www.alfredgratien.com/wp-content/themes/atm-theme/library/images/logo-gris.png"
+  },
+  {
+    "name": "Boizel",
+    "area": "Vallée de la Marne",
+    "website": "https://www.boizel.com/fr/",
+    "logo": "https://www.boizel.com/wp-content/themes/boizel/build/main/assets/logo-white-ac76c69f.png",
+    "logoTone": "light-on-dark"
+  },
+  {
+    "name": "Charlier & Fils",
+    "area": "Vallée de la Marne",
+    "website": "https://www.champagne-charlier.com/en/index",
+    "logo": "https://www.champagne-charlier.com/assets/images/logo.png"
+  },
+  {
+    "name": "Laherte Frères",
+    "area": "Vallée de la Marne",
+    "website": "https://www.champagne-laherte.com/",
+    "logo": "https://www.champagne-laherte.com/images/logo.svg"
+  },
+  {
+    "name": "Cattier",
+    "area": "Montagne de Reims",
+    "website": "https://www.cattier.com/fr/",
+    "logo": "https://www.cattier.com/content/uploads/2019/11/logo.svg"
+  },
+  {
+    "name": "Pierre Paillard",
+    "area": "Montagne de Reims",
+    "website": "https://www.champagne-pierre-paillard.com/fr/",
+    "logo": "https://www.champagne-pierre-paillard.com/wp-content/uploads/2024/01/logo-champagne-pierre-paillard-blanc.png",
+    "logoTone": "light-on-dark"
+  },
+  {
+    "name": "Larnaudie-Hirault",
+    "area": "Montagne de Reims",
+    "website": "https://www.champagne-larnaudie-hirault.com/",
+    "logo": "https://www.champagne-larnaudie-hirault.com/images/logo.png"
+  },
+  {
+    "name": "Ployez-Jacquemart",
+    "area": "Montagne de Reims",
+    "website": "https://www.ployez-jacquemart.fr/",
+    "logo": "https://www.ployez-jacquemart.fr/wp-content/themes/ployez-jacquemart/img/LogoPloyez.png"
+  },
+  {
+    "name": "Vilmart & Cie",
+    "area": "Montagne de Reims",
+    "website": "https://www.champagnevilmart.fr/",
+    "logo": "https://www.champagnevilmart.fr/wp-content/themes/vilmart/assets/images/logo-white.png",
+    "logoTone": "light-on-dark"
+  },
+  {
+    "name": "Cheurlin-Dangin",
+    "area": "Côte des Bar",
+    "website": "https://www.cheurlin-dangin.fr/",
+    "logo": "https://www.cheurlin-dangin.fr/storage/files/configuration10/favicons/logo.png"
+  },
+  {
+    "name": "Coessens",
+    "area": "Côte des Bar",
+    "website": "https://champagne-coessens.com/",
+    "logo": "https://champagne-coessens.com/wp-content/uploads/2020/03/Logo-coessens-noir.png"
+  },
+  {
+    "name": "Étienne Fourrier",
+    "area": "Côte des Bar",
+    "website": "https://champagne-fourrier.com/",
+    "logo": "https://champagne-fourrier.com/wp-content/uploads/2026/06/Logo-BLANC-fourrier-512x313.webp",
+    "logoTone": "light-on-dark"
+  },
+  {
+    "name": "Gautherot",
+    "area": "Côte des Bar",
+    "website": "https://www.champagne-gautherot.com/fr",
+    "logo": "https://www.champagne-gautherot.com/files/front/images/logo.png"
+  },
+  {
+    "name": "Ruppert-Leroy",
+    "area": "Côte des Bar",
+    "website": "https://www.champagne-ruppert-leroy.com/fr/index.html",
+    "logo": "https://www.champagne-ruppert-leroy.com/images/logo-ruppert-leroy.png"
   },
   {
     "name": "Apollonis Michel Loriot",
@@ -60,13 +234,13 @@ export const maisons: Maison[] = [
   {
     "name": "Henri Giraud",
     "area": "Vallée de la Marne",
-    "website": "http://champagne-giraud.com",
+    "website": "https://champagne-giraud.com/",
     "logo": "https://www.champagneexperience.it/wp-content/uploads/2023/03/Champagne-Henri-Giraud_2023-03-uai-258x258.jpg"
   },
   {
     "name": "H. Goutorbe",
     "area": "Vallée de la Marne",
-    "website": "http://champagne-henri-goutorbe.com",
+    "website": "https://www.champagne-henri-goutorbe.com/",
     "logo": "https://www.champagneexperience.it/wp-content/uploads/2023/07/Champagne-H-Goutorbe_2023-07-uai-258x258.jpg"
   },
   {
@@ -84,7 +258,7 @@ export const maisons: Maison[] = [
   {
     "name": "Dom Caudron",
     "area": "Vallée de la Marne",
-    "website": "https://www.domcaudron.com/index-en.html",
+    "website": "https://domcaudron.com/",
     "logo": "https://www.champagneexperience.it/wp-content/uploads/2021/05/Champagne-Dom-Caudron_2021-04-uai-258x258.jpg"
   },
   {
@@ -132,7 +306,7 @@ export const maisons: Maison[] = [
   {
     "name": "Francis Boulard & Fille",
     "area": "Vallée de la Marne",
-    "website": "https://www.francis-boulard.com/",
+    "website": "https://francis-boulard.com/",
     "logo": "https://www.champagneexperience.it/wp-content/uploads/2023/07/Champagne-Francis-Boulard-Fille_2023-07-uai-258x258.jpg"
   },
   {
@@ -220,7 +394,7 @@ export const maisons: Maison[] = [
   {
     "name": "Palmer & Co",
     "area": "Montagne de Reims",
-    "website": "http://www.champagnepalmer.fr",
+    "website": "https://www.champagne-palmer.fr/",
     "logo": "https://www.champagneexperience.it/wp-content/uploads/2024/09/Champagne-Palmer-Co_2024-09-uai-258x258.jpg"
   },
   {
@@ -273,7 +447,7 @@ export const maisons: Maison[] = [
   {
     "name": "Deutz",
     "area": "Vallée de la Marne",
-    "website": "https://champagne-deutz.com/fr/intro/0",
+    "website": "https://www.champagne-deutz.com/",
     "logo": "https://www.champagneexperience.it/wp-content/uploads/2021/04/Champagne-Deutz_2021-04-uai-258x258.jpg"
   },
   {
@@ -351,13 +525,13 @@ export const maisons: Maison[] = [
   {
     "name": "Robert Moncuit",
     "area": "Côte des Blancs",
-    "website": "https://robertmoncuit.com/",
+    "website": "https://www.champagne-robert-moncuit.com/",
     "logo": "https://www.champagneexperience.it/wp-content/uploads/2026/08/Champagne-Robert-Moncuit_2026-08-uai-258x258.jpg"
   },
   {
     "name": "Autréau de Champillon",
     "area": "Montagne de Reims",
-    "website": "https://www.champagneautreau.com/eng/",
+    "website": "https://www.champagneautreau.com/",
     "logo": "https://www.champagneexperience.it/wp-content/uploads/2021/04/Champagne-Autreau_2021-04-uai-258x258.jpg"
   },
   {
@@ -637,7 +811,7 @@ export const maisons: Maison[] = [
   {
     "name": "Claude Cazals",
     "area": "Côte des Blancs",
-    "website": "https://www.champagne-cazals.fr/en/index.php",
+    "website": "https://www.champagne-cazals.fr/",
     "logo": "https://www.champagneexperience.it/wp-content/uploads/2021/05/Champagne-Claude-Cazals_2021-04-uai-258x258.jpg"
   },
   {
