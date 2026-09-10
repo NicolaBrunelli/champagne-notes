@@ -29,6 +29,9 @@ const section = frontmatter.section ?? '01 — Storia e metodo';
   .longform :global(blockquote) { max-width: 680px; margin: 46px auto; padding: 4px 0 4px 28px; border-left: 2px solid var(--gold); color: var(--terre); font: 400 clamp(27px, 4vw, 39px)/1.08 var(--display); }
   .longform :global(pre) { max-width: 740px; margin: 30px 0; padding: 20px 0; overflow: visible; border-block: 1px solid var(--line); color: var(--sage); background: transparent; white-space: pre-wrap; text-align: left; font: 600 12px/1.65 var(--sans); letter-spacing: .04em; }
   .longform :global(hr) { max-width: 740px; margin: 68px 0; border: 0; border-top: 1px solid var(--line); }
+  .longform :global(table) { width: 100%; max-width: 800px; margin: 32px 0 48px; border-collapse: collapse; color: var(--ink); font: 400 15px/1.5 var(--serif); }
+  .longform :global(th), .longform :global(td) { padding: 15px 14px; vertical-align: top; text-align: left; border-bottom: 1px solid var(--line); }
+  .longform :global(th) { color: var(--terre); font: 700 10px/1.35 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
   @media (max-width: 650px) {
     .longform { width: min(100% - 32px, 850px); padding-top: 68px; }
     .longform-header .byline { margin-bottom: 44px; }
@@ -36,5 +39,7 @@ const section = frontmatter.section ?? '01 — Storia e metodo';
     .longform :global(h2) { margin-top: 62px; }
     .longform :global(h3) { font-size: 29px; }
     .longform :global(pre) { font-size: 10px; }
+    .longform :global(table) { display: block; overflow-x: auto; white-space: normal; font-size: 14px; }
+    .longform :global(th), .longform :global(td) { min-width: 150px; padding: 12px; }
   }
 </style>
