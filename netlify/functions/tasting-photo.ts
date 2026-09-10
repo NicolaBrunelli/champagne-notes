@@ -3,8 +3,8 @@ import { getUser } from '@netlify/identity';
 
 const isOwner = async () => {
   const user = await getUser();
-  const runtime = globalThis as unknown as { Netlify?: { env?: { get: (key: string) => string | undefined } }; process?: { env?: Record<string, string | undefined> } };
-  const ownerEmail = (runtime.Netlify?.env?.get('OWNER_EMAIL') || runtime.process?.env?.OWNER_EMAIL)?.trim().toLowerCase();
+  const runtime = globalThis as unknown as { Netlify: { env: { get: (key: string) => string | undefined } } };
+  const ownerEmail = runtime.Netlify.env.get('OWNER_EMAIL')?.trim().toLowerCase();
   return Boolean(ownerEmail && user?.email?.toLowerCase() === ownerEmail);
 };
 
