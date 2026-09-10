@@ -1,0 +1,293 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { maisonSlug, maisons } from '../../data/maisons';
+
+export function getStaticPaths() {
+  return maisons.map((maison) => ({
+    params: { slug: maisonSlug(maison.name) },
+    props: { maison },
+  }));
+}
+
+const { maison } = Astro.props;
+const pageTitle = `${maison.name} — Cantine e vini`;
+---
+
+<BaseLayout title={pageTitle} description={`Scheda di ${maison.name}, ${maison.area}.`}>
+  <article class="producer" data-producer-slug={maisonSlug(maison.name)}>
+    <a class="back" href="/cantine-e-vini"><span aria-hidden="true">←</span> Archivio cantine</a>
+
+    <header class="producer-header">
+      <p class="eyebrow">{maison.area}</p>
+      <div class="logo-frame">
+        <img src={maison.logo} alt={`Logo ${maison.name}`} width="258" height="258" referrerpolicy="no-referrer" />
+      </div>
+      <div class="producer-title">
+        <p class="byline">Cantine e vini · Brunelli Nicola</p>
+        <h1>{maison.name}</h1>
+        <p>Una scheda in crescita: informazioni essenziali della cantina e le annotazioni di degustazione personali.</p>
+        {maison.website ? (
+          <a class="official-link" href={maison.website} target="_blank" rel="noopener noreferrer">Visita il sito ufficiale <span aria-hidden="true">↗</span></a>
+        ) : (
+          <p class="verification">Sito ufficiale in verifica</p>
+        )}
+      </div>
+    </header>
+
+    <section class="tasting-section" aria-labelledby="tasting-title">
+      <div class="section-label">
+        <p>Registro personale</p>
+        <h2 id="tasting-title">Vini bevuti.</h2>
+      </div>
+      <p class="intro">Appunti privati di bottiglie, luoghi e impressioni di degustazione. Il registro compare solo dopo l’accesso del proprietario.</p>
+
+      <div class="tasting-gate" data-tasting-gate>
+        <p>Per aggiungere o consultare le note personali, <a href="/accesso">accedi all’archivio riservato</a>.</p>
+      </div>
+
+      <div class="tasting-private" data-tasting-private hidden>
+        <div class="tasting-toolbar">
+          <p>Le tue bevute per questa cantina</p>
+          <button class="quiet-button" type="button" data-logout>Esci</button>
+        </div>
+        <div class="tasting-list" data-tasting-list aria-live="polite"></div>
+
+        <form class="tasting-form" data-tasting-form>
+          <div class="form-heading">
+            <p>Nuova annotazione</p>
+            <span>Campi personali · non pubblicati</span>
+          </div>
+          <div class="form-grid">
+            <label class="wide">Nome del vino
+              <input name="wine" required autocomplete="off" placeholder="Es. Les Vignes du Levant Extra Brut" />
+            </label>
+            <label>Data di bevuta
+              <input name="drunkAt" type="date" required />
+            </label>
+            <label>Luogo
+              <input name="place" required autocomplete="off" placeholder="Ristorante, casa, città…" />
+            </label>
+            <label>Prezzo (€)
+              <input name="price" type="number" min="0" step="0.01" inputmode="decimal" placeholder="—" />
+            </label>
+            <label>Voto generale
+              <select name="rating" required>
+                <option value="">Scegli</option>
+                {[0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((value) => <option value={value}>{value.toFixed(1)} / 5</option>)}
+              </select>
+            </label>
+            <label class="wide">Foto della bottiglia <span>facoltativa, max 5 MB</span>
+              <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" />
+            </label>
+          </div>
+
+          <fieldset class="sensory-ratings">
+            <legend>Profilo al palato</legend>
+            <div class="sensory-row">
+              <label for="body">Leggero <input id="body" name="body" type="range" min="0" max="100" value="50" /> Strutturato</label>
+            </div>
+            <div class="sensory-row">
+              <label for="tannin">Morbido <input id="tannin" name="tannin" type="range" min="0" max="100" value="50" /> Tannico</label>
+            </div>
+            <div class="sensory-row">
+              <label for="sweetness">Secco <input id="sweetness" name="sweetness" type="range" min="0" max="100" value="50" /> Dolce</label>
+            </div>
+            <div class="sensory-row">
+              <label for="acidity">Piatto <input id="acidity" name="acidity" type="range" min="0" max="100" value="50" /> Acidulo</label>
+            </div>
+          </fieldset>
+          <label class="notes">Note di degustazione
+            <textarea name="notes" rows="5" placeholder="Naso, bocca, evoluzione, abbinamento, ricordo…"></textarea>
+          </label>
+          <div class="form-footer">
+            <p data-form-status aria-live="polite"></p>
+            <button type="submit">Salva la bevuta <span aria-hidden="true">→</span></button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </article>
+</BaseLayout>
+
+<script>
+  import { getUser, logout } from '@netlify/identity';
+
+  type Tasting = {
+    id: string;
+    wine: string;
+    drunkAt: string;
+    place: string;
+    price?: number;
+    rating: number;
+    notes?: string;
+    sensory: { body: number; tannin: number; sweetness: number; acidity: number };
+    photo?: { id: string; mime: string };
+  };
+
+  const producer = document.querySelector<HTMLElement>('[data-producer-slug]');
+  const gate = document.querySelector<HTMLElement>('[data-tasting-gate]');
+  const privateArea = document.querySelector<HTMLElement>('[data-tasting-private]');
+  const list = document.querySelector<HTMLElement>('[data-tasting-list]');
+  const form = document.querySelector<HTMLFormElement>('[data-tasting-form]');
+  const status = document.querySelector<HTMLElement>('[data-form-status]');
+  const logoutButton = document.querySelector<HTMLButtonElement>('[data-logout]');
+  const slug = producer?.dataset.producerSlug;
+
+  const escapeHTML = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] || character));
+  const formatDate = (value: string) => new Intl.DateTimeFormat('it-IT', { dateStyle: 'long' }).format(new Date(`${value}T12:00:00`));
+
+  const drawTastings = (tastings: Tasting[]) => {
+    if (!list) return;
+    if (!tastings.length) {
+      list.innerHTML = '<p class="empty-state">Nessuna bevuta annotata per ora. La prima può iniziare qui sotto.</p>';
+      return;
+    }
+    list.innerHTML = tastings.map((tasting) => `
+      <article class="tasting-entry">
+        ${tasting.photo ? `<img src="/api/foto/${encodeURIComponent(tasting.photo.id)}" alt="Bottiglia di ${escapeHTML(tasting.wine)}" loading="lazy">` : ''}
+        <div>
+          <p class="entry-date">${formatDate(tasting.drunkAt)} · ${escapeHTML(tasting.place)}</p>
+          <h3>${escapeHTML(tasting.wine)}</h3>
+          <p class="entry-rating">${tasting.rating.toFixed(1)} <span>/ 5</span>${typeof tasting.price === 'number' ? ` · € ${tasting.price.toFixed(2)}` : ''}</p>
+          ${tasting.notes ? `<p class="entry-notes">${escapeHTML(tasting.notes)}</p>` : ''}
+        </div>
+      </article>`).join('');
+  };
+
+  const loadTastings = async () => {
+    if (!slug || !list) return;
+    const response = await fetch(`/api/cantine/${encodeURIComponent(slug)}/bevute`, { headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error('Archivio non disponibile');
+    const data = await response.json() as { tastings: Tasting[] };
+    drawTastings(data.tastings);
+  };
+
+  const readPhoto = (file: File) => new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error('Impossibile leggere la foto'));
+    reader.readAsDataURL(file);
+  });
+
+  if (slug && gate && privateArea) {
+    getUser().then(async (user) => {
+      if (!user) return;
+      try {
+        await loadTastings();
+        gate.hidden = true;
+        privateArea.hidden = false;
+      } catch {
+        gate.innerHTML = '<p>L’accesso è attivo, ma questo account non è autorizzato a consultare il registro.</p>';
+      }
+    }).catch(() => undefined);
+  }
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!slug || !status) return;
+    const fields = new FormData(form);
+    const photo = fields.get('photo');
+    if (photo instanceof File && photo.size > 5 * 1024 * 1024) {
+      status.textContent = 'La foto supera il limite di 5 MB.';
+      return;
+    }
+    status.textContent = 'Salvataggio in corso…';
+    const payload = {
+      wine: String(fields.get('wine') || ''),
+      drunkAt: String(fields.get('drunkAt') || ''),
+      place: String(fields.get('place') || ''),
+      price: fields.get('price') ? Number(fields.get('price')) : undefined,
+      rating: Number(fields.get('rating')),
+      notes: String(fields.get('notes') || ''),
+      sensory: ['body', 'tannin', 'sweetness', 'acidity'].reduce((ratings, key) => ({ ...ratings, [key]: Number(fields.get(key)) }), {}),
+      photo: photo instanceof File && photo.size ? await readPhoto(photo) : undefined,
+    };
+    try {
+      const response = await fetch(`/api/cantine/${encodeURIComponent(slug)}/bevute`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error();
+      form.reset();
+      status.textContent = 'Bevuta salvata nell’archivio personale.';
+      await loadTastings();
+    } catch {
+      status.textContent = 'Non è stato possibile salvare la bevuta. Riprova.';
+    }
+  });
+
+  logoutButton?.addEventListener('click', async () => {
+    await logout();
+    window.location.reload();
+  });
+</script>
+
+<style>
+  .producer { width: min(850px, calc(100% - 48px)); margin: auto; }
+  .back { display: inline-flex; gap: 9px; margin-top: 38px; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  .back:hover { color: var(--gold); }
+  .producer-header { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 48px; align-items: center; padding: 72px 0 82px; border-bottom: 1px solid var(--line); }
+  .eyebrow, .byline, .section-label > p, .form-heading p { margin: 0; font: 700 10px var(--sans); letter-spacing: .13em; text-transform: uppercase; }
+  .eyebrow { grid-column: 1 / -1; color: var(--gold); }
+  .logo-frame { aspect-ratio: 1; display: grid; place-items: center; padding: 16px; border: 1px solid var(--line); background: rgba(255,255,255,.45); }
+  .logo-frame img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; filter: saturate(.78); }
+  .byline { color: var(--sage); margin-bottom: 23px; }
+  h1 { margin: 0 0 18px; color: var(--ink); font: 500 var(--page-title)/.9 var(--display); letter-spacing: -.035em; }
+  .producer-title > p:not(.byline):not(.verification) { max-width: 510px; margin: 0; font-size: 20px; line-height: 1.5; }
+  .official-link { display: inline-flex; gap: 11px; margin-top: 28px; padding-bottom: 5px; border-bottom: 1px solid var(--gold); color: var(--terre); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  .official-link:hover { color: var(--gold); }
+  .verification { margin: 26px 0 0; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  .tasting-section { padding: 78px 0 0; }
+  .section-label > p, .form-heading p { color: var(--gold); }
+  h2 { margin: 12px 0 18px; font: 500 clamp(44px, 6vw, 64px)/.92 var(--display); letter-spacing: -.03em; }
+  .intro { max-width: 610px; margin: 0; color: var(--sage); font-size: 19px; line-height: 1.55; }
+  .tasting-gate { margin-top: 38px; padding: 25px 28px; border-left: 2px solid var(--gold); background: rgba(217,212,200,.42); }
+  .tasting-gate p { margin: 0; font-size: 17px; }
+  .tasting-gate a { border-bottom: 1px solid var(--terre); color: var(--terre); }
+  .tasting-private { margin-top: 38px; }
+  .tasting-toolbar { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding-bottom: 13px; border-bottom: 1px solid var(--line); }
+  .tasting-toolbar p, .quiet-button { margin: 0; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  .quiet-button { padding: 0; border: 0; border-bottom: 1px solid currentColor; background: transparent; cursor: pointer; }
+  .tasting-list { margin: 0 0 54px; }
+  :global(.empty-state) { margin: 25px 0 0; color: var(--sage); }
+  :global(.tasting-entry) { display: grid; grid-template-columns: 110px 1fr; gap: 20px; padding: 25px 0; border-bottom: 1px solid var(--line); }
+  :global(.tasting-entry img) { width: 110px; aspect-ratio: 1; object-fit: cover; filter: saturate(.85); }
+  :global(.entry-date) { margin: 0 0 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  :global(.tasting-entry h3) { margin: 0; font: 500 31px/1 var(--display); }
+  :global(.entry-rating) { margin: 10px 0 0; color: var(--gold); font: 600 12px var(--sans); }
+  :global(.entry-rating span) { color: var(--sage); }
+  :global(.entry-notes) { margin: 12px 0 0; line-height: 1.58; white-space: pre-line; }
+  .tasting-form { padding: 30px; background: rgba(255,255,255,.34); border: 1px solid var(--line); }
+  .form-heading { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+  .form-heading span, .tasting-form label > span { color: var(--sage); font: 600 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+  .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 25px 0; }
+  .form-grid label, .notes { display: grid; gap: 8px; color: var(--ink); font: 700 10px var(--sans); letter-spacing: .09em; text-transform: uppercase; }
+  .wide { grid-column: 1 / -1; }
+  input:not([type='range']), select, textarea { width: 100%; padding: 11px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; outline: none; color: var(--ink); background: transparent; font: 400 17px var(--serif); text-transform: none; }
+  input:not([type='range']):focus, select:focus, textarea:focus { border-color: var(--gold); }
+  input[type='file'] { font-size: 14px; }
+  textarea { resize: vertical; }
+  .sensory-ratings { margin: 0; padding: 25px 0; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .sensory-ratings legend { padding: 0; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .11em; text-transform: uppercase; }
+  .sensory-row { margin-top: 16px; }
+  .sensory-row label { display: grid; grid-template-columns: 70px minmax(0, 1fr) 70px; align-items: center; gap: 9px; font: 500 14px var(--serif); }
+  .sensory-row label::first-line { text-align: left; }
+  input[type='range'] { width: 100%; accent-color: #c8112e; }
+  .notes { margin-top: 25px; }
+  .form-footer { display: flex; justify-content: space-between; gap: 20px; align-items: center; margin-top: 25px; }
+  .form-footer p { margin: 0; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .07em; }
+  .form-footer button { padding: 13px 18px; border: 1px solid var(--ink); color: var(--paper); background: var(--ink); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: background .25s ease, color .25s ease; }
+  .form-footer button:hover { color: var(--ink); background: transparent; }
+  @media (max-width: 650px) {
+    .producer { width: min(100% - 32px, 850px); }
+    .producer-header { grid-template-columns: 1fr; gap: 26px; padding: 50px 0 60px; }
+    .logo-frame { width: min(180px, 55vw); }
+    .tasting-section { padding-top: 58px; }
+    .tasting-form { padding: 21px 17px; }
+    .form-grid { grid-template-columns: 1fr; gap: 18px; }
+    .wide { grid-column: auto; }
+    .form-heading, .form-footer { align-items: flex-start; flex-direction: column; }
+    .sensory-row label { grid-template-columns: 56px minmax(0, 1fr) 56px; font-size: 12px; }
+    :global(.tasting-entry) { grid-template-columns: 76px 1fr; gap: 15px; }
+    :global(.tasting-entry img) { width: 76px; }
+  }
+</style>

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { maisonAreas, maisons } from '../data/maisons';
+import { maisonAreas, maisons, maisonSlug } from '../data/maisons';
 const areaId = (area: string) => area.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replaceAll(' ', '-');
 const areaDescription: Record<string, string> = {
   'Côte des Blancs': 'Chardonnay, craie e precisione: una costellazione di vigneron e maison radicati nel calcare.',
@@ -23,8 +23,17 @@ const areaDescription: Record<string, string> = {
       {maisonAreas.map((area, index) => <a href={'#' + areaId(area)}><span>0{index + 1}</span>{area}</a>)}
     </nav>
 
+    <div class="directory-search">
+      <label for="maison-search">Cerca nell’archivio delle cantine</label>
+      <div class="search-field">
+        <span aria-hidden="true">⌕</span>
+        <input id="maison-search" type="search" placeholder="Nome della cantina o area" autocomplete="off" />
+      </div>
+      <p id="maison-search-status" aria-live="polite"></p>
+    </div>
+
     {maisonAreas.map((area, index) => (
-      <section id={areaId(area)}>
+      <section id={areaId(area)} class="maison-area" data-maison-area>
         <header class="area-header">
           <p>Area {String(index + 1).padStart(2, '0')}</p>
           <h2>{area}</h2>
@@ -32,19 +41,48 @@ const areaDescription: Record<string, string> = {
         </header>
         <div class="maison-grid">
           {maisons.filter((maison) => maison.area === area).map((maison) => (
-            <article class="maison-card">
+            <a class="maison-card" href={`/cantine/${maisonSlug(maison.name)}`} data-maison-card data-search={maison.name + ' ' + maison.area} aria-label={`Apri la scheda di ${maison.name}`}>
               <div class="logo-frame">
                 <img src={maison.logo} alt={'Logo ' + maison.name} width="258" height="258" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
               </div>
               <h3>{maison.name}</h3>
-              <p>Scheda vini in arrivo <span aria-hidden="true">↗</span></p>
-            </article>
+              <p>Apri la scheda <span aria-hidden="true">↗</span></p>
+            </a>
           ))}
         </div>
       </section>
     ))}
   </article>
 </BaseLayout>
+
+<script>
+  const searchField = document.querySelector<HTMLInputElement>('#maison-search');
+  const searchStatus = document.querySelector<HTMLElement>('#maison-search-status');
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-maison-card]'));
+  const areas = Array.from(document.querySelectorAll<HTMLElement>('[data-maison-area]'));
+  const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+  if (searchField && searchStatus) {
+    searchField.addEventListener('input', () => {
+      const query = normalize(searchField.value.trim());
+      let matches = 0;
+
+      cards.forEach((card) => {
+        const isMatch = !query || normalize(card.getAttribute('data-search') || '').includes(query);
+        card.hidden = !isMatch;
+        if (isMatch) matches += 1;
+      });
+
+      areas.forEach((area) => {
+        area.hidden = Boolean(query) && !area.querySelector('[data-maison-card]:not([hidden])');
+      });
+
+      searchStatus.textContent = query
+        ? `${matches} ${matches === 1 ? 'cantina trovata' : 'cantine trovate'}`
+        : '';
+    });
+  }
+</script>
 
 <style>
   .directory { width: min(850px, calc(100% - 48px)); margin: auto; }
@@ -59,6 +97,14 @@ const areaDescription: Record<string, string> = {
   .directory-nav a { display: flex; gap: 8px; align-items: baseline; color: var(--ink); font: 600 10px var(--sans); letter-spacing: .09em; text-transform: uppercase; transition: color .25s ease; }
   .directory-nav a span { color: var(--gold); font-size: 9px; }
   .directory-nav a:hover { color: var(--terre); }
+  .directory-search { margin: 36px 0 -2px; }
+  .directory-search label { display: block; margin-bottom: 11px; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .12em; text-transform: uppercase; }
+  .search-field { display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--ink); color: var(--gold); transition: border-color .25s ease; }
+  .search-field:focus-within { border-color: var(--gold); }
+  .search-field span { font: 400 25px/1 var(--display); transform: rotate(-18deg); }
+  .search-field input { width: 100%; padding: 13px 0 14px; border: 0; outline: 0; color: var(--ink); background: transparent; font: 400 19px/1.3 var(--serif); }
+  .search-field input::placeholder { color: var(--sage); opacity: .75; }
+  .directory-search > p { min-height: 17px; margin: 9px 0 0; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
   section { padding: 76px 0; border-bottom: 1px solid var(--line); }
   .area-header { margin-bottom: 34px; }
   h2 { margin: 12px 0 16px; color: var(--ink); font: 500 clamp(40px, 5vw, 60px)/.96 var(--display); letter-spacing: -.025em; }
@@ -81,6 +127,8 @@ const areaDescription: Record<string, string> = {
     .directory-header > div { font-size: 18px; }
     .directory-nav { flex-wrap: nowrap; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
     .directory-nav::-webkit-scrollbar { display: none; }
+    .directory-search { margin-top: 28px; }
+    .search-field input { font-size: 17px; }
     section { padding: 58px 0; }
     .area-header > div { grid-template-columns: 1fr; gap: 9px; }
     .maison-grid { grid-template-columns: repeat(2, 1fr); }

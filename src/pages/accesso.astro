@@ -1,13 +1,100 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
-<BaseLayout title="Accesso riservato — Champagne">
+
+<BaseLayout title="Accesso riservato — Lo Champagne, con calma">
   <section class="access">
-    <p>Archivio personale</p>
-    <h1>Accesso riservato</h1>
-    <div class="note">L’accesso sarà attivato esclusivamente tramite invito personale. Collegheremo qui la pagina di ingresso quando verrà pubblicato il sito.</div>
+    <p class="eyebrow">Archivio personale</p>
+    <h1>Accesso<br /><em>riservato.</em></h1>
+    <p class="intro">Questa porta è dedicata esclusivamente al proprietario dell’archivio: qui si consultano e si aggiungono le note di degustazione.</p>
+
+    <div class="access-panel" data-auth-panel>
+      <form data-login-form>
+        <label>Email
+          <input name="email" type="email" autocomplete="email" required />
+        </label>
+        <label>Password
+          <input name="password" type="password" autocomplete="current-password" required />
+        </label>
+        <p data-auth-status aria-live="polite"></p>
+        <button type="submit">Accedi <span aria-hidden="true">→</span></button>
+      </form>
+    </div>
+
+    <div class="access-panel" data-invite-panel hidden>
+      <form data-invite-form>
+        <p>Imposta la password per attivare l’invito personale.</p>
+        <label>Nuova password
+          <input name="password" type="password" autocomplete="new-password" minlength="8" required />
+        </label>
+        <p data-invite-status aria-live="polite"></p>
+        <button type="submit">Attiva l’accesso <span aria-hidden="true">→</span></button>
+      </form>
+    </div>
   </section>
 </BaseLayout>
+
+<script>
+  import { acceptInvite, getUser, handleAuthCallback, login } from '@netlify/identity';
+
+  const loginForm = document.querySelector<HTMLFormElement>('[data-login-form]');
+  const inviteForm = document.querySelector<HTMLFormElement>('[data-invite-form]');
+  const authPanel = document.querySelector<HTMLElement>('[data-auth-panel]');
+  const invitePanel = document.querySelector<HTMLElement>('[data-invite-panel]');
+  const status = document.querySelector<HTMLElement>('[data-auth-status]');
+  const inviteStatus = document.querySelector<HTMLElement>('[data-invite-status]');
+  let inviteToken = '';
+
+  const goToArchive = () => { window.location.href = '/cantine-e-vini'; };
+  getUser().then((user) => { if (user) goToArchive(); }).catch(() => undefined);
+  handleAuthCallback().then((result) => {
+    if (result?.type === 'invite' && result.token && authPanel && invitePanel) {
+      inviteToken = result.token;
+      authPanel.hidden = true;
+      invitePanel.hidden = false;
+    }
+  }).catch(() => { if (status) status.textContent = 'L’invito non è valido o non può essere elaborato.'; });
+
+  loginForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!status) return;
+    const fields = new FormData(loginForm);
+    status.textContent = 'Accesso in corso…';
+    try {
+      await login(String(fields.get('email')), String(fields.get('password')));
+      goToArchive();
+    } catch {
+      status.textContent = 'Email o password non riconosciute.';
+    }
+  });
+
+  inviteForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!inviteToken || !inviteStatus) return;
+    inviteStatus.textContent = 'Attivazione in corso…';
+    try {
+      const fields = new FormData(inviteForm);
+      await acceptInvite(inviteToken, String(fields.get('password')));
+      goToArchive();
+    } catch {
+      inviteStatus.textContent = 'Non è stato possibile attivare l’invito.';
+    }
+  });
+</script>
+
 <style>
-  .access { width: min(560px, calc(100% - 48px)); margin: auto; padding: 130px 0; text-align: center; }.access > p { color: var(--gold); font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }.access h1 { font-size: clamp(44px, 7vw, 72px); font-weight: 400; line-height: 1; }.note { border-top: 1px solid var(--ink); margin-top: 42px; padding-top: 22px; font-size: 18px; }
+  .access { width: min(560px, calc(100% - 48px)); margin: auto; padding: 112px 0 70px; }
+  .eyebrow { margin: 0; color: var(--gold); font: 700 10px var(--sans); letter-spacing: .13em; text-transform: uppercase; }
+  h1 { margin: 22px 0 24px; font: 500 clamp(56px, 8vw, 86px)/.87 var(--display); letter-spacing: -.04em; }
+  h1 em { color: var(--terre); font-weight: 400; }
+  .intro { max-width: 500px; margin: 0; color: var(--sage); font-size: 19px; line-height: 1.55; }
+  .access-panel { margin-top: 45px; padding: 28px; border: 1px solid var(--line); background: rgba(255,255,255,.32); }
+  form { display: grid; gap: 21px; }
+  label { display: grid; gap: 8px; color: var(--ink); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  input { width: 100%; padding: 11px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; outline: none; color: var(--ink); background: transparent; font: 400 18px var(--serif); }
+  input:focus { border-color: var(--gold); }
+  form p { margin: 0; color: var(--sage); font-size: 15px; }
+  button { justify-self: start; padding: 13px 18px; border: 1px solid var(--ink); color: var(--paper); background: var(--ink); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: background .25s ease, color .25s ease; }
+  button:hover { color: var(--ink); background: transparent; }
+  @media (max-width: 650px) { .access { width: min(100% - 32px, 560px); padding-top: 74px; } .access-panel { padding: 21px 17px; } }
 </style>

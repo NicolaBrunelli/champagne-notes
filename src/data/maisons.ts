@@ -4,9 +4,19 @@ export interface Maison {
   name: string;
   area: MaisonArea;
   logo: string;
+  /** Added as each official source is verified. Never infer a website URL. */
+  website?: string;
 }
 
 export const maisonAreas: MaisonArea[] = ['Côte des Blancs', 'Vallée de la Marne', 'Montagne de Reims', 'Côte des Bar'];
+
+export const maisonSlug = (name: string) => name
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase()
+  .replace(/&/g, ' e ')
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/(^-|-$)/g, '');
 
 export const maisons: Maison[] = [
   {
@@ -635,4 +645,3 @@ export const maisons: Maison[] = [
     "logo": "https://www.champagneexperience.it/wp-content/uploads/2021/04/Champagne-Larmandier-Bernier_2021-04-uai-258x258.jpg"
   }
 ];
-
