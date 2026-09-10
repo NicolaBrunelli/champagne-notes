@@ -12,8 +12,11 @@ type Tasting = {
   notes?: string;
   sensory: SensoryProfile;
   photo?: { id: string; mime: string };
+  author: { id: string; name: string };
   createdAt: string;
 };
+
+type PublicTasting = Tasting & { averageRating: number; ratingCount: number };
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
   status,
@@ -25,11 +28,20 @@ const slugFromRequest = (request: Request) => {
   return parts[2] === 'cantine' && parts[4] === 'bevute' ? parts[3] : undefined;
 };
 
-const isOwner = async () => {
-  const user = await getUser();
-  const runtime = globalThis as unknown as { Netlify: { env: { get: (key: string) => string | undefined } } };
-  const ownerEmail = runtime.Netlify.env.get('OWNER_EMAIL')?.trim().toLowerCase();
-  return Boolean(ownerEmail && user?.email?.toLowerCase() === ownerEmail);
+const registeredUser = () => getUser();
+const wineKey = (wine: string) => wine.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+
+const withHistoricalAverages = (tastings: Tasting[]): PublicTasting[] => {
+  const grouped = new Map<string, Tasting[]>();
+  tastings.forEach((tasting) => {
+    const key = wineKey(tasting.wine);
+    grouped.set(key, [...(grouped.get(key) || []), tasting]);
+  });
+  return tastings.map((tasting) => {
+    const sameWine = grouped.get(wineKey(tasting.wine)) || [tasting];
+    const total = sameWine.reduce((sum, item) => sum + item.rating, 0);
+    return { ...tasting, averageRating: total / sameWine.length, ratingCount: sameWine.length };
+  });
 };
 
 const boundedNumber = (value: unknown, min: number, max: number) => {
@@ -47,14 +59,15 @@ const dataUrlToImage = (dataUrl: string) => {
 export default async (request: Request) => {
   const slug = slugFromRequest(request);
   if (!slug || !/^[a-z0-9-]+$/.test(slug)) return json({ error: 'Cantina non valida.' }, 400);
-  if (!(await isOwner())) return json({ error: 'Accesso riservato.' }, 403);
+  const user = await registeredUser();
+  if (!user) return json({ error: 'Accedi con il tuo account per consultare le degustazioni.' }, 401);
 
   const store = getStore({ name: 'champagne-tasting-notes', consistency: 'strong' });
   const key = `producers/${slug}.json`;
 
   if (request.method === 'GET') {
     const tastings = (await store.get(key, { type: 'json' }) || []) as Tasting[];
-    return json({ tastings });
+    return json({ tastings: withHistoricalAverages(tastings) });
   }
 
   if (request.method !== 'POST') return json({ error: 'Metodo non supportato.' }, 405);
@@ -77,6 +90,10 @@ export default async (request: Request) => {
 
     const tasting: Tasting = {
       id: crypto.randomUUID(), wine, place, drunkAt, rating, price, sensory,
+      author: {
+        id: user.id,
+        name: user.name || (typeof user.userMetadata?.full_name === 'string' ? user.userMetadata.full_name : 'Membro'),
+      },
       notes: typeof payload.notes === 'string' ? payload.notes.trim().slice(0, 3000) : undefined,
       createdAt: new Date().toISOString(),
     };
@@ -92,7 +109,7 @@ export default async (request: Request) => {
 
     const current = (await store.get(key, { type: 'json' }) || []) as Tasting[];
     await store.setJSON(key, [tasting, ...current]);
-    return json({ tasting }, 201);
+    return json({ tasting: withHistoricalAverages([tasting])[0] }, 201);
   } catch {
     return json({ error: 'Non è stato possibile salvare la bevuta.' }, 400);
   }

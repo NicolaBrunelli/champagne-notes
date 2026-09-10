@@ -43,7 +43,7 @@ const areaDescription: Record<string, string> = {
           {maisons.filter((maison) => maison.area === area).map((maison) => (
             <a class="maison-card" href={`/cantine/${maisonSlug(maison.name)}`} data-maison-card data-search={maison.name + ' ' + maison.area} aria-label={`Apri la scheda di ${maison.name}`}>
               <div class="logo-frame">
-                <img src={maison.logo} alt={'Logo ' + maison.name} width="258" height="258" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+                {maison.logo ? <img src={maison.logo} alt={'Logo ' + maison.name} width="258" height="258" loading="lazy" decoding="async" referrerpolicy="no-referrer" /> : <span class="logo-placeholder" aria-label={`Monogramma ${maison.name}`}>{maison.name.split(/\s+/).map((part) => part[0]).slice(0, 2).join('')}</span>}
               </div>
               <h3>{maison.name}</h3>
               <p>Apri la scheda <span aria-hidden="true">↗</span></p>
@@ -116,6 +116,7 @@ const areaDescription: Record<string, string> = {
   .maison-card:hover { z-index: 1; background: rgba(255,255,255,.72); transform: translateY(-3px); }
   .logo-frame { aspect-ratio: 1; display: grid; place-items: center; padding: 8px; background: rgba(255,255,255,.72); border-bottom: 1px solid var(--line); }
   .logo-frame img { display: block; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; filter: saturate(.76) contrast(.98); transition: filter .35s ease; }
+  .logo-placeholder { display: grid; place-items: center; width: 100%; height: 100%; color: var(--gold); border: 1px solid var(--line); border-radius: 50%; font: 500 44px/1 var(--display); }
   .maison-card:hover img { filter: saturate(1) contrast(1); }
   .maison-card h3 { margin: 17px 0 9px; color: var(--ink); font: 500 25px/1 var(--display); letter-spacing: -.015em; }
   .maison-card > p { margin: auto 0 0; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .075em; text-transform: uppercase; }
