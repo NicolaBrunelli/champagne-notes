@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const articles = [
+  {
+    category: 'Terroir',
+    title: 'L’Anima Bianca dello Champagne',
+    subtitle: 'L’importanza della craie nel terroir',
+    excerpt: 'Il mare antico sotto le vigne, la riserva d’acqua, il calore e le crayères: il gesso come elemento identitario della Champagne.',
+    href: '/articoli/la-craie-il-gesso-nel-terroir',
+  },
+];
+---
+
+<BaseLayout title="Articoli — Lo Champagne, con calma">
+  <article class="articles-page">
+    <header class="articles-header">
+      <p class="eyebrow">04 — Articoli</p>
+      <p class="byline">Scritto e redatto da Brunelli Nicola</p>
+      <h1>Letture con<br /><em>calma.</em></h1>
+      <p>Un archivio di approfondimenti su vigna, craie, territori, metodo e cultura dello Champagne.</p>
+    </header>
+
+    <section class="articles-list" aria-label="Articoli pubblicati">
+      {articles.map((article, index) => (
+        <article class="article-entry">
+          <p class="article-number">{String(index + 1).padStart(2, '0')}</p>
+          <div class="article-copy">
+            <p class="article-category">{article.category}</p>
+            <h2><a href={article.href}>{article.title}</a></h2>
+            <h3>{article.subtitle}</h3>
+            <p class="article-excerpt">{article.excerpt}</p>
+          </div>
+          <a class="article-arrow" href={article.href} aria-label={'Leggi ' + article.title}>↗</a>
+        </article>
+      ))}
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .articles-page { width: min(850px, calc(100% - 48px)); margin: auto; }
+  .articles-header { padding: 105px 0 54px; }
+  .eyebrow, .byline { margin: 0; font: 700 10px var(--sans); letter-spacing: .13em; text-transform: uppercase; }
+  .eyebrow { color: var(--gold); }.byline { margin: 16px 0 54px; color: var(--sage); font-weight: 600; }
+  h1 { margin: 0 0 28px; color: var(--ink); font: 500 var(--page-title)/.9 var(--display); letter-spacing: -.035em; }
+  h1 em { color: var(--terre); font-weight: 400; }.articles-header > p:last-child { max-width: 650px; margin: 0; font-size: 20px; line-height: 1.48; }
+  .articles-list { border-top: 1px solid var(--line); }
+  .article-entry { display: grid; grid-template-columns: 70px minmax(0, 1fr) 42px; gap: 20px; padding: 36px 0; border-bottom: 1px solid var(--line); }
+  .article-number, .article-category { margin: 0; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .13em; text-transform: uppercase; }
+  h2 { margin: 14px 0 5px; color: var(--ink); font: 500 clamp(36px, 5vw, 54px)/.96 var(--display); letter-spacing: -.025em; }
+  h2 a { background: linear-gradient(var(--gold), var(--gold)) 0 100% / 0 1px no-repeat; transition: background-size .3s ease, color .3s ease; } h2 a:hover { color: var(--terre); background-size: 100% 1px; }
+  h3 { margin: 0; color: var(--terre); font: 400 25px/1.05 var(--display); }.article-excerpt { max-width: 610px; margin: 18px 0 0; color: var(--sage); font-size: 17px; line-height: 1.6; }
+  .article-arrow { align-self: center; display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid var(--line); color: var(--gold); font-size: 20px; transition: background .25s ease, color .25s ease; }.article-arrow:hover { background: var(--ink); color: var(--paper); }
+  @media (max-width: 650px) { .articles-page { width: min(100% - 32px, 850px); }.articles-header { padding: 68px 0 44px; }.byline { margin-bottom: 44px; }.articles-header > p:last-child { font-size: 18px; }.article-entry { grid-template-columns: 1fr 36px; gap: 12px; }.article-number { grid-column: 1 / -1; }.article-arrow { width: 34px; height: 34px; }.article-excerpt { font-size: 16px; } }
+</style>

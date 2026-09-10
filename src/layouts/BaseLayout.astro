@@ -13,7 +13,9 @@ const navigation = [
   { href: '/storia-e-metodo', label: 'Storia e metodo' },
   { href: '/territorio', label: 'Territorio' },
   { href: '/cantine-e-vini', label: 'Cantine e vini' },
+  { href: '/articoli', label: 'Articoli' },
 ];
+const isCurrent = (href: string) => href === '/' ? path === '/' : path.startsWith(href);
 ---
 
 <!doctype html>
@@ -31,17 +33,16 @@ const navigation = [
     <header class="site-header">
       <div class="header-inner">
         <a class="brand" href="/" aria-label="Lo Champagne, con calma — pagina iniziale">
-          <span class="brand-mark">LC</span>
+          <span class="brand-mark" aria-hidden="true"><span class="brand-letter">C</span><span class="bubble bubble-one"></span><span class="bubble bubble-two"></span><span class="bubble bubble-three"></span></span>
           <span class="brand-name">Lo Champagne,<i> con calma</i></span>
         </a>
         <nav aria-label="Navigazione principale">
           <ul>
             {navigation.map((item) => (
-              <li><a href={item.href} aria-current={path === item.href ? 'page' : undefined}>{item.label}</a></li>
+              <li><a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a></li>
             ))}
           </ul>
         </nav>
-        <a class="login-link" href="/accesso">Archivio privato</a>
       </div>
     </header>
     <main><slot /></main>
@@ -65,6 +66,7 @@ const navigation = [
     --display: 'Cormorant Garamond', Georgia, serif;
     --serif: 'Source Serif 4', Georgia, serif;
     --sans: 'DM Sans', Arial, sans-serif;
+    --page-title: clamp(54px, 8vw, 92px);
   }
 
   * { box-sizing: border-box; }
@@ -90,17 +92,20 @@ const navigation = [
   .header-inner, .site-footer { width: min(1180px, calc(100% - 48px)); margin: auto; }
   .header-inner { min-height: 82px; display: flex; align-items: center; gap: 32px; }
   .brand { display: inline-flex; align-items: center; gap: 12px; min-width: 0; white-space: nowrap; }
-  .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font: 700 9px var(--sans); letter-spacing: .04em; }
+  .brand-mark { position: relative; width: 34px; height: 34px; display: grid; place-items: center; flex: 0 0 auto; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); overflow: hidden; }
+  .brand-letter { padding-right: 3px; font: 500 21px/.8 var(--display); }
+  .bubble { position: absolute; display: block; border: 1px solid currentColor; border-radius: 50%; opacity: .9; }
+  .bubble-one { width: 5px; height: 5px; top: 7px; right: 7px; }
+  .bubble-two { width: 3px; height: 3px; top: 13px; right: 4px; }
+  .bubble-three { width: 3px; height: 3px; top: 5px; right: 12px; }
   .brand-name { font: 500 21px/1 var(--display); letter-spacing: -.01em; }
   .brand-name i { color: var(--terre); font-weight: 400; }
   nav { margin-left: auto; } nav ul { display: flex; flex-wrap: wrap; gap: 24px; list-style: none; margin: 0; padding: 0; }
-  nav a, .login-link { font: 600 10px var(--sans); letter-spacing: .11em; text-transform: uppercase; }
+  nav a { font: 600 10px var(--sans); letter-spacing: .11em; text-transform: uppercase; }
   nav a { position: relative; padding: 8px 0; }
   nav a::after { content: ''; position: absolute; right: 0; bottom: 2px; left: 0; height: 1px; background: var(--gold); transform: scaleX(0); transform-origin: right; transition: transform .28s ease; }
   nav a:hover, nav a[aria-current='page'] { color: var(--terre); }
   nav a:hover::after, nav a[aria-current='page']::after { transform: scaleX(1); transform-origin: left; }
-  .login-link { padding: 9px 11px; border: 1px solid var(--line); color: var(--terre); transition: background .25s ease, color .25s ease, border-color .25s ease; }
-  .login-link:hover { color: var(--paper); background: var(--ink); border-color: var(--ink); }
   .site-footer { display: flex; justify-content: space-between; gap: 24px; padding: 30px 0 38px; margin-top: 100px; border-top: 1px solid var(--line); color: var(--sage); font: 600 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
   .site-footer p { margin: 0; } .site-footer span { color: var(--gold); }
   main #s1, main #s6, main .article > footer { display: none; }
@@ -115,7 +120,7 @@ const navigation = [
   .article > header > p, .article section > b { color: var(--gold) !important; font: 700 10px var(--sans) !important; letter-spacing: .13em !important; text-transform: uppercase !important; }
   .article > header > p { margin: 0 !important; }
   .article > header small { display: block !important; margin: 16px 0 54px !important; color: var(--sage) !important; font: 600 10px var(--sans) !important; letter-spacing: .13em !important; text-transform: uppercase !important; }
-  .article h1 { margin: 0 0 28px !important; color: var(--ink) !important; font: 500 clamp(56px, 8vw, 98px)/.9 var(--display) !important; letter-spacing: -.035em !important; }
+  .article h1 { margin: 0 0 28px !important; color: var(--ink) !important; font: 500 var(--page-title)/.9 var(--display) !important; letter-spacing: -.035em !important; }
   .article header div { max-width: 670px !important; font: 400 20px/1.48 var(--serif) !important; }
   .article nav { display: flex !important; gap: 18px !important; flex-wrap: wrap !important; justify-content: flex-start !important; padding: 16px 0 !important; border-block: 1px solid var(--line) !important; }
   .article nav a { font: 600 10px var(--sans) !important; letter-spacing: .1em !important; text-transform: uppercase !important; }
@@ -131,13 +136,13 @@ const navigation = [
 
   @media (max-width: 900px) {
     .header-inner { min-height: auto; padding: 14px 0; flex-wrap: wrap; gap: 13px; }
-    nav { order: 3; width: 100%; overflow-x: auto; } nav ul { width: max-content; gap: 20px; }
-    .login-link { margin-left: auto; }
+    nav { order: 3; width: 100%; overflow-x: auto; scrollbar-width: none; } nav::-webkit-scrollbar { display: none; } nav ul { width: max-content; gap: 20px; }
   }
   @media (max-width: 650px) {
     body { font-size: 17px; }
     .header-inner, .site-footer, .article { width: min(100% - 32px, 1180px) !important; }
     .brand-name { font-size: 18px; } .brand-mark { width: 30px; height: 30px; }
+    nav { overflow: visible; } nav ul { width: 100%; gap: 8px 12px; flex-wrap: wrap; } nav a { font-size: 9px; letter-spacing: .08em; }
     .site-footer { flex-direction: column; margin-top: 64px; }
     .article > header { padding: 68px 0 44px !important; }
     .article > header small { margin-bottom: 44px !important; }

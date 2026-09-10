@@ -1,12 +1,13 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 const { frontmatter } = Astro.props;
+const section = frontmatter.section ?? '01 — Storia e metodo';
 ---
 
 <BaseLayout title={`${frontmatter.title} · scritto e redatto da Brunelli Nicola`}>
   <article class="longform">
     <header class="longform-header">
-      <p class="eyebrow">01 — Storia e metodo</p>
+      <p class="eyebrow">{section}</p>
       <p class="byline">Scritto e redatto da Brunelli Nicola</p>
     </header>
     <slot />
@@ -18,7 +19,7 @@ const { frontmatter } = Astro.props;
   .eyebrow, .byline { margin: 0; font: 700 10px var(--sans); letter-spacing: .13em; text-transform: uppercase; }
   .eyebrow { color: var(--gold); }
   .byline { margin: 16px 0 54px; color: var(--sage); font-weight: 600; }
-  .longform :global(h1) { margin: 0 0 30px; color: var(--ink); font: 500 clamp(56px, 8vw, 98px)/.9 var(--display); letter-spacing: -.035em; }
+  .longform :global(h1) { margin: 0 0 30px; color: var(--ink); font: 500 var(--page-title)/.9 var(--display); letter-spacing: -.035em; }
   .longform :global(h2) { margin: 88px 0 24px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--ink); font: 500 clamp(38px, 5vw, 58px)/.98 var(--display); letter-spacing: -.025em; }
   .longform :global(h3) { margin: 52px 0 14px; color: var(--ink); font: 500 32px/1 var(--display); }
   .longform :global(p), .longform :global(li) { max-width: 740px; font: 400 18px/1.7 var(--serif); }
