@@ -25,21 +25,19 @@ import { curiosita } from '../data/curiosita';
   <section class="latest">
     <article class="featured-article">
       <p class="eyebrow">In evidenza</p>
-      <p class="article-category">Terroir</p>
-      <h2><a href="/articoli/la-craie-il-gesso-nel-terroir">L’Anima Bianca dello Champagne</a></h2>
-      <h3>L’importanza della <em>craie</em> nel terroir</h3>
-      <p class="article-excerpt">Il mare antico sotto le vigne, la riserva d’acqua, il calore e le crayères: il gesso come elemento identitario della Champagne.</p>
-      <a class="read-link" href="/articoli/la-craie-il-gesso-nel-terroir">Leggi l’articolo <span aria-hidden="true">↗</span></a>
+      <p class="article-category">Vitigni</p>
+      <h2><a href="/articoli/vitigni-dello-champagne">Vitigni dello Champagne</a></h2>
+      <h3>Caratteristiche, cuvée e degustazione</h3>
+      <p class="article-excerpt">Chardonnay, Pinot Noir, Meunier e varietà rare: il loro ruolo nell’assemblaggio e le chiavi per riconoscerli nel calice.</p>
+      <a class="read-link" href="/articoli/vitigni-dello-champagne">Leggi l’articolo <span aria-hidden="true">↗</span></a>
     </article>
 
     <aside class="curiosity-card" aria-label="Curiosità sullo Champagne">
-      <div class="curiosity-head"><p class="eyebrow">Curiosità</p><span data-curiosity-count>01 / 20</span></div>
+      <div class="curiosity-head"><p class="eyebrow">Curiosità</p></div>
       <div class="curiosity-content" aria-live="polite">
         <p class="curiosity-title" data-curiosity-title>{curiosita[0].title}</p>
         <p class="curiosity-text" data-curiosity-text>{curiosita[0].text}</p>
       </div>
-      <div class="curiosity-progress" aria-hidden="true"><i data-curiosity-progress></i></div>
-      <p class="curiosity-note">Una curiosità ogni sette secondi</p>
     </aside>
   </section>
 </BaseLayout>
@@ -47,24 +45,22 @@ import { curiosita } from '../data/curiosita';
 <script is:inline define:vars={{ curiosita }}>
   const title = document.querySelector('[data-curiosity-title]');
   const text = document.querySelector('[data-curiosity-text]');
-  const count = document.querySelector('[data-curiosity-count]');
-  const progress = document.querySelector('[data-curiosity-progress]');
   let current = 0;
-  const duration = 7000;
+  const duration = 11000;
 
   const renderCuriosity = () => {
     const item = curiosita[current];
     title.textContent = item.title;
     text.textContent = item.text;
-    count.textContent = `${String(current + 1).padStart(2, '0')} / ${String(curiosita.length).padStart(2, '0')}`;
-    progress.classList.remove('is-running');
-    void progress.offsetWidth;
-    progress.classList.add('is-running');
   };
 
   if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    progress.classList.add('is-running');
-    window.setInterval(() => { current = (current + 1) % curiosita.length; renderCuriosity(); }, duration);
+    window.setInterval(() => {
+      let next = current;
+      while (next === current) next = Math.floor(Math.random() * curiosita.length);
+      current = next;
+      renderCuriosity();
+    }, duration);
   }
 </script>
 
@@ -82,7 +78,7 @@ import { curiosita } from '../data/curiosita';
   .latest { width: min(1180px, calc(100% - 48px)); display: grid; grid-template-columns: 1fr 1fr; gap: min(9vw, 120px); margin: 120px auto 0; }.featured-article, .curiosity-card { padding: 26px 0 30px; border-top: 1px solid var(--line); }
   .article-category { margin: 40px 0 12px; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .12em; text-transform: uppercase; }.featured-article h2 { max-width: 560px; margin: 0; font: 500 clamp(42px, 5vw, 62px)/.96 var(--display); letter-spacing: -.025em; }.featured-article h2 a { background: linear-gradient(var(--gold), var(--gold)) 0 100% / 0 1px no-repeat; transition: background-size .3s ease, color .3s ease; }.featured-article h2 a:hover { color: var(--terre); background-size: 100% 1px; }
   .featured-article h3 { margin: 9px 0 0; color: var(--terre); font: 400 27px/1.05 var(--display); }.article-excerpt { max-width: 510px; margin: 20px 0 0; color: var(--sage); font-size: 17px; line-height: 1.6; }.read-link { display: inline-block; margin-top: 28px; color: var(--terre); font: 600 10px var(--sans); letter-spacing: .11em; text-transform: uppercase; }.read-link span { margin-left: 8px; color: var(--gold); font-size: 14px; }
-  .curiosity-card { min-height: 345px; display: flex; flex-direction: column; background: rgba(217,212,200,.34); padding: 26px; border: 1px solid var(--line); }.curiosity-head { display: flex; justify-content: space-between; gap: 12px; }.curiosity-head span, .curiosity-note { color: var(--sage); font: 600 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }.curiosity-content { margin: auto 0; }.curiosity-title { margin: 0 0 12px; color: var(--ink); font: 500 clamp(31px, 4vw, 42px)/.98 var(--display); }.curiosity-text { margin: 0; font-size: 17px; line-height: 1.55; }.curiosity-progress { height: 1px; margin-top: 24px; overflow: hidden; background: var(--line); }.curiosity-progress i { display: block; width: 0; height: 100%; background: var(--gold); }.curiosity-progress i.is-running { animation: curiosity-progress 7s linear forwards; }.curiosity-note { margin: 13px 0 0; }@keyframes curiosity-progress { from { width: 0; } to { width: 100%; } }
+  .curiosity-card { min-height: 345px; display: flex; flex-direction: column; background: rgba(217,212,200,.34); padding: 26px; border: 1px solid var(--line); }.curiosity-content { margin: auto 0; }.curiosity-title { margin: 0 0 12px; color: var(--ink); font: 500 clamp(31px, 4vw, 42px)/.98 var(--display); }.curiosity-text { margin: 0; font-size: 17px; line-height: 1.55; }
   @media (max-width: 850px) { .sections { grid-template-columns: repeat(2, 1fr); }.sections a:nth-child(2) { border-right: 0; }.sections a:nth-child(-n+2) { border-bottom: 1px solid var(--line); }.latest { grid-template-columns: 1fr; gap: 38px; margin-top: 76px; } }
   @media (max-width: 650px) { .home-hero { min-height: 590px; padding-inline: 24px; }.home-hero::before { inset: 12px; }.sections, .latest { width: min(100% - 32px, 1180px); }.sections { grid-template-columns: 1fr; margin-top: 62px; }.sections a { min-height: 150px; border-right: 0; border-bottom: 1px solid var(--line); }.sections a:last-child { border-bottom: 0; }.sections strong { margin-top: 34px; font-size: 34px; }.curiosity-card { min-height: 320px; padding: 21px; }.curiosity-text { font-size: 16px; } }
 </style>
