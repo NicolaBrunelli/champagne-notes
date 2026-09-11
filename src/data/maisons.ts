@@ -951,5 +951,97 @@ export const maisons: Maison[] = [
     "area": "Côte des Blancs",
     "website": "https://larmandier.fr/fr/",
     "logo": "https://www.champagneexperience.it/wp-content/uploads/2021/04/Champagne-Larmandier-Bernier_2021-04-uai-258x258.jpg"
+  },
+  {
+    "name": "Jacques Selosse",
+    "area": "Côte des Blancs",
+    "website": "https://www.selosse-lesavises.com/",
+    "logo": "https://www.selosse-lesavises.com/fichiers/favicon.png"
+  },
+  {
+    "name": "Salon",
+    "area": "Côte des Blancs",
+    "website": "https://www.champagne-salon.fr/fr/",
+    "logo": "https://www.champagne-salon.fr/user/themes/salon-champagne/img/champagne-salon.svg",
+    "logoTone": "light-on-dark"
+  },
+  {
+    "name": "Pierre Péters",
+    "area": "Côte des Blancs",
+    "website": "https://www.champagne-peters.com/fr",
+    "logo": "https://www.champagne-peters.com/sites/all/themes/best_responsive/images/logo-peters.png"
+  },
+  {
+    "name": "Étienne Calsac",
+    "area": "Côte des Blancs",
+    "website": "https://champagne-etienne-calsac.com/",
+    "logo": "https://champagne-etienne-calsac.com/wp-content/uploads/2020/10/EC.svg"
+  },
+  {
+    "name": "Suenen",
+    "area": "Côte des Blancs",
+    "website": "https://champagne-suenen.fr/?lang=en",
+    "logo": "https://champagne-suenen.fr/images/logo.png"
+  },
+  {
+    "name": "Stéphane Regnault",
+    "area": "Côte des Blancs",
+    "website": "https://www.champagne-stephane-regnault.com/",
+    "logo": "https://static.wixstatic.com/media/80d4d2_6ce9581156d141648e3b1e8ef48470a0~mv2.png/v1/fill/w_216,h_17,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/logo-stephaneregnault.png"
+  },
+  {
+    "name": "François Girard",
+    "area": "Côte des Blancs",
+    "website": "https://www.champagne-francois-girard.com/",
+    "logo": "https://www.champagne-francois-girard.com/img/510091www1-logo-1537965727.jpg"
+  },
+  {
+    "name": "Gimonnet-Gonet",
+    "area": "Côte des Blancs",
+    "website": "https://www.champagne-gimonnet-gonet.com/",
+    "logo": "https://www.champagne-gimonnet-gonet.com/wp-content/uploads/2025/12/logo.svg"
+  },
+  {
+    "name": "Michel Turgy",
+    "area": "Côte des Blancs",
+    "website": "https://champagne-turgy.com/",
+    "logo": "https://champagne-turgy.com/uploads/media/images/cms/medias/thumb_/cms/medias/6853cde63f204_images_medium.webp"
+  },
+  {
+    "name": "Lancelot-Pienne",
+    "area": "Côte des Blancs",
+    "website": "https://www.champagne-lancelot-pienne.fr/",
+    "logo": "https://www.champagne-lancelot-pienne.fr/wp-content/uploads/2024/01/logo-c24.png"
+  },
+  {
+    "name": "Moët & Chandon",
+    "area": "Vallée de la Marne",
+    "website": "https://www.moet.com/en-int",
+    "logo": "https://www.moet.com/themes/custom/moet/images/logo-red-header.png"
+  },
+  {
+    "name": "A. R. Lenoble",
+    "area": "Vallée de la Marne",
+    "website": "https://champagne-lenoble.com/",
+    "logo": "https://champagne-lenoble.com/wp-content/uploads/2024/11/LOGO-small.svg"
+  },
+  {
+    "name": "Dehours",
+    "area": "Vallée de la Marne",
+    "website": "https://champagne-dehours.fr/",
+    "logo": "https://champagne-dehours.fr/wp-content/uploads/2025/07/logo-champagne-dehours.svg"
+  },
+  {
+    "name": "Marguet",
+    "area": "Montagne de Reims",
+    "website": "https://champagne-marguet.fr/",
+    "logo": "https://champagne-marguet.fr/wp-content/uploads/2025/03/Logo-Marguet.png"
+  },
+  {
+    "name": "Charles Dufour",
+    "area": "Côte des Bar",
+    "website": "https://www.charlesdufour.fr/",
+    "logo": "https://www.charlesdufour.fr/images/logo-blanc.png",
+    "logoTone": "light-on-dark"
   }
 ];

@@ -19,7 +19,7 @@ const pageTitle = `${maison.name} — Cantine e vini`;
 
     <header class="producer-header">
       <p class="eyebrow">{maison.area}</p>
-      <div class="logo-frame">
+      <div class:list={['logo-frame', maison.logoTone ? `logo-frame--${maison.logoTone}` : undefined]}>
         {maison.logo ? <img src={maison.logo} alt={`Logo ${maison.name}`} width="258" height="258" referrerpolicy="no-referrer" /> : <span class="logo-placeholder" aria-label={`Monogramma ${maison.name}`}>{maison.name.split(/\s+/).map((part) => part[0]).slice(0, 2).join('')}</span>}
       </div>
       <div class="producer-title">
@@ -234,6 +234,8 @@ const pageTitle = `${maison.name} — Cantine e vini`;
   .eyebrow { grid-column: 1 / -1; color: var(--gold); }
   .logo-frame { aspect-ratio: 1; display: grid; place-items: center; padding: 16px; border: 1px solid var(--line); background: rgba(255,255,255,.45); }
   .logo-frame img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; filter: saturate(.78); }
+  .logo-frame--light-on-dark { background: var(--ink); }
+  .logo-frame--light-on-dark img { mix-blend-mode: normal; filter: none; }
   .logo-placeholder { display: grid; place-items: center; width: 100%; height: 100%; color: var(--gold); border: 1px solid var(--line); border-radius: 50%; font: 500 58px/1 var(--display); }
   .byline { color: var(--sage); margin-bottom: 23px; }
   h1 { margin: 0 0 18px; color: var(--ink); font: 500 var(--page-title)/.9 var(--display); letter-spacing: -.035em; }
