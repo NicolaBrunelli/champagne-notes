@@ -8,6 +8,8 @@ const areaDescription: Record<string, string> = {
   'Montagne de Reims': 'La dorsale dei grandi Pinot Noir, tra versanti esposti, foreste e villaggi storici.',
   'Côte des Bar': 'L’Aube, le argille kimmeridgiane e una Champagne dalla voce più meridionale.',
 };
+const needsDarkLogoFrame = (logo?: string, tone?: 'light-on-dark') =>
+  tone === 'light-on-dark' || /(?:white|blanc|light|(?:^|[-_])wh(?:[._-]|$))/i.test(logo ?? '');
 ---
 
 <BaseLayout title="Cantine e vini — Lo Champagne, con calma">
@@ -42,7 +44,7 @@ const areaDescription: Record<string, string> = {
         <div class="maison-grid">
           {maisons.filter((maison) => maison.area === area).map((maison) => (
             <a class="maison-card" href={`/cantine/${maisonSlug(maison.name)}`} data-maison-card data-search={maison.name + ' ' + maison.area} aria-label={`Apri la scheda di ${maison.name}`}>
-              <div class:list={['logo-frame', maison.logoTone ? `logo-frame--${maison.logoTone}` : undefined]}>
+              <div class:list={['logo-frame', needsDarkLogoFrame(maison.logo, maison.logoTone) ? 'logo-frame--light-on-dark' : undefined]}>
                 {maison.logo ? <img src={maison.logo} alt={'Logo ' + maison.name} width="258" height="258" loading="lazy" decoding="async" referrerpolicy="no-referrer" /> : <span class="logo-placeholder" aria-label={`Monogramma ${maison.name}`}>{maison.name.split(/\s+/).map((part) => part[0]).slice(0, 2).join('')}</span>}
               </div>
               <h3>{maison.name}</h3>

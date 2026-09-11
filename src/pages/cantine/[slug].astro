@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { maisonSlug, maisons } from '../../data/maisons';
+const needsDarkLogoFrame = (logo?: string, tone?: 'light-on-dark') =>
+  tone === 'light-on-dark' || /(?:white|blanc|light|(?:^|[-_])wh(?:[._-]|$))/i.test(logo ?? '');
 
 export function getStaticPaths() {
   return maisons.map((maison) => ({
@@ -19,7 +21,7 @@ const pageTitle = `${maison.name} — Cantine e vini`;
 
     <header class="producer-header">
       <p class="eyebrow">{maison.area}</p>
-      <div class:list={['logo-frame', maison.logoTone ? `logo-frame--${maison.logoTone}` : undefined]}>
+      <div class:list={['logo-frame', needsDarkLogoFrame(maison.logo, maison.logoTone) ? 'logo-frame--light-on-dark' : undefined]}>
         {maison.logo ? <img src={maison.logo} alt={`Logo ${maison.name}`} width="258" height="258" referrerpolicy="no-referrer" /> : <span class="logo-placeholder" aria-label={`Monogramma ${maison.name}`}>{maison.name.split(/\s+/).map((part) => part[0]).slice(0, 2).join('')}</span>}
       </div>
       <div class="producer-title">
