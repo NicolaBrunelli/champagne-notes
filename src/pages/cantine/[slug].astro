@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { maisonSlug, maisons } from '../../data/maisons';
 import { aromas } from '../../data/aromas';
 import { winesForMaison } from '../../data/wines';
+import { maisonStories } from '../../data/maison-stories';
 const needsDarkLogoFrame = (logo?: string, tone?: 'light-on-dark') =>
   tone === 'light-on-dark' || /(?:white|blanc|light|(?:^|[-_])wh(?:[._-]|$))/i.test(logo ?? '');
 
@@ -16,6 +17,7 @@ export function getStaticPaths() {
 const { maison } = Astro.props;
 const pageTitle = `${maison.name} — Cantine e vini`;
 const producerWines = winesForMaison(maison.name);
+const producerStory = maisonStories[maison.name];
 ---
 
 <BaseLayout title={pageTitle} description={`Scheda di ${maison.name}, ${maison.area}.`}>
@@ -39,6 +41,26 @@ const producerWines = winesForMaison(maison.name);
         )}
       </div>
     </header>
+
+    {producerStory && (
+      <section class="maison-story" aria-labelledby="maison-story-title">
+        <div class="section-label">
+          <p>Nel nostro archivio</p>
+          <h2 id="maison-story-title">La storia.</h2>
+        </div>
+        <div class="story-layout">
+          <div class="story-text">
+            {producerStory.history.map((paragraph) => <p>{paragraph}</p>)}
+          </div>
+          <aside class="story-curiosities" aria-label={`Curiosità su ${maison.name}`}>
+            <p>Due dettagli da ricordare</p>
+            <ul>
+              {producerStory.curiosities.map((curiosity) => <li>{curiosity}</li>)}
+            </ul>
+          </aside>
+        </div>
+      </section>
+    )}
 
     {producerWines.length > 0 && (
       <section class="wine-catalog" aria-labelledby="wine-catalog-title">
@@ -391,6 +413,16 @@ const producerWines = winesForMaison(maison.name);
   .official-link:hover { color: var(--gold); }
   .verification { margin: 26px 0 0; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
   .tasting-section { padding: 78px 0 0; }
+  .maison-story { padding: 78px 0; border-bottom: 1px solid var(--line); }
+  .story-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(230px, .7fr); gap: 60px; margin-top: 30px; }
+  .story-text { max-width: 620px; }
+  .story-text p { margin: 0 0 18px; color: var(--ink); font-size: 19px; line-height: 1.58; }
+  .story-text p:last-child { margin-bottom: 0; }
+  .story-curiosities { padding: 22px; border-left: 2px solid var(--gold); background: rgba(217,212,200,.32); }
+  .story-curiosities > p { margin: 0 0 14px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  .story-curiosities ul { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+  .story-curiosities li { color: var(--sage); font-size: 15px; line-height: 1.45; }
+  .story-curiosities li::before { content: '✦'; margin-right: 8px; color: var(--gold); }
   .wine-catalog { padding: 78px 0; border-bottom: 1px solid var(--line); }
   .section-label > p, .form-heading p { color: var(--gold); }
   h2 { margin: 12px 0 18px; font: 500 clamp(44px, 6vw, 64px)/.92 var(--display); letter-spacing: -.03em; }
@@ -461,6 +493,9 @@ const producerWines = winesForMaison(maison.name);
     .producer { width: min(100% - 32px, 850px); }
     .producer-header { grid-template-columns: 1fr; gap: 26px; padding: 50px 0 60px; }
     .logo-frame { width: min(180px, 55vw); }
+    .maison-story { padding: 58px 0; }
+    .story-layout { grid-template-columns: 1fr; gap: 24px; }
+    .story-text p { font-size: 18px; }
     .wine-catalog { padding: 58px 0; }
     .wine-grid { grid-template-columns: repeat(2, 1fr); }
     .catalog-wine { min-height: 148px; padding: 15px; }
