@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { maisonSlug, maisons } from '../../data/maisons';
 import { aromas } from '../../data/aromas';
+import { winesForMaison } from '../../data/wines';
 const needsDarkLogoFrame = (logo?: string, tone?: 'light-on-dark') =>
   tone === 'light-on-dark' || /(?:white|blanc|light|(?:^|[-_])wh(?:[._-]|$))/i.test(logo ?? '');
 
@@ -14,6 +15,7 @@ export function getStaticPaths() {
 
 const { maison } = Astro.props;
 const pageTitle = `${maison.name} — Cantine e vini`;
+const producerWines = winesForMaison(maison.name);
 ---
 
 <BaseLayout title={pageTitle} description={`Scheda di ${maison.name}, ${maison.area}.`}>
@@ -37,6 +39,25 @@ const pageTitle = `${maison.name} — Cantine e vini`;
         )}
       </div>
     </header>
+
+    {producerWines.length > 0 && (
+      <section class="wine-catalog" aria-labelledby="wine-catalog-title">
+        <div class="section-label">
+          <p>Archivio della maison</p>
+          <h2 id="wine-catalog-title">Le cuvée.</h2>
+        </div>
+        <p class="intro">Referenze già predisposte per la cantina. Scegline una per iniziare una degustazione senza doverla riscrivere.</p>
+        <div class="wine-grid">
+          {producerWines.map((wine) => (
+            <article class="catalog-wine">
+              <p>{wine.family}</p>
+              <h3>{wine.name}</h3>
+              <button type="button" data-wine-select={wine.name}>Degusta questa cuvée <span aria-hidden="true">→</span></button>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
 
     <section class="tasting-section" aria-labelledby="tasting-title">
       <div class="section-label">
@@ -63,7 +84,8 @@ const pageTitle = `${maison.name} — Cantine e vini`;
           </div>
           <div class="form-grid">
             <label class="wide">Nome del vino
-              <input name="wine" required autocomplete="off" placeholder="Es. Les Vignes du Levant Extra Brut" />
+              <input name="wine" list="producer-wines" required autocomplete="off" placeholder="Es. Les Vignes du Levant Extra Brut" />
+              {producerWines.length > 0 && <datalist id="producer-wines">{producerWines.map((wine) => <option value={wine.name} />)}</datalist>}
             </label>
             <label>Data di bevuta
               <input name="drunkAt" type="date" required />
@@ -237,6 +259,21 @@ const pageTitle = `${maison.name} — Cantine e vini`;
     });
   });
 
+  document.querySelectorAll<HTMLButtonElement>('[data-wine-select]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const user = await getCurrentUser();
+      if (!user) {
+        window.location.href = `/accesso?continua=${encodeURIComponent(window.location.pathname)}`;
+        return;
+      }
+      const wineField = form?.elements.namedItem('wine') as HTMLInputElement | null;
+      if (!wineField) return;
+      wineField.value = button.dataset.wineSelect || '';
+      form?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      wineField.focus();
+    });
+  });
+
   if (slug && gate && privateArea) {
     void (async () => {
       const user = await getCurrentUser();
@@ -348,9 +385,16 @@ const pageTitle = `${maison.name} — Cantine e vini`;
   .official-link:hover { color: var(--gold); }
   .verification { margin: 26px 0 0; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
   .tasting-section { padding: 78px 0 0; }
+  .wine-catalog { padding: 78px 0; border-bottom: 1px solid var(--line); }
   .section-label > p, .form-heading p { color: var(--gold); }
   h2 { margin: 12px 0 18px; font: 500 clamp(44px, 6vw, 64px)/.92 var(--display); letter-spacing: -.03em; }
   .intro { max-width: 610px; margin: 0; color: var(--sage); font-size: 19px; line-height: 1.55; }
+  .wine-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 34px; border: 1px solid var(--line); background: var(--line); }
+  .catalog-wine { min-width: 0; display: flex; flex-direction: column; min-height: 172px; padding: 20px; background: rgba(255,255,255,.3); }
+  .catalog-wine > p { margin: 0; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  .catalog-wine h3 { margin: 15px 0; color: var(--ink); font: 500 28px/.98 var(--display); letter-spacing: -.02em; }
+  .catalog-wine button { align-self: flex-start; margin-top: auto; padding: 0; border: 0; border-bottom: 1px solid var(--gold); color: var(--terre); background: transparent; font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+  .catalog-wine button:hover { color: var(--gold); }
   .tasting-gate { margin-top: 38px; padding: 25px 28px; border-left: 2px solid var(--gold); background: rgba(217,212,200,.42); }
   .tasting-gate p { margin: 0; font-size: 17px; }
   .tasting-gate a { border-bottom: 1px solid var(--terre); color: var(--terre); }
@@ -410,6 +454,10 @@ const pageTitle = `${maison.name} — Cantine e vini`;
     .producer { width: min(100% - 32px, 850px); }
     .producer-header { grid-template-columns: 1fr; gap: 26px; padding: 50px 0 60px; }
     .logo-frame { width: min(180px, 55vw); }
+    .wine-catalog { padding: 58px 0; }
+    .wine-grid { grid-template-columns: repeat(2, 1fr); }
+    .catalog-wine { min-height: 148px; padding: 15px; }
+    .catalog-wine h3 { font-size: 23px; overflow-wrap: anywhere; }
     .tasting-section { padding-top: 58px; }
     .tasting-form { padding: 21px 17px; }
     .form-grid { grid-template-columns: 1fr; gap: 18px; }
@@ -419,5 +467,8 @@ const pageTitle = `${maison.name} — Cantine e vini`;
     :global(.profile-meter) { grid-template-columns: 55px minmax(0, 1fr) 65px; gap: 6px; font-size: 10px; }
     :global(.tasting-entry) { grid-template-columns: 76px 1fr; gap: 15px; }
     :global(.tasting-entry img) { width: 76px; }
+  }
+  @media (max-width: 390px) {
+    .wine-grid { grid-template-columns: 1fr; }
   }
 </style>
