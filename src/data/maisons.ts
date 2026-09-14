@@ -1545,8 +1545,7 @@ export const maisons: Maison[] = [
   {
     "name": "Jacques Selosse",
     "area": "Côte des Blancs",
-    "website": "https://www.selosse-lesavises.com/",
-    "logo": "https://www.selosse-lesavises.com/fichiers/favicon-150x150.png"
+    "website": "https://www.selosse-lesavises.com/en/le-domaine-jacques-selosse/"
   },
   {
     "name": "Salon",
