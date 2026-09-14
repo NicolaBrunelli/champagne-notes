@@ -40,7 +40,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <script>
-  import { getUser, hydrateSession } from '@netlify/identity';
+  import { getCurrentUser } from '../scripts/identity-session';
 
   type Invite = { id: string; label: string; createdAt: string; expiresAt: string; redeemedAt?: string };
   const form = document.querySelector<HTMLFormElement>('[data-invite-create]');
@@ -67,7 +67,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   };
 
   void (async () => {
-    const user = await hydrateSession() ?? await getUser();
+    const user = await getCurrentUser();
     if (!user || !user.roles?.includes('admin')) { window.location.href = '/account'; return; }
     await load();
   })().catch(() => { window.location.href = '/accesso'; });

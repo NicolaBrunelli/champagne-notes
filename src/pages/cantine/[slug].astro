@@ -124,7 +124,8 @@ const pageTitle = `${maison.name} — Cantine e vini`;
 </BaseLayout>
 
 <script>
-  import { getUser, hydrateSession, logout } from '@netlify/identity';
+  import { logout } from '@netlify/identity';
+  import { getCurrentUser } from '../../scripts/identity-session';
 
   type Tasting = {
     id: string;
@@ -231,7 +232,7 @@ const pageTitle = `${maison.name} — Cantine e vini`;
 
   if (slug && gate && privateArea) {
     void (async () => {
-      const user = await hydrateSession() ?? await getUser();
+      const user = await getCurrentUser();
       if (!user) return;
       try {
         currentUserId = user.id;

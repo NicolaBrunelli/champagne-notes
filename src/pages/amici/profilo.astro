@@ -10,7 +10,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <script>
-  import { getUser, hydrateSession } from '@netlify/identity';
+  import { getCurrentUser } from '../../scripts/identity-session';
   import { aromas } from '../../data/aromas';
   const content = document.querySelector<HTMLElement>('[data-profile-content]');
   const handle = new URLSearchParams(window.location.search).get('utente')?.trim().toLowerCase() || '';
@@ -43,7 +43,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     <div class="cellar-list">${cellar.length ? cellar.map((bottle) => `<article><p>${escapeHTML(bottle.producer)}</p><h3>${escapeHTML(bottle.wine)}${bottle.vintage ? ` <span>${escapeHTML(bottle.vintage)}</span>` : ''}</h3><strong>${bottle.quantity} ${bottle.quantity === 1 ? 'bottiglia' : 'bottiglie'}</strong></article>`).join('') : '<p class="empty">Nessuna bottiglia in cantina per ora.</p>'}</div></section>`;
   };
   void (async () => {
-    const user = await hydrateSession() ?? await getUser();
+    const user = await getCurrentUser();
     if (!user) { window.location.href = '/accesso'; return; }
     if (!handle) { window.location.href = '/amici'; return; }
     const response = await fetch(`/api/amici?utente=${encodeURIComponent(handle)}`, { headers: { Accept: 'application/json' } });

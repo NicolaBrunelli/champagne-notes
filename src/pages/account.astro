@@ -49,8 +49,9 @@ import { maisons } from '../data/maisons';
 </BaseLayout>
 
 <script>
-  import { getUser, hydrateSession, logout } from '@netlify/identity';
+  import { logout } from '@netlify/identity';
   import { aromas } from '../data/aromas';
+  import { getCurrentUser } from '../scripts/identity-session';
 
   const name = document.querySelector<HTMLElement>('[data-user-name]');
   const email = document.querySelector<HTMLElement>('[data-user-email]');
@@ -111,7 +112,7 @@ import { maisons } from '../data/maisons';
   });
 
   void (async () => {
-    const user = await hydrateSession() ?? await getUser();
+    const user = await getCurrentUser();
     if (!user) { window.location.href = '/accesso'; return; }
     const handle = typeof user.userMetadata?.handle === 'string' ? user.userMetadata.handle : user.name || 'Membro';
     if (name) name.textContent = handle;

@@ -58,7 +58,7 @@ const isCurrent = (href: string) => href === '/' ? path === '/' : path.startsWit
       <p>Appunti di vigna, craie e vino</p>
     </footer>
     <script>
-      import { getUser, hydrateSession } from '@netlify/identity';
+      import { getCurrentUser } from '../scripts/identity-session';
 
       const identityToken = window.location.hash;
       const isIdentityCallback = /(?:invite_token|recovery_token|confirmation_token|email_change_token)=/.test(identityToken);
@@ -72,7 +72,7 @@ const isCurrent = (href: string) => href === '/' ? path === '/' : path.startsWit
         window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => undefined));
       }
       void (async () => {
-        const user = await hydrateSession() ?? await getUser();
+        const user = await getCurrentUser();
         if (!accountLink || !user) return;
         if (friendsNavigation) friendsNavigation.hidden = false;
         accountLink.href = '/account';
