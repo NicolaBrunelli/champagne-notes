@@ -1,15 +1,19 @@
 import { getUser, hydrateSession } from '@netlify/identity';
 
-let currentUserPromise: ReturnType<typeof getUser> | undefined;
+type IdentitySessionScope = typeof globalThis & {
+  __champagneIdentitySession?: ReturnType<typeof getUser>;
+};
+
+const sessionScope = globalThis as IdentitySessionScope;
 
 /**
  * Restores a cookie-backed Netlify Identity session only once per page.
  * Layout and page scripts can ask for the same promise without racing each other.
  */
 export const getCurrentUser = () => {
-  currentUserPromise ??= (async () => {
+  sessionScope.__champagneIdentitySession ??= (async () => {
     const hydratedUser = await hydrateSession();
     return hydratedUser ?? getUser();
   })();
-  return currentUserPromise;
+  return sessionScope.__champagneIdentitySession;
 };
