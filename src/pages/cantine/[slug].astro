@@ -52,6 +52,7 @@ const producerWines = winesForMaison(maison.name);
             <article class="catalog-wine">
               <p>{wine.family}</p>
               <h3>{wine.name}</h3>
+              {wine.note && <p class="catalog-note">{wine.note}</p>}
               <button type="button" data-wine-select={wine.name}>Degusta questa cuvée <span aria-hidden="true">→</span></button>
             </article>
           ))}
@@ -398,6 +399,7 @@ const producerWines = winesForMaison(maison.name);
   .catalog-wine { min-width: 0; display: flex; flex-direction: column; min-height: 172px; padding: 20px; background: rgba(255,255,255,.3); }
   .catalog-wine > p { margin: 0; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
   .catalog-wine h3 { margin: 15px 0; color: var(--ink); font: 500 28px/.98 var(--display); letter-spacing: -.02em; }
+  .catalog-wine .catalog-note { margin: -2px 0 17px; color: var(--sage); font: 400 14px/1.42 var(--serif); letter-spacing: 0; text-transform: none; }
   .catalog-wine button { align-self: flex-start; margin-top: auto; padding: 0; border: 0; border-bottom: 1px solid var(--gold); color: var(--terre); background: transparent; font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
   .catalog-wine button:hover { color: var(--gold); }
   .tasting-gate { margin-top: 38px; padding: 25px 28px; border-left: 2px solid var(--gold); background: rgba(217,212,200,.42); }
