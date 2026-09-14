@@ -242,6 +242,24 @@ const producerWines = winesForMaison(maison.name);
     drawTastings(data.tastings);
   };
 
+  const startEditing = (id: string) => {
+    if (!form) return;
+    const tasting = records.get(id);
+    if (!tasting || tasting.author.id !== currentUserId) return;
+    editingId = tasting.id;
+    (form.elements.namedItem('wine') as HTMLInputElement).value = tasting.wine;
+    (form.elements.namedItem('drunkAt') as HTMLInputElement).value = tasting.drunkAt;
+    (form.elements.namedItem('place') as HTMLInputElement).value = tasting.place;
+    (form.elements.namedItem('price') as HTMLInputElement).value = typeof tasting.price === 'number' ? String(tasting.price) : '';
+    (form.elements.namedItem('rating') as HTMLSelectElement).value = String(tasting.rating);
+    (form.elements.namedItem('notes') as HTMLTextAreaElement).value = tasting.notes || '';
+    ['body', 'tannin', 'sweetness', 'acidity'].forEach((key) => ((form.elements.namedItem(key) as HTMLInputElement).value = String(tasting.sensory[key as keyof Tasting['sensory']])));
+    form.querySelectorAll<HTMLInputElement>('input[name="aromas"]').forEach((input) => { input.checked = Boolean(tasting.aromas?.includes(input.value)); });
+    if (saveButton) saveButton.innerHTML = 'Aggiorna la bevuta <span aria-hidden="true">→</span>';
+    if (status) status.textContent = 'Stai modificando questa annotazione. Lascia vuota la foto per conservarla.';
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const readPhoto = (file: File) => new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result));
@@ -283,6 +301,8 @@ const producerWines = winesForMaison(maison.name);
         await loadTastings();
         gate.hidden = true;
         privateArea.hidden = false;
+        const editId = new URLSearchParams(window.location.search).get('modifica');
+        if (editId) startEditing(editId);
       } catch {
         gate.innerHTML = '<p>Non è stato possibile caricare le degustazioni. Riprova ad accedere.</p>';
       }
@@ -329,22 +349,7 @@ const producerWines = winesForMaison(maison.name);
     const target = event.target as HTMLElement;
     const editId = target.closest<HTMLButtonElement>('[data-edit-id]')?.dataset.editId;
     const deleteId = target.closest<HTMLButtonElement>('[data-delete-id]')?.dataset.deleteId;
-    if (editId && form) {
-      const tasting = records.get(editId);
-      if (!tasting) return;
-      editingId = tasting.id;
-      (form.elements.namedItem('wine') as HTMLInputElement).value = tasting.wine;
-      (form.elements.namedItem('drunkAt') as HTMLInputElement).value = tasting.drunkAt;
-      (form.elements.namedItem('place') as HTMLInputElement).value = tasting.place;
-      (form.elements.namedItem('price') as HTMLInputElement).value = typeof tasting.price === 'number' ? String(tasting.price) : '';
-      (form.elements.namedItem('rating') as HTMLSelectElement).value = String(tasting.rating);
-      (form.elements.namedItem('notes') as HTMLTextAreaElement).value = tasting.notes || '';
-      ['body', 'tannin', 'sweetness', 'acidity'].forEach((key) => ((form.elements.namedItem(key) as HTMLInputElement).value = String(tasting.sensory[key as keyof Tasting['sensory']])));
-      form.querySelectorAll<HTMLInputElement>('input[name="aromas"]').forEach((input) => { input.checked = Boolean(tasting.aromas?.includes(input.value)); });
-      if (saveButton) saveButton.innerHTML = 'Aggiorna la bevuta <span aria-hidden="true">→</span>';
-      if (status) status.textContent = 'Stai modificando questa annotazione. Lascia vuota la foto per conservarla.';
-      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (editId) startEditing(editId);
     if (deleteId && slug && window.confirm('Eliminare definitivamente questa annotazione?')) {
       try {
         const response = await fetch(`/api/cantine/${encodeURIComponent(slug)}/bevute?id=${encodeURIComponent(deleteId)}`, { method: 'DELETE', headers: { Accept: 'application/json' } });

@@ -26,7 +26,8 @@ import { maisons } from '../data/maisons';
     <section class="my-tastings" aria-labelledby="my-tastings-title">
       <p class="label">Archivio personale</p>
       <h2 id="my-tastings-title">Le tue bevute.</h2>
-      <p class="intro">Qui ritrovi ogni annotazione. Per modificarla o eliminarla, apri la relativa scheda della cantina.</p>
+      <p class="intro">Qui ritrovi ogni annotazione. Puoi modificarla o eliminarla direttamente dal tuo taccuino.</p>
+      <p class="tasting-status" data-tasting-status aria-live="polite"></p>
       <div data-my-tastings aria-live="polite"><p class="loading">Caricamento del taccuino…</p></div>
     </section>
 
@@ -58,6 +59,7 @@ import { maisons } from '../data/maisons';
   const admin = document.querySelector<HTMLElement>('[data-admin-link]');
   const logoutButton = document.querySelector<HTMLButtonElement>('[data-logout]');
   const tastingList = document.querySelector<HTMLElement>('[data-my-tastings]');
+  const tastingStatus = document.querySelector<HTMLElement>('[data-tasting-status]');
   const avatarImage = document.querySelector<HTMLImageElement>('[data-avatar-image]');
   const avatarFallback = document.querySelector<HTMLElement>('[data-avatar-fallback]');
   const avatarFile = document.querySelector<HTMLInputElement>('[data-avatar-file]');
@@ -94,6 +96,7 @@ import { maisons } from '../data/maisons';
         <strong>${tasting.rating.toFixed(1)} / 5 <small>· media storica ${tasting.averageRating.toFixed(1)} (${tasting.ratingCount})</small></strong>
         ${flags ? `<div class="my-aromas">${flags}</div>` : ''}
         ${tasting.notes ? `<div class="my-notes">${escapeHTML(tasting.notes)}</div>` : ''}
+        <p class="my-tasting-actions"><a href="/cantine/${encodeURIComponent(tasting.producer.slug)}?modifica=${encodeURIComponent(tasting.id)}">Modifica</a><button type="button" data-delete-tasting="${escapeHTML(tasting.id)}" data-producer-slug="${escapeHTML(tasting.producer.slug)}" data-wine-name="${escapeHTML(tasting.wine)}">Elimina</button></p>
       </article>`;
     }).join('');
   };
@@ -106,6 +109,11 @@ import { maisons } from '../data/maisons';
     const response = await fetch('/api/cantina-personale', { headers: { Accept: 'application/json' } });
     if (!response.ok) throw new Error();
     drawCellar((await response.json() as { bottles: CellarBottle[] }).bottles);
+  };
+  const loadTastings = async () => {
+    const response = await fetch('/api/account/bevute', { headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error();
+    drawTastings((await response.json() as { tastings: AccountTasting[] }).tastings);
   };
   const readPhoto = (file: File) => new Promise<string>((resolve, reject) => {
     const reader = new FileReader(); reader.onload = () => resolve(String(reader.result)); reader.onerror = () => reject(new Error()); reader.readAsDataURL(file);
@@ -121,9 +129,7 @@ import { maisons } from '../data/maisons';
     if (avatarImage) { avatarImage.src = '/api/profilo/avatar'; avatarImage.onload = () => { avatarImage.hidden = false; if (avatarFallback) avatarFallback.hidden = true; }; }
     if (admin && user.roles?.includes('admin')) admin.hidden = false;
     try {
-      const response = await fetch('/api/account/bevute', { headers: { Accept: 'application/json' } });
-      if (!response.ok) throw new Error();
-      drawTastings((await response.json() as { tastings: AccountTasting[] }).tastings);
+      await loadTastings();
     } catch {
       if (tastingList) tastingList.innerHTML = '<p class="empty">Non è stato possibile caricare il taccuino. Riprova tra poco.</p>';
     }
@@ -133,6 +139,25 @@ import { maisons } from '../data/maisons';
   logoutButton?.addEventListener('click', async () => {
     await logout();
     window.location.href = '/';
+  });
+
+  tastingList?.addEventListener('click', async (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-delete-tasting]');
+    const id = button?.dataset.deleteTasting;
+    const producerSlug = button?.dataset.producerSlug;
+    const wineName = button?.dataset.wineName || 'questa bevuta';
+    if (!button || !id || !producerSlug || !window.confirm(`Eliminare definitivamente “${wineName}” dal tuo taccuino?`)) return;
+    button.disabled = true;
+    if (tastingStatus) tastingStatus.textContent = 'Eliminazione in corso…';
+    try {
+      const response = await fetch(`/api/cantine/${encodeURIComponent(producerSlug)}/bevute?id=${encodeURIComponent(id)}`, { method: 'DELETE', headers: { Accept: 'application/json' } });
+      if (!response.ok) throw new Error();
+      await loadTastings();
+      if (tastingStatus) tastingStatus.textContent = 'Bevuta eliminata dal tuo taccuino.';
+    } catch {
+      button.disabled = false;
+      if (tastingStatus) tastingStatus.textContent = 'Non è stato possibile eliminare la bevuta. Riprova.';
+    }
   });
 
   avatarSave?.addEventListener('click', async () => {
@@ -192,6 +217,7 @@ import { maisons } from '../data/maisons';
   .my-tastings { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--line); }
   h2 { margin: 12px 0 18px; font: 500 clamp(42px, 6vw, 58px)/.92 var(--display); letter-spacing: -.03em; }
   .my-tastings .intro { font-size: 17px; }
+  .tasting-status { min-height: 17px; margin: 13px 0 0; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .06em; text-transform: uppercase; }
   :global(.loading), :global(.empty) { margin: 27px 0 0; color: var(--sage); }
   :global(.my-tasting) { padding: 25px 0; border-bottom: 1px solid var(--line); }
   :global(.my-tasting > p) { margin: 0 0 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
@@ -202,6 +228,10 @@ import { maisons } from '../data/maisons';
   :global(.my-aromas) { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }
   :global(.my-aromas span) { padding: 4px 7px; border: 1px solid var(--line); color: var(--terre); font: 600 9px var(--sans); }
   :global(.my-notes) { margin-top: 13px; line-height: 1.58; white-space: pre-line; }
+  :global(.my-tasting-actions) { display: flex; flex-wrap: wrap; gap: 14px; margin: 18px 0 0 !important; }
+  :global(.my-tasting-actions a), :global(.my-tasting-actions button) { margin: 0 !important; padding: 0; border: 0; border-bottom: 1px solid currentColor; color: var(--terre); background: transparent; font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+  :global(.my-tasting-actions button) { color: #9d4031; }
+  :global(.my-tasting-actions button:disabled) { cursor: wait; opacity: .55; }
   .my-cellar { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--line); }
   .cellar-form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 29px; padding: 24px; border: 1px solid var(--line); background: rgba(255,255,255,.22); }
   .cellar-form label { display: grid; gap: 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
