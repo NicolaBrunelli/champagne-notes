@@ -14,7 +14,7 @@ type PublicTasting = Tasting & { averageRating: number; ratingCount: number; ave
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'private, no-store' } });
 const slugFromRequest = (request: Request) => {
   const parts = new URL(request.url).pathname.split('/').filter(Boolean);
-  return parts[2] === 'cantine' && parts[4] === 'bevute' ? parts[3] : undefined;
+  return parts[1] === 'cantine' && parts[3] === 'bevute' ? parts[2] : undefined;
 };
 const wineKey = (wine: string) => wine.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
 const boundedNumber = (value: unknown, min: number, max: number) => {
