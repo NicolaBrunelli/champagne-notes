@@ -58,7 +58,7 @@ const isCurrent = (href: string) => href === '/' ? path === '/' : path.startsWit
       <p>Appunti di vigna, craie e vino</p>
     </footer>
     <script>
-      import { getUser } from '@netlify/identity';
+      import { getUser, hydrateSession } from '@netlify/identity';
 
       const identityToken = window.location.hash;
       const isIdentityCallback = /(?:invite_token|recovery_token|confirmation_token|email_change_token)=/.test(identityToken);
@@ -71,15 +71,13 @@ const isCurrent = (href: string) => href === '/' ? path === '/' : path.startsWit
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => undefined));
       }
-      void getUser().then((user) => {
+      void (async () => {
+        const user = await hydrateSession() ?? await getUser();
         if (!accountLink || !user) return;
         if (friendsNavigation) friendsNavigation.hidden = false;
-        const isAdmin = user.roles?.includes('admin');
-        accountLink.href = isAdmin ? '/admin' : '/account';
-        accountLink.innerHTML = isAdmin
-          ? 'Gestisci inviti <span aria-hidden="true">↗</span>'
-          : 'Il tuo account <span aria-hidden="true">↗</span>';
-      }).catch(() => undefined);
+        accountLink.href = '/account';
+        accountLink.innerHTML = 'Il tuo account <span aria-hidden="true">↗</span>';
+      })().catch(() => undefined);
     </script>
   </body>
 </html>

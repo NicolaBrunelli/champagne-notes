@@ -10,7 +10,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <script>
-  import { getUser } from '@netlify/identity';
+  import { getUser, hydrateSession } from '@netlify/identity';
   import { aromas } from '../../data/aromas';
   const content = document.querySelector<HTMLElement>('[data-profile-content]');
   const handle = new URLSearchParams(window.location.search).get('utente')?.trim().toLowerCase() || '';
@@ -42,13 +42,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     <section><p class="eyebrow">Cantina personale · ${cellar.reduce((sum, bottle) => sum + bottle.quantity, 0)}</p><h2>Le bottiglie in attesa.</h2>
     <div class="cellar-list">${cellar.length ? cellar.map((bottle) => `<article><p>${escapeHTML(bottle.producer)}</p><h3>${escapeHTML(bottle.wine)}${bottle.vintage ? ` <span>${escapeHTML(bottle.vintage)}</span>` : ''}</h3><strong>${bottle.quantity} ${bottle.quantity === 1 ? 'bottiglia' : 'bottiglie'}</strong></article>`).join('') : '<p class="empty">Nessuna bottiglia in cantina per ora.</p>'}</div></section>`;
   };
-  void getUser().then(async (user) => {
+  void (async () => {
+    const user = await hydrateSession() ?? await getUser();
     if (!user) { window.location.href = '/accesso'; return; }
     if (!handle) { window.location.href = '/amici'; return; }
     const response = await fetch(`/api/amici?utente=${encodeURIComponent(handle)}`, { headers: { Accept: 'application/json' } });
     if (!response.ok) throw new Error();
     draw(await response.json() as ProfileData);
-  }).catch(() => { if (content) content.innerHTML = '<p class="empty">Profilo non disponibile.</p>'; });
+  })().catch(() => { if (content) content.innerHTML = '<p class="empty">Profilo non disponibile.</p>'; });
 </script>
 
 <style>

@@ -49,7 +49,7 @@ import { maisons } from '../data/maisons';
 </BaseLayout>
 
 <script>
-  import { getUser, logout } from '@netlify/identity';
+  import { getUser, hydrateSession, logout } from '@netlify/identity';
   import { aromas } from '../data/aromas';
 
   const name = document.querySelector<HTMLElement>('[data-user-name]');
@@ -110,7 +110,8 @@ import { maisons } from '../data/maisons';
     const reader = new FileReader(); reader.onload = () => resolve(String(reader.result)); reader.onerror = () => reject(new Error()); reader.readAsDataURL(file);
   });
 
-  void getUser().then(async (user) => {
+  void (async () => {
+    const user = await hydrateSession() ?? await getUser();
     if (!user) { window.location.href = '/accesso'; return; }
     const handle = typeof user.userMetadata?.handle === 'string' ? user.userMetadata.handle : user.name || 'Membro';
     if (name) name.textContent = handle;
@@ -126,7 +127,7 @@ import { maisons } from '../data/maisons';
       if (tastingList) tastingList.innerHTML = '<p class="empty">Non è stato possibile caricare il taccuino. Riprova tra poco.</p>';
     }
     try { await loadCellar(); } catch { if (cellarCollection) cellarCollection.innerHTML = '<p class="empty">Non è stato possibile caricare la cantina. Riprova tra poco.</p>'; }
-  }).catch(() => { window.location.href = '/accesso'; });
+  })().catch(() => { window.location.href = '/accesso'; });
 
   logoutButton?.addEventListener('click', async () => {
     await logout();

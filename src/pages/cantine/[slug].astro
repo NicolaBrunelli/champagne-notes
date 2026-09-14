@@ -124,7 +124,7 @@ const pageTitle = `${maison.name} — Cantine e vini`;
 </BaseLayout>
 
 <script>
-  import { getUser, logout } from '@netlify/identity';
+  import { getUser, hydrateSession, logout } from '@netlify/identity';
 
   type Tasting = {
     id: string;
@@ -230,7 +230,8 @@ const pageTitle = `${maison.name} — Cantine e vini`;
   });
 
   if (slug && gate && privateArea) {
-    getUser().then(async (user) => {
+    void (async () => {
+      const user = await hydrateSession() ?? await getUser();
       if (!user) return;
       try {
         currentUserId = user.id;
@@ -240,7 +241,7 @@ const pageTitle = `${maison.name} — Cantine e vini`;
       } catch {
         gate.innerHTML = '<p>Non è stato possibile caricare le degustazioni. Riprova ad accedere.</p>';
       }
-    }).catch(() => undefined);
+    })();
   }
 
   form?.addEventListener('submit', async (event) => {

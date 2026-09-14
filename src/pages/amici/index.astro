@@ -12,7 +12,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <script>
-  import { getUser } from '@netlify/identity';
+  import { getUser, hydrateSession } from '@netlify/identity';
   type Friend = { handle: string; avatar: boolean; tastingCount: number; cellarCount: number };
   const grid = document.querySelector<HTMLElement>('[data-friend-grid]');
   const escapeHTML = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] || character));
@@ -26,12 +26,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       <span class="friend-arrow" aria-hidden="true">→</span>
     </a>`).join('');
   };
-  void getUser().then(async (user) => {
+  void (async () => {
+    const user = await hydrateSession() ?? await getUser();
     if (!user) { window.location.href = '/accesso'; return; }
     const response = await fetch('/api/amici', { headers: { Accept: 'application/json' } });
     if (!response.ok) throw new Error();
     draw((await response.json() as { friends: Friend[] }).friends);
-  }).catch(() => { if (grid) grid.innerHTML = '<p class="empty">Non è stato possibile caricare gli amici. Riprova tra poco.</p>'; });
+  })().catch(() => { if (grid) grid.innerHTML = '<p class="empty">Non è stato possibile caricare gli amici. Riprova tra poco.</p>'; });
 </script>
 
 <style>
