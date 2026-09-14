@@ -60,6 +60,12 @@ const isCurrent = (href: string) => href === '/' ? path === '/' : path.startsWit
     <script>
       import { getUser } from '@netlify/identity';
 
+      const identityToken = window.location.hash;
+      const isIdentityCallback = /(?:invite_token|recovery_token|confirmation_token|email_change_token)=/.test(identityToken);
+      if (isIdentityCallback && window.location.pathname !== '/accesso') {
+        window.location.replace(`/accesso/${identityToken}`);
+      }
+
       const accountLink = document.querySelector<HTMLAnchorElement>('[data-account-link]');
       const friendsNavigation = document.querySelector<HTMLElement>('[data-friends-nav]');
       if ('serviceWorker' in navigator) {
