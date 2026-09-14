@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title>Lo Champagne, con calma</title>
+  <rect width="512" height="512" rx="112" fill="#20342b"/>
+  <circle cx="256" cy="256" r="174" fill="none" stroke="#b58b43" stroke-width="9"/>
+  <text x="226" y="320" fill="#f3f0e8" font-family="Georgia, serif" font-size="250" font-weight="500">C</text>
+  <g fill="none" stroke="#b58b43" stroke-width="9">
+    <circle cx="332" cy="167" r="19"/>
+    <circle cx="371" cy="217" r="12"/>
+    <circle cx="338" cy="230" r="9"/>
+  </g>
+</svg>

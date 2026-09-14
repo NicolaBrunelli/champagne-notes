@@ -2,6 +2,17 @@
   command = "npm run build"
 publish = "dist"
 
+[[redirects]]
+from = "/admin"
+to = "/admin"
+status = 200
+conditions = { Role = ["admin"] }
+
+[[redirects]]
+from = "/admin"
+to = "/account"
+status = 302
+
 [[headers]]
 for = "/_astro/*"
 [headers.values]

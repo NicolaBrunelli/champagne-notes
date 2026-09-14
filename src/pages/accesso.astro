@@ -7,7 +7,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <p class="eyebrow">Archivio personale</p>
     <h1>Accesso<br /><em>riservato.</em></h1>
     <p class="intro">Il tuo profilo custodisce le degustazioni che inserisci. Gli utenti invitati possono consultare i voti della comunità e contribuire alla media storica di ogni vino.</p>
-    <p class="invite-note">L’accesso è personale e solo su invito. Hai ricevuto un invito? Apri il link nell’email per scegliere la tua password.</p>
+    <p class="invite-note">L’accesso è personale e solo su invito. Ricevi un codice da Brunelli Nicola, scegli username e password una sola volta, poi resta connesso.</p>
 
     <div class="access-panel" data-auth-panel>
       <form data-login-form>
@@ -19,7 +19,29 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </label>
         <p data-auth-status aria-live="polite"></p>
         <button type="submit">Accedi <span aria-hidden="true">→</span></button>
+        <button class="text-button" type="button" data-code-trigger>Hai ricevuto un codice?</button>
         <button class="text-button" type="button" data-recovery-trigger>Password dimenticata?</button>
+      </form>
+    </div>
+
+    <div class="access-panel" data-code-panel hidden>
+      <form data-code-form>
+        <p>Inserisci il codice ricevuto. L’email servirà esclusivamente per il recupero sicuro della password.</p>
+        <label>Codice invito
+          <input name="code" type="text" inputmode="text" autocomplete="one-time-code" maxlength="23" placeholder="CRAIE-XXXXX-XXXXX-XXXXX" required />
+        </label>
+        <label>Username
+          <input name="handle" type="text" autocomplete="username" minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]+" required />
+        </label>
+        <label>Email di recupero
+          <input name="email" type="email" autocomplete="email" required />
+        </label>
+        <label>Scegli una password
+          <input name="password" type="password" autocomplete="new-password" minlength="8" required />
+        </label>
+        <p data-code-status aria-live="polite"></p>
+        <button type="submit">Crea il tuo account <span aria-hidden="true">→</span></button>
+        <button class="text-button" type="button" data-login-trigger>Torna all’accesso</button>
       </form>
     </div>
 
@@ -65,22 +87,26 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   const loginForm = document.querySelector<HTMLFormElement>('[data-login-form]');
   const inviteForm = document.querySelector<HTMLFormElement>('[data-invite-form]');
   const authPanel = document.querySelector<HTMLElement>('[data-auth-panel]');
+  const codePanel = document.querySelector<HTMLElement>('[data-code-panel]');
   const invitePanel = document.querySelector<HTMLElement>('[data-invite-panel]');
   const recoveryPanel = document.querySelector<HTMLElement>('[data-recovery-panel]');
   const resetPanel = document.querySelector<HTMLElement>('[data-reset-panel]');
   const recoveryForm = document.querySelector<HTMLFormElement>('[data-recovery-form]');
   const resetForm = document.querySelector<HTMLFormElement>('[data-reset-form]');
+  const codeForm = document.querySelector<HTMLFormElement>('[data-code-form]');
+  const codeTrigger = document.querySelector<HTMLButtonElement>('[data-code-trigger]');
   const recoveryTrigger = document.querySelector<HTMLButtonElement>('[data-recovery-trigger]');
   const loginTrigger = document.querySelector<HTMLButtonElement>('[data-login-trigger]');
   const status = document.querySelector<HTMLElement>('[data-auth-status]');
   const inviteStatus = document.querySelector<HTMLElement>('[data-invite-status]');
   const recoveryStatus = document.querySelector<HTMLElement>('[data-recovery-status]');
   const resetStatus = document.querySelector<HTMLElement>('[data-reset-status]');
+  const codeStatus = document.querySelector<HTMLElement>('[data-code-status]');
   let inviteToken = '';
 
   const goToArchive = () => { window.location.href = '/cantine-e-vini'; };
   const showPanel = (panel: HTMLElement | null) => {
-    [authPanel, invitePanel, recoveryPanel, resetPanel].forEach((item) => { if (item) item.hidden = item !== panel; });
+    [authPanel, codePanel, invitePanel, recoveryPanel, resetPanel].forEach((item) => { if (item) item.hidden = item !== panel; });
   };
   (async () => {
     try {
@@ -101,6 +127,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
   })();
 
+  codeTrigger?.addEventListener('click', () => showPanel(codePanel));
   recoveryTrigger?.addEventListener('click', () => showPanel(recoveryPanel));
   loginTrigger?.addEventListener('click', () => showPanel(authPanel));
 
@@ -114,6 +141,27 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       goToArchive();
     } catch {
       status.textContent = 'Email o password non riconosciute.';
+    }
+  });
+
+  codeForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!codeStatus) return;
+    codeStatus.textContent = 'Creazione dell’account in corso…';
+    try {
+      const fields = new FormData(codeForm);
+      const email = String(fields.get('email'));
+      const password = String(fields.get('password'));
+      const response = await fetch('/api/accesso/codice', {
+        method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: fields.get('code'), handle: fields.get('handle'), email, password }),
+      });
+      const result = await response.json() as { error?: string };
+      if (!response.ok) throw new Error(result.error || 'Non è stato possibile creare l’account.');
+      await login(email, password);
+      goToArchive();
+    } catch (error) {
+      codeStatus.textContent = error instanceof Error ? error.message : 'Non è stato possibile creare l’account.';
     }
   });
 

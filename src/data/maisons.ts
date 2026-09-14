@@ -500,7 +500,7 @@ export const maisons: Maison[] = [
   {
     "name": "Lanson",
     "area": "Montagne de Reims",
-    "website": "https://www.lanson.com/",
+    "website": "https://lanson.com/",
     "logo": "https://lanson.com/cdn/shop/files/logo.svg?v=1711461687&width=600"
   },
   {
@@ -956,7 +956,7 @@ export const maisons: Maison[] = [
   {
     "name": "Bruno Paillard",
     "area": "Montagne de Reims",
-    "website": "http://champagnebrunopaillard.com",
+    "website": "https://champagnebrunopaillard.com/",
     "logo": "https://www.champagneexperience.it/wp-content/uploads/2021/04/Champagne-Bruno-Paillard_2021-04-1-uai-258x258.jpg"
   },
   {

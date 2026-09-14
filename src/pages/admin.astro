@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Gestione inviti — Lo Champagne, con calma">
+  <section class="admin" data-admin-page>
+    <p class="eyebrow">Amministrazione</p>
+    <h1>Inviti con<br /><em>calma.</em></h1>
+    <p class="intro">Crea un codice personale, condividilo direttamente e lascia che l’ospite scelga username, email e password.</p>
+
+    <div class="admin-panel">
+      <form data-invite-create>
+        <label>Riferimento dell’invito
+          <input name="label" required maxlength="80" placeholder="Es. Marco — settembre" />
+        </label>
+        <label>Validità
+          <select name="days">
+            <option value="3">3 giorni</option>
+            <option value="7" selected>7 giorni</option>
+            <option value="14">14 giorni</option>
+            <option value="30">30 giorni</option>
+          </select>
+        </label>
+        <p data-create-status aria-live="polite"></p>
+        <button type="submit">Crea codice <span aria-hidden="true">→</span></button>
+      </form>
+      <div class="code-result" data-code-result hidden>
+        <p class="label">Codice da condividere ora</p>
+        <output data-invite-code></output>
+        <button type="button" class="copy" data-copy-code>Copia codice</button>
+        <p>Per sicurezza, questo è l’unico momento in cui il codice viene mostrato per intero.</p>
+      </div>
+    </div>
+
+    <div class="invite-list">
+      <p class="label">Inviti creati</p>
+      <div data-invite-list><p>Caricamento inviti…</p></div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { getUser } from '@netlify/identity';
+
+  type Invite = { id: string; label: string; createdAt: string; expiresAt: string; redeemedAt?: string };
+  const form = document.querySelector<HTMLFormElement>('[data-invite-create]');
+  const status = document.querySelector<HTMLElement>('[data-create-status]');
+  const result = document.querySelector<HTMLElement>('[data-code-result]');
+  const codeOutput = document.querySelector<HTMLOutputElement>('[data-invite-code]');
+  const copyButton = document.querySelector<HTMLButtonElement>('[data-copy-code]');
+  const list = document.querySelector<HTMLElement>('[data-invite-list]');
+
+  const formatDate = (value: string) => new Intl.DateTimeFormat('it-IT', { dateStyle: 'medium' }).format(new Date(value));
+  const render = (invites: Invite[]) => {
+    if (!list) return;
+    if (!invites.length) { list.innerHTML = '<p>Nessun codice creato.</p>'; return; }
+    list.innerHTML = invites.map((invite) => {
+      const state = invite.redeemedAt ? 'Utilizzato' : new Date(invite.expiresAt) <= new Date() ? 'Scaduto' : 'Attivo';
+      return `<article><div><strong>${invite.label.replace(/[&<>"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[character] || character))}</strong><small>Creato ${formatDate(invite.createdAt)} · scade ${formatDate(invite.expiresAt)}</small></div><span class="state state--${state.toLowerCase()}">${state}</span></article>`;
+    }).join('');
+  };
+  const load = async () => {
+    const response = await fetch('/api/admin/inviti', { credentials: 'same-origin' });
+    if (!response.ok) throw new Error('non autorizzato');
+    const data = await response.json() as { invites: Invite[] };
+    render(data.invites);
+  };
+
+  void getUser().then(async (user) => {
+    if (!user || !user.roles?.includes('admin')) { window.location.href = '/account'; return; }
+    await load();
+  }).catch(() => { window.location.href = '/accesso'; });
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!status) return;
+    status.textContent = 'Creazione in corso…';
+    try {
+      const fields = new FormData(form);
+      const response = await fetch('/api/admin/inviti', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ label: fields.get('label'), days: fields.get('days') }) });
+      const data = await response.json() as { code?: string; error?: string };
+      if (!response.ok || !data.code) throw new Error(data.error || 'Errore');
+      if (codeOutput) codeOutput.value = data.code;
+      if (result) result.hidden = false;
+      status.textContent = 'Codice creato.';
+      form.reset();
+      await load();
+    } catch (error) { status.textContent = error instanceof Error ? error.message : 'Non è stato possibile creare il codice.'; }
+  });
+  copyButton?.addEventListener('click', async () => {
+    if (!codeOutput?.value) return;
+    await navigator.clipboard.writeText(codeOutput.value);
+    copyButton.textContent = 'Copiato';
+  });
+</script>
+
+<style>
+  .admin { width: min(760px, calc(100% - 48px)); margin: auto; padding: 112px 0 70px; }
+  .eyebrow, .label { margin: 0; color: var(--gold); font: 700 10px var(--sans); letter-spacing: .13em; text-transform: uppercase; }
+  h1 { margin: 22px 0 24px; font: 500 clamp(56px, 8vw, 86px)/.87 var(--display); letter-spacing: -.04em; } h1 em { color: var(--terre); font-weight: 400; }
+  .intro { max-width: 570px; margin: 0; color: var(--sage); font-size: 19px; line-height: 1.55; }
+  .admin-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, .75fr); gap: 28px; margin-top: 45px; padding: 28px; border: 1px solid var(--line); background: rgba(255,255,255,.32); }
+  form { display: grid; gap: 18px; } label { display: grid; gap: 8px; font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; } input, select { width: 100%; padding: 11px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; color: var(--ink); background: transparent; font: 400 18px var(--serif); } form p, .code-result p, .invite-list p { margin: 0; color: var(--sage); font-size: 15px; }
+  button { justify-self: start; padding: 13px 18px; border: 1px solid var(--ink); color: var(--paper); background: var(--ink); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; } button.copy { margin-top: 12px; color: var(--ink); background: transparent; }
+  .code-result { padding-left: 28px; border-left: 1px solid var(--line); } output { display: block; margin: 12px 0 0; color: var(--terre); font: 700 20px/1.3 var(--sans); letter-spacing: .08em; overflow-wrap: anywhere; }
+  .invite-list { margin-top: 56px; } .invite-list > .label { display: block; margin-bottom: 15px; } .invite-list article { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px 0; border-top: 1px solid var(--line); } .invite-list strong { display: block; font: 500 24px/1.1 var(--display); } .invite-list small { display: block; margin-top: 5px; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; } .state { color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; } .state--utilizzato { color: var(--sage); } .state--scaduto { color: #9a4e3d; }
+  @media (max-width: 650px) { .admin { width: min(100% - 32px, 760px); padding-top: 74px; } .admin-panel { grid-template-columns: 1fr; padding: 21px 17px; } .code-result { padding: 22px 0 0; border-top: 1px solid var(--line); border-left: 0; } .invite-list article { align-items: flex-start; flex-direction: column; gap: 7px; } }
+</style>

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { maisonSlug, maisons } from '../../data/maisons';
+import { aromas } from '../../data/aromas';
 const needsDarkLogoFrame = (logo?: string, tone?: 'light-on-dark') =>
   tone === 'light-on-dark' || /(?:white|blanc|light|(?:^|[-_])wh(?:[._-]|$))/i.test(logo ?? '');
 
@@ -98,12 +99,23 @@ const pageTitle = `${maison.name} — Cantine e vini`;
               <label for="acidity">Piatto <input id="acidity" name="acidity" type="range" min="0" max="100" value="50" /> Acidulo</label>
             </div>
           </fieldset>
+          <fieldset class="aroma-picker">
+            <legend>Tratti aromatici <span>seleziona fino a 20 note</span></legend>
+            <div class="aroma-grid">
+              {aromas.map(([id, label, emoji]) => (
+                <label class="aroma-chip" title={label} data-aroma={id} data-aroma-label={label} data-aroma-emoji={emoji}>
+                  <input name="aromas" type="checkbox" value={id} />
+                  <span aria-hidden="true">{emoji}</span>{label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
           <label class="notes">Note di degustazione
             <textarea name="notes" rows="5" placeholder="Naso, bocca, evoluzione, abbinamento, ricordo…"></textarea>
           </label>
           <div class="form-footer">
             <p data-form-status aria-live="polite"></p>
-            <button type="submit">Salva la bevuta <span aria-hidden="true">→</span></button>
+            <button type="submit" data-save-tasting>Salva la bevuta <span aria-hidden="true">→</span></button>
           </div>
         </form>
       </div>
@@ -122,11 +134,13 @@ const pageTitle = `${maison.name} — Cantine e vini`;
     price?: number;
     rating: number;
     notes?: string;
+    aromas?: string[];
     sensory: { body: number; tannin: number; sweetness: number; acidity: number };
     photo?: { id: string; mime: string };
     author: { id: string; name: string };
     averageRating: number;
     ratingCount: number;
+    averageSensory: { body: number; tannin: number; sweetness: number; acidity: number };
   };
 
   const producer = document.querySelector<HTMLElement>('[data-producer-slug]');
@@ -136,18 +150,44 @@ const pageTitle = `${maison.name} — Cantine e vini`;
   const form = document.querySelector<HTMLFormElement>('[data-tasting-form]');
   const status = document.querySelector<HTMLElement>('[data-form-status]');
   const logoutButton = document.querySelector<HTMLButtonElement>('[data-logout]');
+  const saveButton = document.querySelector<HTMLButtonElement>('[data-save-tasting]');
   const slug = producer?.dataset.producerSlug;
+  const aromaLabels = new Map(Array.from(document.querySelectorAll<HTMLElement>('[data-aroma]')).map((element) => [element.dataset.aroma || '', {
+    label: element.dataset.aromaLabel || '', emoji: element.dataset.aromaEmoji || '✦',
+  }]));
+  let currentUserId = '';
+  let editingId: string | undefined;
+  let records = new Map<string, Tasting>();
 
   const escapeHTML = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] || character));
   const formatDate = (value: string) => new Intl.DateTimeFormat('it-IT', { dateStyle: 'long' }).format(new Date(`${value}T12:00:00`));
 
+  const meter = (left: string, value: number, right: string) => `<div class="profile-meter"><span>${left}</span><i><b style="width:${Math.round(value)}%"></b></i><span>${right}</span></div>`;
+  const aromaFlags = (aromaIds: string[] = []) => aromaIds.map((id) => {
+    const aroma = aromaLabels.get(id);
+    return aroma ? `<span class="aroma-flag">${aroma.emoji} ${escapeHTML(aroma.label)}</span>` : '';
+  }).join('');
+  const profile = (sensory: Tasting['averageSensory']) => `<div class="community-profile">
+    <p>Profilo medio della comunità</p>
+    ${meter('Leggero', sensory.body, 'Strutturato')}
+    ${meter('Morbido', sensory.tannin, 'Tannico')}
+    ${meter('Secco', sensory.sweetness, 'Dolce')}
+    ${meter('Piatto', sensory.acidity, 'Acidulo')}
+  </div>`;
+
   const drawTastings = (tastings: Tasting[]) => {
     if (!list) return;
+    records = new Map(tastings.map((tasting) => [tasting.id, tasting]));
     if (!tastings.length) {
       list.innerHTML = '<p class="empty-state">Nessuna bevuta annotata per ora. La prima può iniziare qui sotto.</p>';
       return;
     }
-    list.innerHTML = tastings.map((tasting) => `
+    const profilesShown = new Set<string>();
+    list.innerHTML = tastings.map((tasting) => {
+      const showProfile = !profilesShown.has(tasting.wine.trim().toLowerCase());
+      profilesShown.add(tasting.wine.trim().toLowerCase());
+      const isMine = tasting.author.id === currentUserId;
+      return `
       <article class="tasting-entry">
         ${tasting.photo ? `<img src="/api/foto/${encodeURIComponent(tasting.photo.id)}" alt="Bottiglia di ${escapeHTML(tasting.wine)}" loading="lazy">` : ''}
         <div>
@@ -155,9 +195,13 @@ const pageTitle = `${maison.name} — Cantine e vini`;
           <h3>${escapeHTML(tasting.wine)}</h3>
           <p class="entry-rating">${tasting.averageRating.toFixed(1)} <span>/ 5 · media storica (${tasting.ratingCount} ${tasting.ratingCount === 1 ? 'voto' : 'voti'})</span></p>
           <p class="entry-author">Annotato da ${escapeHTML(tasting.author.name)}${typeof tasting.price === 'number' ? ` · € ${tasting.price.toFixed(2)}` : ''}</p>
+          ${aromaFlags(tasting.aromas)}
           ${tasting.notes ? `<p class="entry-notes">${escapeHTML(tasting.notes)}</p>` : ''}
+          ${showProfile ? profile(tasting.averageSensory) : ''}
+          ${isMine ? `<p class="entry-actions"><button type="button" data-edit-id="${tasting.id}">Modifica</button><button type="button" data-delete-id="${tasting.id}">Elimina</button></p>` : ''}
         </div>
-      </article>`).join('');
+      </article>`;
+    }).join('');
   };
 
   const loadTastings = async () => {
@@ -175,10 +219,21 @@ const pageTitle = `${maison.name} — Cantine e vini`;
     reader.readAsDataURL(file);
   });
 
+  form?.querySelectorAll<HTMLInputElement>('input[name="aromas"]').forEach((input) => {
+    input.addEventListener('change', () => {
+      const selected = form.querySelectorAll<HTMLInputElement>('input[name="aromas"]:checked');
+      if (selected.length > 20) {
+        input.checked = false;
+        if (status) status.textContent = 'Puoi selezionare al massimo 20 tratti aromatici.';
+      }
+    });
+  });
+
   if (slug && gate && privateArea) {
     getUser().then(async (user) => {
       if (!user) return;
       try {
+        currentUserId = user.id;
         await loadTastings();
         gate.hidden = true;
         privateArea.hidden = false;
@@ -202,22 +257,58 @@ const pageTitle = `${maison.name} — Cantine e vini`;
       wine: String(fields.get('wine') || ''),
       drunkAt: String(fields.get('drunkAt') || ''),
       place: String(fields.get('place') || ''),
-      price: fields.get('price') ? Number(fields.get('price')) : undefined,
+      price: fields.get('price') ? Number(fields.get('price')) : null,
       rating: Number(fields.get('rating')),
       notes: String(fields.get('notes') || ''),
+      aromas: fields.getAll('aromas').map(String),
       sensory: ['body', 'tannin', 'sweetness', 'acidity'].reduce((ratings, key) => ({ ...ratings, [key]: Number(fields.get(key)) }), {}),
       photo: photo instanceof File && photo.size ? await readPhoto(photo) : undefined,
     };
     try {
       const response = await fetch(`/api/cantine/${encodeURIComponent(slug)}/bevute`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload),
+        method: editingId ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(editingId ? { ...payload, id: editingId } : payload),
       });
       if (!response.ok) throw new Error();
       form.reset();
-      status.textContent = 'Bevuta salvata nell’archivio personale.';
+      editingId = undefined;
+      if (saveButton) saveButton.innerHTML = 'Salva la bevuta <span aria-hidden="true">→</span>';
+      status.textContent = 'Bevuta salvata nel tuo taccuino e nell’archivio condiviso.';
       await loadTastings();
     } catch {
       status.textContent = 'Non è stato possibile salvare la bevuta. Riprova.';
+    }
+  });
+
+  list?.addEventListener('click', async (event) => {
+    const target = event.target as HTMLElement;
+    const editId = target.closest<HTMLButtonElement>('[data-edit-id]')?.dataset.editId;
+    const deleteId = target.closest<HTMLButtonElement>('[data-delete-id]')?.dataset.deleteId;
+    if (editId && form) {
+      const tasting = records.get(editId);
+      if (!tasting) return;
+      editingId = tasting.id;
+      (form.elements.namedItem('wine') as HTMLInputElement).value = tasting.wine;
+      (form.elements.namedItem('drunkAt') as HTMLInputElement).value = tasting.drunkAt;
+      (form.elements.namedItem('place') as HTMLInputElement).value = tasting.place;
+      (form.elements.namedItem('price') as HTMLInputElement).value = typeof tasting.price === 'number' ? String(tasting.price) : '';
+      (form.elements.namedItem('rating') as HTMLSelectElement).value = String(tasting.rating);
+      (form.elements.namedItem('notes') as HTMLTextAreaElement).value = tasting.notes || '';
+      ['body', 'tannin', 'sweetness', 'acidity'].forEach((key) => ((form.elements.namedItem(key) as HTMLInputElement).value = String(tasting.sensory[key as keyof Tasting['sensory']])));
+      form.querySelectorAll<HTMLInputElement>('input[name="aromas"]').forEach((input) => { input.checked = Boolean(tasting.aromas?.includes(input.value)); });
+      if (saveButton) saveButton.innerHTML = 'Aggiorna la bevuta <span aria-hidden="true">→</span>';
+      if (status) status.textContent = 'Stai modificando questa annotazione. Lascia vuota la foto per conservarla.';
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    if (deleteId && slug && window.confirm('Eliminare definitivamente questa annotazione?')) {
+      try {
+        const response = await fetch(`/api/cantine/${encodeURIComponent(slug)}/bevute?id=${encodeURIComponent(deleteId)}`, { method: 'DELETE', headers: { Accept: 'application/json' } });
+        if (!response.ok) throw new Error();
+        if (editingId === deleteId) { form?.reset(); editingId = undefined; }
+        if (status) status.textContent = 'Annotazione eliminata dal tuo taccuino.';
+        await loadTastings();
+      } catch {
+        if (status) status.textContent = 'Non è stato possibile eliminare l’annotazione. Riprova.';
+      }
     }
   });
 
@@ -282,11 +373,28 @@ const pageTitle = `${maison.name} — Cantine e vini`;
   .sensory-row label { display: grid; grid-template-columns: 70px minmax(0, 1fr) 70px; align-items: center; gap: 9px; font: 500 14px var(--serif); }
   .sensory-row label::first-line { text-align: left; }
   input[type='range'] { width: 100%; accent-color: #c8112e; }
+  .aroma-picker { margin: 0; padding: 25px 0; border: 0; border-bottom: 1px solid var(--line); }
+  .aroma-picker legend { padding: 0; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .11em; text-transform: uppercase; }
+  .aroma-picker legend span { margin-left: 9px; color: var(--sage); font-weight: 600; font-size: 9px; letter-spacing: .07em; }
+  .aroma-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 17px; }
+  .aroma-chip { display: inline-flex; align-items: center; gap: 5px; min-height: 31px; padding: 6px 9px; border: 1px solid var(--line); color: var(--terre); background: rgba(255,255,255,.2); font: 600 10px var(--sans); letter-spacing: .02em; text-transform: none; cursor: pointer; transition: background .2s ease, border-color .2s ease, color .2s ease; }
+  .aroma-chip input { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+  .aroma-chip:has(input:checked) { border-color: var(--gold); color: var(--ink); background: rgba(191,151,70,.14); }
   .notes { margin-top: 25px; }
   .form-footer { display: flex; justify-content: space-between; gap: 20px; align-items: center; margin-top: 25px; }
   .form-footer p { margin: 0; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .07em; }
   .form-footer button { padding: 13px 18px; border: 1px solid var(--ink); color: var(--paper); background: var(--ink); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: background .25s ease, color .25s ease; }
   .form-footer button:hover { color: var(--ink); background: transparent; }
+  :global(.aroma-flag) { display: inline-block; margin: 12px 6px 0 0; padding: 4px 7px; border: 1px solid var(--line); color: var(--terre); font: 600 9px var(--sans); letter-spacing: .02em; }
+  :global(.community-profile) { max-width: 570px; margin: 19px 0 0; padding: 16px 0 0; border-top: 1px solid var(--line); }
+  :global(.community-profile > p) { margin: 0 0 12px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  :global(.profile-meter) { display: grid; grid-template-columns: 66px minmax(0, 1fr) 76px; gap: 8px; align-items: center; margin-top: 8px; color: var(--sage); font: 500 11px var(--serif); }
+  :global(.profile-meter span:last-child) { text-align: right; }
+  :global(.profile-meter i) { display: block; height: 4px; overflow: hidden; background: var(--line); }
+  :global(.profile-meter b) { display: block; height: 100%; background: var(--gold); }
+  :global(.entry-actions) { display: flex; gap: 12px; margin: 17px 0 0; }
+  :global(.entry-actions button) { padding: 0; border: 0; border-bottom: 1px solid currentColor; color: var(--terre); background: transparent; font: 700 9px var(--sans); letter-spacing: .09em; text-transform: uppercase; cursor: pointer; }
+  :global(.entry-actions button:last-child) { color: #9d4031; }
   @media (max-width: 650px) {
     .producer { width: min(100% - 32px, 850px); }
     .producer-header { grid-template-columns: 1fr; gap: 26px; padding: 50px 0 60px; }
@@ -297,6 +405,7 @@ const pageTitle = `${maison.name} — Cantine e vini`;
     .wide { grid-column: auto; }
     .form-heading, .form-footer { align-items: flex-start; flex-direction: column; }
     .sensory-row label { grid-template-columns: 56px minmax(0, 1fr) 56px; font-size: 12px; }
+    :global(.profile-meter) { grid-template-columns: 55px minmax(0, 1fr) 65px; gap: 6px; font-size: 10px; }
     :global(.tasting-entry) { grid-template-columns: 76px 1fr; gap: 15px; }
     :global(.tasting-entry img) { width: 76px; }
   }

@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Profilo amico — Lo Champagne, con calma">
+  <section class="friend-profile" data-profile-page>
+    <a class="back" href="/amici"><span aria-hidden="true">←</span> Tutti gli amici</a>
+    <div data-profile-content><p class="loading">Caricamento del taccuino…</p></div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { getUser } from '@netlify/identity';
+  import { aromas } from '../../data/aromas';
+  const content = document.querySelector<HTMLElement>('[data-profile-content]');
+  const handle = new URLSearchParams(window.location.search).get('utente')?.trim().toLowerCase() || '';
+  const aromaById = new Map<string, { label: string; emoji: string }>(aromas.map(([id, label, emoji]) => [id, { label, emoji }]));
+  const escapeHTML = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] || character));
+  const formatDate = (value: string) => new Intl.DateTimeFormat('it-IT', { dateStyle: 'long' }).format(new Date(`${value}T12:00:00`));
+  type SensoryProfile = { body: number; tannin: number; sweetness: number; acidity: number };
+  type Tasting = {
+    wine: string; drunkAt: string; place: string; price?: number; rating: number; averageRating: number; ratingCount: number;
+    notes?: string; aromas?: string[]; sensory: SensoryProfile; averageSensory: SensoryProfile; photo?: { id: string; mime: string }; producer: { slug: string; name: string };
+  };
+  type Bottle = { producer: string; wine: string; vintage?: string; quantity: number };
+  type ProfileData = { profile: { handle: string; avatar: boolean; isSelf: boolean }; tastings: Tasting[]; cellar: Bottle[] };
+  const aromaFlags = (ids: string[] = []) => ids.map((id) => { const aroma = aromaById.get(id); return aroma ? `<span class="aroma-flag">${aroma.emoji} ${escapeHTML(aroma.label)}</span>` : ''; }).join('');
+  const meter = (left: string, value: number, right: string) => `<div class="profile-meter"><span>${left}</span><i><b style="width:${Math.max(0, Math.min(100, Math.round(value)))}%"></b></i><span>${right}</span></div>`;
+  const sensoryProfile = (sensory: SensoryProfile) => `<div class="sensory-profile" aria-label="Profilo al palato">
+    <p>Profilo al palato</p>${meter('Leggero', sensory.body, 'Strutturato')}${meter('Morbido', sensory.tannin, 'Tannico')}${meter('Secco', sensory.sweetness, 'Dolce')}${meter('Piatto', sensory.acidity, 'Acidulo')}
+  </div>`;
+  const draw = ({ profile, tastings, cellar }: ProfileData) => {
+    if (!content) return;
+    document.title = `${profile.handle} — Amici · Lo Champagne, con calma`;
+    content.innerHTML = `<header class="profile-header">
+      <span class="profile-avatar">${profile.avatar ? `<img src="/api/profilo/avatar?utente=${encodeURIComponent(profile.handle)}" alt="Foto profilo di ${escapeHTML(profile.handle)}">` : escapeHTML(profile.handle.slice(0, 1).toUpperCase())}</span>
+      <p>Amico dell'archivio</p><h1>${escapeHTML(profile.handle)}</h1>
+      ${profile.isSelf ? '<a href="/account">Gestisci il tuo taccuino →</a>' : ''}
+    </header>
+    <section><p class="eyebrow">Vini bevuti · ${tastings.length}</p><h2>${profile.isSelf ? 'Le tue degustazioni.' : 'Le sue degustazioni.'}</h2>
+    <div class="profile-list">${tastings.length ? tastings.map((tasting) => `<article class="profile-entry">${tasting.photo ? `<img class="tasting-photo" src="/api/foto/${encodeURIComponent(tasting.photo.id)}" alt="Bottiglia di ${escapeHTML(tasting.wine)}" loading="lazy">` : ''}<div class="tasting-copy"><p>${formatDate(tasting.drunkAt)} · ${escapeHTML(tasting.place)}${typeof tasting.price === 'number' ? ` · € ${tasting.price.toFixed(2)}` : ''}</p><h3>${escapeHTML(tasting.wine)}</h3><a href="/cantine/${encodeURIComponent(tasting.producer.slug)}">${escapeHTML(tasting.producer.name)} →</a><strong>${tasting.rating.toFixed(1)} / 5 <small>· media storica ${tasting.averageRating.toFixed(1)} (${tasting.ratingCount})</small></strong>${sensoryProfile(tasting.sensory)}${aromaFlags(tasting.aromas)}${tasting.notes ? `<div class="tasting-notes">${escapeHTML(tasting.notes)}</div>` : ''}</div></article>`).join('') : '<p class="empty">Nessuna degustazione condivisa per ora.</p>'}</div></section>
+    <section><p class="eyebrow">Cantina personale · ${cellar.reduce((sum, bottle) => sum + bottle.quantity, 0)}</p><h2>Le bottiglie in attesa.</h2>
+    <div class="cellar-list">${cellar.length ? cellar.map((bottle) => `<article><p>${escapeHTML(bottle.producer)}</p><h3>${escapeHTML(bottle.wine)}${bottle.vintage ? ` <span>${escapeHTML(bottle.vintage)}</span>` : ''}</h3><strong>${bottle.quantity} ${bottle.quantity === 1 ? 'bottiglia' : 'bottiglie'}</strong></article>`).join('') : '<p class="empty">Nessuna bottiglia in cantina per ora.</p>'}</div></section>`;
+  };
+  void getUser().then(async (user) => {
+    if (!user) { window.location.href = '/accesso'; return; }
+    if (!handle) { window.location.href = '/amici'; return; }
+    const response = await fetch(`/api/amici?utente=${encodeURIComponent(handle)}`, { headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error();
+    draw(await response.json() as ProfileData);
+  }).catch(() => { if (content) content.innerHTML = '<p class="empty">Profilo non disponibile.</p>'; });
+</script>
+
+<style>
+  .friend-profile { width: min(850px, calc(100% - 48px)); margin: auto; padding: 38px 0 70px; }
+  .back { display: inline-flex; gap: 9px; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  :global(.profile-header) { padding: 65px 0 57px; border-bottom: 1px solid var(--line); } :global(.profile-header > p), :global(.eyebrow) { margin: 24px 0 0; color: var(--gold); font: 700 10px var(--sans); letter-spacing: .13em; text-transform: uppercase; }
+  :global(.profile-avatar) { display: grid; place-items: center; width: 88px; height: 88px; overflow: hidden; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font: 500 48px/1 var(--display); } :global(.profile-avatar img) { width: 100%; height: 100%; object-fit: cover; }
+  :global(.profile-header h1) { margin: 12px 0 19px; font: 500 clamp(58px, 8vw, 88px)/.88 var(--display); letter-spacing: -.04em; } :global(.profile-header a), :global(.profile-entry > a) { border-bottom: 1px solid var(--gold); color: var(--terre); font: 700 9px var(--sans); letter-spacing: .09em; text-transform: uppercase; }
+  :global(.friend-profile section) { padding: 60px 0; border-bottom: 1px solid var(--line); } :global(.friend-profile section > h2) { margin: 12px 0 27px; font: 500 clamp(40px, 6vw, 58px)/.95 var(--display); letter-spacing: -.03em; }
+  :global(.profile-list) { max-width: 720px; } :global(.profile-entry) { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 20px; padding: 22px 0; border-top: 1px solid var(--line); } :global(.profile-entry > .tasting-copy > p), :global(.cellar-list p) { margin: 0 0 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; } :global(.profile-entry h3), :global(.cellar-list h3) { margin: 0 0 9px; font: 500 31px/1 var(--display); } :global(.profile-entry strong) { display: block; margin-top: 12px; color: var(--gold); font: 700 11px var(--sans); } :global(.profile-entry small) { color: var(--sage); font-weight: 600; } :global(.profile-entry .aroma-flag) { display: inline-block; margin: 12px 6px 0 0; padding: 4px 7px; border: 1px solid var(--line); color: var(--terre); font: 600 9px var(--sans); } :global(.tasting-notes) { margin-top: 13px; line-height: 1.58; white-space: pre-line; } :global(.tasting-photo) { width: 112px; height: 148px; border: 1px solid var(--line); object-fit: cover; background: rgba(255,255,255,.22); } :global(.sensory-profile) { margin-top: 17px; padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); } :global(.sensory-profile > p) { margin: 0 0 10px; color: var(--sage); font: 700 8px var(--sans); letter-spacing: .09em; text-transform: uppercase; } :global(.profile-meter) { display: grid; grid-template-columns: 62px minmax(0, 1fr) 74px; align-items: center; gap: 8px; margin-top: 7px; color: var(--terre); font: 600 9px var(--sans); } :global(.profile-meter span:last-child) { text-align: right; } :global(.profile-meter i) { display: block; height: 4px; overflow: hidden; background: rgba(37,54,43,.1); } :global(.profile-meter b) { display: block; height: 100%; background: var(--gold); }
+  :global(.cellar-list) { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; } :global(.cellar-list article) { padding: 20px; border: 1px solid var(--line); background: rgba(255,255,255,.22); } :global(.cellar-list h3 span) { color: var(--terre); font-style: italic; font-weight: 400; } :global(.cellar-list strong) { color: var(--sage); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; } :global(.loading), :global(.empty) { color: var(--sage); }
+  @media (max-width: 650px) { .friend-profile { width: min(100% - 32px, 850px); } :global(.profile-entry) { grid-template-columns: 76px minmax(0, 1fr); gap: 14px; } :global(.tasting-photo) { width: 76px; height: 104px; } :global(.profile-meter) { grid-template-columns: 50px minmax(0, 1fr) 57px; gap: 6px; font-size: 8px; } :global(.cellar-list) { grid-template-columns: 1fr; } }
+</style>
