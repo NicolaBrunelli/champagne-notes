@@ -3,49 +3,69 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { maisons } from '../data/maisons';
 ---
 
-<BaseLayout title="Il tuo account — Lo Champagne, con calma">
+<BaseLayout title="My Champagne — Lo Champagne, con calma">
   <section class="account" data-account-page>
-    <p class="eyebrow">Area personale</p>
-    <h1>Il tuo<br /><em>taccuino.</em></h1>
-    <p class="intro">Qui ritroverai le degustazioni che hai inserito e il tuo profilo nell’archivio condiviso.</p>
+    <header class="account-hero">
+      <p class="eyebrow">My Champagne</p>
+      <h1>Il tuo viaggio<br /><em>nello Champagne.</em></h1>
+      <p class="intro">Un atlante personale di bottiglie, luoghi e scoperte. Più annoti, più questa pagina prende la forma del tuo gusto.</p>
+      <nav class="account-nav" aria-label="Sezioni My Champagne">
+        <a href="#overview">Overview</a><a href="#degustazioni">Degustazioni</a><a href="#cantina">Cantina</a><a href="#wishlist">Wishlist</a><a href="#gusto">Il mio gusto</a>
+      </nav>
+    </header>
 
-    <div class="account-panel">
-      <p class="label">Utente</p>
-      <div class="avatar-editor">
-        <span class="account-avatar" data-account-avatar><img data-avatar-image alt="Foto profilo" hidden /><b data-avatar-fallback>?</b></span>
-        <label>Foto profilo <input data-avatar-file type="file" accept="image/jpeg,image/png,image/webp" /><span>JPG, PNG o WebP · max 2 MB</span></label>
-        <button type="button" class="outline-button" data-avatar-save>Salva foto</button>
-        <p data-avatar-status aria-live="polite"></p>
-      </div>
-      <p class="name" data-user-name>Caricamento profilo…</p>
-      <p class="email" data-user-email></p>
-      <a class="admin-link" href="/admin" data-admin-link hidden>Gestisci inviti <span aria-hidden="true">→</span></a>
-      <button type="button" data-logout>Esci dal tuo account</button>
-    </div>
-
-    <section class="my-tastings" aria-labelledby="my-tastings-title">
-      <p class="label">Archivio personale</p>
-      <h2 id="my-tastings-title">Le tue bevute.</h2>
-      <p class="intro">Qui ritrovi ogni annotazione. Puoi modificarla o eliminarla direttamente dal tuo taccuino.</p>
-      <p class="tasting-status" data-tasting-status aria-live="polite"></p>
-      <div data-my-tastings aria-live="polite"><p class="loading">Caricamento del taccuino…</p></div>
+    <section id="overview" class="overview" aria-labelledby="overview-title">
+      <div class="section-heading"><p>01 — Overview</p><h2 id="overview-title">Il tuo atlante.</h2></div>
+      <div class="stats" data-overview-stats><p class="loading">Sto aprendo il tuo taccuino…</p></div>
+      <section class="discover" aria-labelledby="discover-title">
+        <p class="label">Continua a scoprire</p><h3 id="discover-title">Il prossimo capitolo.</h3>
+        <div data-suggestions><p class="empty">Registra una prima bottiglia: da lì potremo suggerire un prossimo confronto con un perché chiaro.</p></div>
+      </section>
     </section>
 
-    <section class="my-cellar" aria-labelledby="my-cellar-title">
-      <p class="label">Cantina personale</p>
-      <h2 id="my-cellar-title">In attesa.</h2>
-      <p class="intro">Bottiglie già nella tua cantina, da tenere distinte dalle degustazioni.</p>
-      <form class="cellar-form" data-cellar-form>
+    <section id="degustazioni" class="account-section" aria-labelledby="tastings-title">
+      <div class="section-heading"><p>02 — Degustazioni</p><h2 id="tastings-title">Il taccuino.</h2></div>
+      <p class="intro">Le bottiglie bevute restano una storia separata dal semplice possesso. Ogni pagina di cantina permette di aggiungerne una nuova.</p>
+      <p class="status" data-tasting-status aria-live="polite"></p>
+      <div data-my-tastings aria-live="polite"><p class="loading">Caricamento delle degustazioni…</p></div>
+    </section>
+
+    <section id="cantina" class="account-section" aria-labelledby="cellar-title">
+      <div class="section-heading"><p>03 — Cantina</p><h2 id="cellar-title">In attesa.</h2></div>
+      <p class="intro">Le bottiglie che possiedi, senza confonderle con ciò che hai già degustato.</p>
+      <form class="record-form" data-cellar-form>
         <label>Produttore<input name="producer" list="maison-options" required placeholder="Es. Jacques Selosse" /></label>
-        <label>Vino<input name="wine" required placeholder="Es. Substance" /></label>
+        <label>Champagne<input name="wine" required placeholder="Es. Substance" /></label>
         <label>Annata <input name="vintage" inputmode="numeric" maxlength="12" placeholder="Es. 2014" /></label>
         <label>Quantità <input name="quantity" type="number" min="1" max="99" value="1" required /></label>
-        <button type="submit">Aggiungi in cantina <span aria-hidden="true">→</span></button>
-        <p data-cellar-status aria-live="polite"></p>
+        <button type="submit">Aggiungi in cantina <span aria-hidden="true">→</span></button><p class="status" data-cellar-status aria-live="polite"></p>
+      </form>
+      <div class="collection" data-cellar-collection aria-live="polite"><p class="loading">Caricamento della cantina…</p></div>
+    </section>
+
+    <section id="wishlist" class="account-section" aria-labelledby="wishlist-title">
+      <div class="section-heading"><p>04 — Wishlist</p><h2 id="wishlist-title">Da incontrare.</h2></div>
+      <p class="intro">Una lista essenziale di Champagne che vuoi provare o acquistare. Puoi aggiungere una cuvée dalle pagine dei produttori oppure annotarla qui.</p>
+      <form class="record-form" data-wishlist-form>
+        <label>Produttore<input name="producer" list="maison-options" required placeholder="Es. Bollinger" /></label>
+        <label>Champagne<input name="wine" required placeholder="Es. La Grande Année" /></label>
+        <button type="submit">Aggiungi alla wishlist <span aria-hidden="true">→</span></button><p class="status" data-wishlist-status aria-live="polite"></p>
       </form>
       <datalist id="maison-options">{maisons.map((maison) => <option value={maison.name} />)}</datalist>
-      <div class="cellar-collection" data-cellar-collection aria-live="polite"><p class="loading">Caricamento della cantina…</p></div>
+      <div class="collection wishlist-collection" data-wishlist-collection aria-live="polite"><p class="loading">Caricamento della wishlist…</p></div>
     </section>
+
+    <section id="gusto" class="account-section taste" aria-labelledby="taste-title">
+      <div class="section-heading"><p>05 — Il mio gusto</p><h2 id="taste-title">La tua impronta.</h2></div>
+      <div data-taste-profile><p class="loading">Sto leggendo le tracce del tuo percorso…</p></div>
+    </section>
+
+    <aside class="account-panel" aria-label="Impostazioni account">
+      <p class="label">Il tuo profilo</p>
+      <div class="avatar-editor"><span class="account-avatar"><img data-avatar-image alt="Foto profilo" hidden /><b data-avatar-fallback>?</b></span><label>Foto profilo <input data-avatar-file type="file" accept="image/jpeg,image/png,image/webp" /><span>JPG, PNG o WebP · max 2 MB</span></label><button type="button" class="outline-button" data-avatar-save>Salva foto</button></div>
+      <p class="name" data-user-name>Caricamento profilo…</p><p class="email" data-user-email></p><p class="status" data-avatar-status aria-live="polite"></p>
+      <a class="admin-link" href="/admin" data-admin-link hidden>Gestisci inviti <span aria-hidden="true">→</span></a><button type="button" class="logout" data-logout>Esci dal tuo account</button>
+    </aside>
   </section>
 </BaseLayout>
 
@@ -54,197 +74,48 @@ import { maisons } from '../data/maisons';
   import { aromas } from '../data/aromas';
   import { getCurrentUser } from '../scripts/identity-session';
 
-  const name = document.querySelector<HTMLElement>('[data-user-name]');
-  const email = document.querySelector<HTMLElement>('[data-user-email]');
-  const admin = document.querySelector<HTMLElement>('[data-admin-link]');
-  const logoutButton = document.querySelector<HTMLButtonElement>('[data-logout]');
-  const tastingList = document.querySelector<HTMLElement>('[data-my-tastings]');
-  const tastingStatus = document.querySelector<HTMLElement>('[data-tasting-status]');
-  const avatarImage = document.querySelector<HTMLImageElement>('[data-avatar-image]');
-  const avatarFallback = document.querySelector<HTMLElement>('[data-avatar-fallback]');
-  const avatarFile = document.querySelector<HTMLInputElement>('[data-avatar-file]');
-  const avatarSave = document.querySelector<HTMLButtonElement>('[data-avatar-save]');
-  const avatarStatus = document.querySelector<HTMLElement>('[data-avatar-status]');
-  const cellarForm = document.querySelector<HTMLFormElement>('[data-cellar-form]');
-  const cellarStatus = document.querySelector<HTMLElement>('[data-cellar-status]');
-  const cellarCollection = document.querySelector<HTMLElement>('[data-cellar-collection]');
-  const aromaById = new Map<string, { label: string; emoji: string }>(aromas.map(([id, label, emoji]) => [id, { label, emoji }]));
+  type Tasting = { id: string; wine: string; drunkAt: string; place: string; rating: number; notes?: string; aromas?: string[]; wouldRepurchase?: boolean; producer: { slug: string; name: string } };
+  type Bottle = { id: string; producer: string; wine: string; vintage?: string; quantity: number };
+  type Wish = { id: string; producer: string; producerSlug?: string; wine: string };
+  type Atlas = { tastings: Tasting[]; cellar: Bottle[]; wishlist: Wish[]; overview: { tasted: number; cellarBottles: number; wishlist: number; producers: number; areas: number; crus: number }; profile: { enough: boolean; sampleSize: number; styles: { favorite?: string; covered: number }; grapes: { favorite?: string; covered: number }; dosage: { favorite?: string; covered: number }; producers: { producer: string; rating: number }[]; territory: { areas: string[]; crus: string[] }; repurchase?: { yes: number; total: number; percent: number }; experience?: { count: number; description: string[] } }; suggestions: { title: string; reason: string; producer?: string; wine?: string }[] };
+  const qs = <T extends Element>(selector: string) => document.querySelector<T>(selector);
+  const tastingList = qs<HTMLElement>('[data-my-tastings]'); const cellarList = qs<HTMLElement>('[data-cellar-collection]'); const wishlistList = qs<HTMLElement>('[data-wishlist-collection]');
+  const overview = qs<HTMLElement>('[data-overview-stats]'); const profileBox = qs<HTMLElement>('[data-taste-profile]'); const suggestions = qs<HTMLElement>('[data-suggestions]');
+  const tastingStatus = qs<HTMLElement>('[data-tasting-status]'); const cellarStatus = qs<HTMLElement>('[data-cellar-status]'); const wishlistStatus = qs<HTMLElement>('[data-wishlist-status]');
   const escapeHTML = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] || character));
   const formatDate = (value: string) => new Intl.DateTimeFormat('it-IT', { dateStyle: 'long' }).format(new Date(`${value}T12:00:00`));
+  const aromaById = new Map<string, { label: string; emoji: string }>(aromas.map(([id, label, emoji]) => [id, { label, emoji }]));
 
-  type AccountTasting = {
-    id: string; wine: string; drunkAt: string; place: string; rating: number; notes?: string; aromas?: string[];
-    producer: { slug: string; name: string }; averageRating: number; ratingCount: number;
-  };
-  type CellarBottle = { id: string; producer: string; wine: string; vintage?: string; quantity: number };
-
-  const drawTastings = (tastings: AccountTasting[]) => {
-    if (!tastingList) return;
-    if (!tastings.length) {
-      tastingList.innerHTML = '<p class="empty">Il tuo taccuino è ancora vuoto. Apri una cantina e annota la tua prima bevuta.</p>';
-      return;
+  const draw = (data: Atlas) => {
+    if (overview) overview.innerHTML = [['Champagne degustati', data.overview.tasted], ['Bottiglie in cantina', data.overview.cellarBottles], ['Nella wishlist', data.overview.wishlist], ['Produttori scoperti', data.overview.producers], ['Aree esplorate', data.overview.areas], ['Cru con dati certi', data.overview.crus]].map(([label, value]) => `<article><strong>${value}</strong><span>${label}</span></article>`).join('');
+    if (suggestions) suggestions.innerHTML = data.suggestions.length ? data.suggestions.map((item) => `<article class="suggestion"><p>${escapeHTML(item.title)}</p>${item.producer && item.wine ? `<h3>${escapeHTML(item.producer)} · ${escapeHTML(item.wine)}</h3>` : ''}<span>${escapeHTML(item.reason)}</span></article>`).join('') : '<p class="empty">Registra una prima bottiglia: il tuo atlante inizierà a suggerire confronti coerenti e spiegati.</p>';
+    if (tastingList) tastingList.innerHTML = data.tastings.length ? data.tastings.map((item) => {
+      const flags = (item.aromas || []).map((id) => { const aroma = aromaById.get(id); return aroma ? `<span>${aroma.emoji} ${escapeHTML(aroma.label)}</span>` : ''; }).join('');
+      return `<article class="tasting"><p>${formatDate(item.drunkAt)} · ${escapeHTML(item.place)}</p><h3>${escapeHTML(item.wine)}</h3><a href="/cantine/${encodeURIComponent(item.producer.slug)}">${escapeHTML(item.producer.name)} →</a><strong>${item.rating.toFixed(1)} / 5</strong>${item.wouldRepurchase === true ? '<small>Lo ricompreresti: sì</small>' : item.wouldRepurchase === false ? '<small>Lo ricompreresti: no</small>' : ''}${flags ? `<div class="aromas">${flags}</div>` : ''}${item.notes ? `<div class="notes">${escapeHTML(item.notes)}</div>` : ''}<p class="actions"><a href="/cantine/${encodeURIComponent(item.producer.slug)}?modifica=${encodeURIComponent(item.id)}">Modifica</a><button type="button" data-delete-tasting="${item.id}" data-producer="${escapeHTML(item.producer.slug)}" data-wine="${escapeHTML(item.wine)}">Elimina</button></p></article>`;
+    }).join('') : '<p class="empty">Il tuo taccuino è ancora vuoto. Apri una cantina e annota la tua prima bevuta.</p>';
+    if (cellarList) cellarList.innerHTML = data.cellar.length ? data.cellar.map((item) => `<article class="bottle"><p>${escapeHTML(item.producer)}</p><h3>${escapeHTML(item.wine)}${item.vintage ? ` <span>${escapeHTML(item.vintage)}</span>` : ''}</h3><strong>${item.quantity} ${item.quantity === 1 ? 'bottiglia' : 'bottiglie'}</strong><button data-remove-cellar="${item.id}" type="button">Rimuovi</button></article>`).join('') : '<p class="empty">La tua cantina è ancora vuota.</p>';
+    if (wishlistList) wishlistList.innerHTML = data.wishlist.length ? data.wishlist.map((item) => `<article class="bottle"><p>${escapeHTML(item.producer)}</p><h3>${escapeHTML(item.wine)}</h3><button data-remove-wish="${item.id}" type="button">Rimuovi dalla wishlist</button></article>`).join('') : '<p class="empty">Nessuna bottiglia in attesa per ora.</p>';
+    if (profileBox) {
+      if (!data.profile.enough) profileBox.innerHTML = `<div class="profile-empty"><p>Il tuo Champagne</p><h3>Stiamo iniziando a conoscerti.</h3><span>Hai registrato ${data.profile.sampleSize} ${data.profile.sampleSize === 1 ? 'degustazione' : 'degustazioni'}. Dopo almeno tre, il profilo inizierà a mostrare preferenze con basi sufficienti.</span></div>`;
+      else {
+        const rows = [['Stile preferito', data.profile.styles.favorite, data.profile.styles.covered], ['Vitigno ricorrente', data.profile.grapes.favorite, data.profile.grapes.covered], ['Dosage ricorrente', data.profile.dosage.favorite, data.profile.dosage.covered]].map(([label, value, covered]) => `<article><p>${label}</p><h3>${value || 'Dati insufficienti'}</h3><span>${Number(covered) ? `basato su ${covered} schede con dato dichiarato` : 'non disponibile nelle schede degustate'}</span></article>`).join('');
+        const taste = data.profile.experience?.description.length ? data.profile.experience.description.join(' · ') : 'Dati sensoriali insufficienti'; const producers = data.profile.producers.length ? data.profile.producers.map((item) => `${escapeHTML(item.producer)} · ${item.rating.toFixed(1)}`).join('<br>') : 'Continua a degustare lo stesso produttore per leggere una media prudente.';
+        profileBox.innerHTML = `<div class="profile-grid">${rows}<article><p>Profilo</p><h3>${escapeHTML(taste)}</h3><span>basato sulle impressioni che hai registrato</span></article><article><p>Produttori preferiti</p><h3>${producers}</h3><span>almeno due degustazioni per produttore</span></article><article><p>Lo ricompreresti?</p><h3>${data.profile.repurchase ? `${data.profile.repurchase.percent}%` : 'Dati insufficienti'}</h3><span>${data.profile.repurchase ? `${data.profile.repurchase.yes} su ${data.profile.repurchase.total} risposte` : 'servono almeno tre risposte'}</span></article></div><div class="territory"><p>Territorio letto con cautela</p><span>Aree con provenienza dichiarata: ${data.profile.territory.areas.length ? escapeHTML(data.profile.territory.areas.join(' · ')) : 'dati insufficienti'}. Cru certi: ${data.profile.territory.crus.length ? escapeHTML(data.profile.territory.crus.join(' · ')) : 'nessuno ancora'}.</span></div>`;
+      }
     }
-    tastingList.innerHTML = tastings.map((tasting) => {
-      const flags = (tasting.aromas || []).map((id) => {
-        const aroma = aromaById.get(id);
-        return aroma ? `<span>${aroma.emoji} ${escapeHTML(aroma.label)}</span>` : '';
-      }).join('');
-      return `<article class="my-tasting">
-        <p>${formatDate(tasting.drunkAt)} · ${escapeHTML(tasting.place)}</p>
-        <h3>${escapeHTML(tasting.wine)}</h3>
-        <a href="/cantine/${encodeURIComponent(tasting.producer.slug)}">${escapeHTML(tasting.producer.name)} <b aria-hidden="true">→</b></a>
-        <strong>${tasting.rating.toFixed(1)} / 5 <small>· media storica ${tasting.averageRating.toFixed(1)} (${tasting.ratingCount})</small></strong>
-        ${flags ? `<div class="my-aromas">${flags}</div>` : ''}
-        ${tasting.notes ? `<div class="my-notes">${escapeHTML(tasting.notes)}</div>` : ''}
-        <p class="my-tasting-actions"><a href="/cantine/${encodeURIComponent(tasting.producer.slug)}?modifica=${encodeURIComponent(tasting.id)}">Modifica</a><button type="button" data-delete-tasting="${escapeHTML(tasting.id)}" data-producer-slug="${escapeHTML(tasting.producer.slug)}" data-wine-name="${escapeHTML(tasting.wine)}">Elimina</button></p>
-      </article>`;
-    }).join('');
   };
-  const drawCellar = (bottles: CellarBottle[]) => {
-    if (!cellarCollection) return;
-    if (!bottles.length) { cellarCollection.innerHTML = '<p class="empty">La tua cantina è ancora vuota.</p>'; return; }
-    cellarCollection.innerHTML = bottles.map((bottle) => `<article class="cellar-bottle"><p>${escapeHTML(bottle.producer)}</p><h3>${escapeHTML(bottle.wine)}${bottle.vintage ? ` <span>${escapeHTML(bottle.vintage)}</span>` : ''}</h3><strong>${bottle.quantity} ${bottle.quantity === 1 ? 'bottiglia' : 'bottiglie'}</strong><button type="button" data-remove-cellar="${bottle.id}">Rimuovi</button></article>`).join('');
-  };
-  const loadCellar = async () => {
-    const response = await fetch('/api/cantina-personale', { headers: { Accept: 'application/json' } });
-    if (!response.ok) throw new Error();
-    drawCellar((await response.json() as { bottles: CellarBottle[] }).bottles);
-  };
-  const loadTastings = async () => {
-    const response = await fetch('/api/account/bevute', { headers: { Accept: 'application/json' } });
-    if (!response.ok) throw new Error();
-    drawTastings((await response.json() as { tastings: AccountTasting[] }).tastings);
-  };
-  const readPhoto = (file: File) => new Promise<string>((resolve, reject) => {
-    const reader = new FileReader(); reader.onload = () => resolve(String(reader.result)); reader.onerror = () => reject(new Error()); reader.readAsDataURL(file);
-  });
-
-  void (async () => {
-    const user = await getCurrentUser();
-    if (!user) { window.location.href = '/accesso'; return; }
-    const handle = typeof user.userMetadata?.handle === 'string' ? user.userMetadata.handle : user.name || 'Membro';
-    if (name) name.textContent = handle;
-    if (email) email.textContent = user.email || '';
-    if (avatarFallback) avatarFallback.textContent = handle.slice(0, 1).toUpperCase();
-    if (avatarImage) { avatarImage.src = '/api/profilo/avatar'; avatarImage.onload = () => { avatarImage.hidden = false; if (avatarFallback) avatarFallback.hidden = true; }; }
-    if (admin && user.roles?.includes('admin')) admin.hidden = false;
-    try {
-      await loadTastings();
-    } catch {
-      if (tastingList) tastingList.innerHTML = '<p class="empty">Non è stato possibile caricare il taccuino. Riprova tra poco.</p>';
-    }
-    try { await loadCellar(); } catch { if (cellarCollection) cellarCollection.innerHTML = '<p class="empty">Non è stato possibile caricare la cantina. Riprova tra poco.</p>'; }
-  })().catch(() => { window.location.href = '/accesso'; });
-
-  logoutButton?.addEventListener('click', async () => {
-    await logout();
-    window.location.href = '/';
-  });
-
-  tastingList?.addEventListener('click', async (event) => {
-    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-delete-tasting]');
-    const id = button?.dataset.deleteTasting;
-    const producerSlug = button?.dataset.producerSlug;
-    const wineName = button?.dataset.wineName || 'questa bevuta';
-    if (!button || !id || !producerSlug || !window.confirm(`Eliminare definitivamente “${wineName}” dal tuo taccuino?`)) return;
-    button.disabled = true;
-    if (tastingStatus) tastingStatus.textContent = 'Eliminazione in corso…';
-    try {
-      const response = await fetch(`/api/cantine/${encodeURIComponent(producerSlug)}/bevute?id=${encodeURIComponent(id)}`, { method: 'DELETE', headers: { Accept: 'application/json' } });
-      if (!response.ok) throw new Error();
-      await loadTastings();
-      if (tastingStatus) tastingStatus.textContent = 'Bevuta eliminata dal tuo taccuino.';
-    } catch {
-      button.disabled = false;
-      if (tastingStatus) tastingStatus.textContent = 'Non è stato possibile eliminare la bevuta. Riprova.';
-    }
-  });
-
-  avatarSave?.addEventListener('click', async () => {
-    const file = avatarFile?.files?.[0];
-    if (!file || !avatarStatus) { if (avatarStatus) avatarStatus.textContent = 'Scegli una foto prima di salvare.'; return; }
-    if (file.size > 2 * 1024 * 1024) { avatarStatus.textContent = 'La foto supera il limite di 2 MB.'; return; }
-    avatarStatus.textContent = 'Salvataggio foto…';
-    try {
-      const response = await fetch('/api/profilo/avatar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photo: await readPhoto(file) }) });
-      if (!response.ok) throw new Error();
-      if (avatarImage) { avatarImage.src = `/api/profilo/avatar?aggiornata=${Date.now()}`; avatarImage.hidden = false; }
-      if (avatarFallback) avatarFallback.hidden = true;
-      avatarStatus.textContent = 'Foto profilo aggiornata.';
-    } catch { avatarStatus.textContent = 'Non è stato possibile salvare la foto.'; }
-  });
-
-  cellarForm?.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    if (!cellarStatus) return;
-    const fields = new FormData(cellarForm);
-    cellarStatus.textContent = 'Aggiornamento in corso…';
-    try {
-      const response = await fetch('/api/cantina-personale', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ producer: fields.get('producer'), wine: fields.get('wine'), vintage: fields.get('vintage'), quantity: Number(fields.get('quantity')) }) });
-      if (!response.ok) throw new Error();
-      cellarForm.reset();
-      cellarStatus.textContent = 'Bottiglia aggiunta alla tua cantina.';
-      await loadCellar();
-    } catch { cellarStatus.textContent = 'Non è stato possibile aggiornare la cantina.'; }
-  });
-
-  cellarCollection?.addEventListener('click', async (event) => {
-    const id = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-remove-cellar]')?.dataset.removeCellar;
-    if (!id || !window.confirm('Rimuovere questa bottiglia dalla cantina?')) return;
-    try { const response = await fetch(`/api/cantina-personale?id=${encodeURIComponent(id)}`, { method: 'DELETE' }); if (!response.ok) throw new Error(); await loadCellar(); }
-    catch { if (cellarStatus) cellarStatus.textContent = 'Non è stato possibile rimuovere la bottiglia.'; }
-  });
+  const load = async () => { const response = await fetch('/api/my-champagne', { headers: { Accept: 'application/json' } }); if (!response.ok) throw new Error(); draw(await response.json() as Atlas); };
+  const readPhoto = (file: File) => new Promise<string>((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(String(reader.result)); reader.onerror = () => reject(new Error()); reader.readAsDataURL(file); });
+  void (async () => { const user = await getCurrentUser(); if (!user) { window.location.href = '/accesso'; return; } const handle = typeof user.userMetadata?.handle === 'string' ? user.userMetadata.handle : user.name || 'Membro'; const name = qs<HTMLElement>('[data-user-name]'); const email = qs<HTMLElement>('[data-user-email]'); const fallback = qs<HTMLElement>('[data-avatar-fallback]'); const avatar = qs<HTMLImageElement>('[data-avatar-image]'); if (name) name.textContent = handle; if (email) email.textContent = user.email || ''; if (fallback) fallback.textContent = handle.slice(0, 1).toUpperCase(); if (avatar) { avatar.src = '/api/profilo/avatar'; avatar.onload = () => { avatar.hidden = false; if (fallback) fallback.hidden = true; }; } const admin = qs<HTMLElement>('[data-admin-link]'); if (admin && user.roles?.includes('admin')) admin.hidden = false; await load(); })().catch(() => { if (overview) overview.innerHTML = '<p class="empty">Non è stato possibile aprire il tuo atlante. Riprova tra poco.</p>'; });
+  qs<HTMLButtonElement>('[data-logout]')?.addEventListener('click', async () => { await logout(); window.location.href = '/'; });
+  qs<HTMLFormElement>('[data-cellar-form]')?.addEventListener('submit', async (event) => { event.preventDefault(); const form = event.currentTarget as HTMLFormElement; if (cellarStatus) cellarStatus.textContent = 'Aggiornamento in corso…'; try { const values = new FormData(form); const response = await fetch('/api/cantina-personale', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ producer: values.get('producer'), wine: values.get('wine'), vintage: values.get('vintage'), quantity: Number(values.get('quantity')) }) }); if (!response.ok) throw new Error(); form.reset(); if (cellarStatus) cellarStatus.textContent = 'Bottiglia aggiunta alla cantina.'; await load(); } catch { if (cellarStatus) cellarStatus.textContent = 'Non è stato possibile aggiornare la cantina.'; } });
+  qs<HTMLFormElement>('[data-wishlist-form]')?.addEventListener('submit', async (event) => { event.preventDefault(); const form = event.currentTarget as HTMLFormElement; if (wishlistStatus) wishlistStatus.textContent = 'Aggiornamento in corso…'; try { const values = new FormData(form); const response = await fetch('/api/wishlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ producer: values.get('producer'), wine: values.get('wine') }) }); if (!response.ok) throw new Error(); form.reset(); if (wishlistStatus) wishlistStatus.textContent = 'Champagne aggiunto alla wishlist.'; await load(); } catch { if (wishlistStatus) wishlistStatus.textContent = 'Non è stato possibile aggiornare la wishlist.'; } });
+  cellarList?.addEventListener('click', async (event) => { const id = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-remove-cellar]')?.dataset.removeCellar; if (!id || !confirm('Rimuovere questa bottiglia dalla cantina?')) return; await fetch(`/api/cantina-personale?id=${encodeURIComponent(id)}`, { method: 'DELETE' }); await load(); });
+  wishlistList?.addEventListener('click', async (event) => { const id = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-remove-wish]')?.dataset.removeWish; if (!id || !confirm('Rimuovere questo Champagne dalla wishlist?')) return; await fetch(`/api/wishlist?id=${encodeURIComponent(id)}`, { method: 'DELETE' }); await load(); });
+  tastingList?.addEventListener('click', async (event) => { const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-delete-tasting]'); const id = button?.dataset.deleteTasting; const producer = button?.dataset.producer; if (!button || !id || !producer || !confirm(`Eliminare “${button.dataset.wine || 'questa bevuta'}” dal taccuino?`)) return; if (tastingStatus) tastingStatus.textContent = 'Eliminazione in corso…'; try { const response = await fetch(`/api/cantine/${encodeURIComponent(producer)}/bevute?id=${encodeURIComponent(id)}`, { method: 'DELETE' }); if (!response.ok) throw new Error(); await load(); if (tastingStatus) tastingStatus.textContent = 'Bevuta eliminata dal taccuino.'; } catch { if (tastingStatus) tastingStatus.textContent = 'Non è stato possibile eliminare la bevuta.'; } });
+  qs<HTMLButtonElement>('[data-avatar-save]')?.addEventListener('click', async () => { const file = qs<HTMLInputElement>('[data-avatar-file]')?.files?.[0]; const status = qs<HTMLElement>('[data-avatar-status]'); if (!file || !status) return; if (file.size > 2 * 1024 * 1024) { status.textContent = 'La foto supera il limite di 2 MB.'; return; } status.textContent = 'Salvataggio foto…'; try { const response = await fetch('/api/profilo/avatar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photo: await readPhoto(file) }) }); if (!response.ok) throw new Error(); const avatar = qs<HTMLImageElement>('[data-avatar-image]'); if (avatar) { avatar.src = `/api/profilo/avatar?aggiornata=${Date.now()}`; avatar.hidden = false; } const fallback = qs<HTMLElement>('[data-avatar-fallback]'); if (fallback) fallback.hidden = true; status.textContent = 'Foto profilo aggiornata.'; } catch { status.textContent = 'Non è stato possibile salvare la foto.'; } });
 </script>
 
 <style>
-  .account { width: min(560px, calc(100% - 48px)); margin: auto; padding: 112px 0 70px; }
-  .eyebrow, .label { margin: 0; color: var(--gold); font: 700 10px var(--sans); letter-spacing: .13em; text-transform: uppercase; }
-  h1 { margin: 22px 0 24px; font: 500 clamp(56px, 8vw, 86px)/.87 var(--display); letter-spacing: -.04em; }
-  h1 em { color: var(--terre); font-weight: 400; }
-  .intro { max-width: 500px; margin: 0; color: var(--sage); font-size: 19px; line-height: 1.55; }
-  .account-panel { display: grid; gap: 12px; margin-top: 45px; padding: 28px; border: 1px solid var(--line); background: rgba(255,255,255,.32); }
-  .avatar-editor { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px 16px; align-items: center; padding-bottom: 23px; border-bottom: 1px solid var(--line); }
-  .account-avatar { display: grid; place-items: center; width: 58px; height: 58px; overflow: hidden; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font: 500 31px var(--display); }
-  .account-avatar img { width: 100%; height: 100%; object-fit: cover; }
-  .avatar-editor label { display: grid; gap: 5px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
-  .avatar-editor label span, .avatar-editor > p { margin: 0; color: var(--sage); font: 600 8px var(--sans); letter-spacing: .05em; text-transform: uppercase; }
-  .avatar-editor > p { grid-column: 2 / -1; }
-  .outline-button { padding: 10px 12px; border-color: var(--line); color: var(--terre); background: transparent; }
-  .name { margin: 0; font: 500 42px/.95 var(--display); }
-  .email { margin: 0 0 15px; color: var(--sage); }
-  .admin-link { justify-self: start; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
-  button { justify-self: start; padding: 13px 18px; border: 1px solid var(--ink); color: var(--paper); background: var(--ink); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
-  .my-tastings { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--line); }
-  h2 { margin: 12px 0 18px; font: 500 clamp(42px, 6vw, 58px)/.92 var(--display); letter-spacing: -.03em; }
-  .my-tastings .intro { font-size: 17px; }
-  .tasting-status { min-height: 17px; margin: 13px 0 0; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .06em; text-transform: uppercase; }
-  :global(.loading), :global(.empty) { margin: 27px 0 0; color: var(--sage); }
-  :global(.my-tasting) { padding: 25px 0; border-bottom: 1px solid var(--line); }
-  :global(.my-tasting > p) { margin: 0 0 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
-  :global(.my-tasting h3) { margin: 0; font: 500 30px/1 var(--display); }
-  :global(.my-tasting > a) { display: inline-block; margin-top: 9px; border-bottom: 1px solid var(--gold); color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
-  :global(.my-tasting > strong) { display: block; margin-top: 13px; color: var(--gold); font: 700 11px var(--sans); }
-  :global(.my-tasting > strong small) { color: var(--sage); font-weight: 600; }
-  :global(.my-aromas) { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }
-  :global(.my-aromas span) { padding: 4px 7px; border: 1px solid var(--line); color: var(--terre); font: 600 9px var(--sans); }
-  :global(.my-notes) { margin-top: 13px; line-height: 1.58; white-space: pre-line; }
-  :global(.my-tasting-actions) { display: flex; flex-wrap: wrap; gap: 14px; margin: 18px 0 0 !important; }
-  :global(.my-tasting-actions a), :global(.my-tasting-actions button) { margin: 0 !important; padding: 0; border: 0; border-bottom: 1px solid currentColor; color: var(--terre); background: transparent; font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
-  :global(.my-tasting-actions button) { color: #9d4031; }
-  :global(.my-tasting-actions button:disabled) { cursor: wait; opacity: .55; }
-  .my-cellar { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--line); }
-  .cellar-form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 29px; padding: 24px; border: 1px solid var(--line); background: rgba(255,255,255,.22); }
-  .cellar-form label { display: grid; gap: 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
-  .cellar-form input { width: 100%; padding: 10px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; outline: none; color: var(--ink); background: transparent; font: 400 16px var(--serif); }
-  .cellar-form input:focus { border-color: var(--gold); }
-  .cellar-form button { justify-self: start; }
-  .cellar-form > p { margin: 0; align-self: center; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .06em; }
-  .cellar-collection { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 23px; }
-  :global(.cellar-bottle) { padding: 20px; border: 1px solid var(--line); background: rgba(255,255,255,.22); }
-  :global(.cellar-bottle p) { margin: 0 0 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .09em; text-transform: uppercase; }
-  :global(.cellar-bottle h3) { margin: 0; font: 500 28px/1 var(--display); }
-  :global(.cellar-bottle h3 span) { color: var(--terre); font-style: italic; font-weight: 400; }
-  :global(.cellar-bottle strong) { display: block; margin-top: 12px; color: var(--sage); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
-  :global(.cellar-bottle button) { margin-top: 15px; padding: 0; border: 0; border-bottom: 1px solid currentColor; color: #9d4031; background: transparent; font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
-  @media (max-width: 650px) { .account { width: min(100% - 32px, 560px); padding-top: 74px; } .account-panel { padding: 21px 17px; } .avatar-editor { grid-template-columns: 58px 1fr; } .avatar-editor .outline-button { grid-column: 2; } .cellar-form, .cellar-collection { grid-template-columns: 1fr; } }
+  .account { width: min(850px, calc(100% - 48px)); margin: auto; padding: 105px 0 74px; }.eyebrow, .label, .section-heading > p { margin: 0; color: var(--gold); font: 700 10px var(--sans); letter-spacing: .13em; text-transform: uppercase; }.account-hero { max-width: 730px; } h1 { margin: 22px 0 24px; font: 500 var(--page-title)/.87 var(--display); letter-spacing: -.04em; } h1 em { color: var(--terre); font-weight: 400; }.intro { max-width: 690px; margin: 0; color: var(--sage); font-size: 19px; line-height: 1.55; }.account-nav { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 42px; padding: 15px 0; border-block: 1px solid var(--line); }.account-nav a { color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }.overview, .account-section { padding: 74px 0; border-bottom: 1px solid var(--line); }.section-heading h2 { margin: 12px 0 22px; font: 500 clamp(42px, 6vw, 62px)/.94 var(--display); letter-spacing: -.03em; }.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; border: 1px solid var(--line); background: var(--line); }.stats article { display: grid; align-content: space-between; min-height: 134px; padding: 20px; background: rgba(255,255,255,.33); }.stats strong { color: var(--ink); font: 500 52px/.9 var(--display); }.stats span { color: var(--terre); font: 700 9px var(--sans); letter-spacing: .09em; text-transform: uppercase; }.discover { margin-top: 42px; padding: 24px 0 0; border-top: 1px solid var(--line); }.discover h3 { margin: 10px 0 20px; font: 500 38px/1 var(--display); }.suggestion, :global(.suggestion) { padding: 20px 0; border-top: 1px solid var(--line); }.suggestion p, :global(.suggestion p) { margin: 0; color: var(--gold); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }.suggestion h3, :global(.suggestion h3) { margin: 7px 0; font: 500 27px/1 var(--display); }.suggestion span, :global(.suggestion span) { color: var(--sage); font-size: 16px; line-height: 1.45; }.status { min-height: 17px; margin: 13px 0 0; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .06em; text-transform: uppercase; }.loading, .empty { color: var(--sage); }:global(.tasting) { padding: 26px 0; border-bottom: 1px solid var(--line); }:global(.tasting > p), :global(.bottle > p) { margin: 0 0 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }:global(.tasting h3), :global(.bottle h3) { margin: 0; font: 500 31px/1 var(--display); }:global(.tasting > a) { display: inline-block; margin-top: 9px; border-bottom: 1px solid var(--gold); color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }:global(.tasting > strong) { display: block; margin-top: 13px; color: var(--gold); font: 700 11px var(--sans); }:global(.tasting > small) { display: block; margin-top: 5px; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .07em; text-transform: uppercase; }:global(.aromas) { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }:global(.aromas span) { padding: 4px 7px; border: 1px solid var(--line); color: var(--terre); font: 600 9px var(--sans); }:global(.notes) { margin-top: 13px; line-height: 1.58; white-space: pre-line; }:global(.actions) { display: flex; gap: 14px; margin: 18px 0 0 !important; }:global(.actions a), :global(.actions button), :global(.bottle button) { padding: 0; border: 0; border-bottom: 1px solid currentColor; color: var(--terre); background: transparent; font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }:global(.actions button), :global(.bottle button) { color: #9d4031; }.record-form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 29px; padding: 24px; border: 1px solid var(--line); background: rgba(255,255,255,.22); }.record-form label { display: grid; gap: 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }.record-form input { width: 100%; padding: 10px 0; border: 0; border-bottom: 1px solid var(--line); outline: 0; color: var(--ink); background: transparent; font: 400 16px var(--serif); }.record-form input:focus { border-color: var(--gold); }button { justify-self: start; padding: 13px 18px; border: 1px solid var(--ink); color: var(--paper); background: var(--ink); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }.collection { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 23px; }:global(.bottle) { padding: 20px; border: 1px solid var(--line); background: rgba(255,255,255,.22); }:global(.bottle h3 span) { color: var(--terre); font-style: italic; font-weight: 400; }:global(.bottle strong) { display: block; margin-top: 12px; color: var(--sage); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }:global(.bottle button) { margin-top: 15px; }.taste { border-bottom: 0; }.profile-empty { max-width: 620px; padding: 28px; border-left: 2px solid var(--gold); background: rgba(217,212,200,.4); }.profile-empty p, :global(.profile-grid article p), :global(.territory p) { margin: 0; color: var(--gold); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }.profile-empty h3 { margin: 11px 0; font: 500 37px/1 var(--display); }.profile-empty span { color: var(--sage); }.profile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; border: 1px solid var(--line); background: var(--line); }:global(.profile-grid article) { padding: 23px; background: rgba(255,255,255,.28); }:global(.profile-grid h3) { margin: 10px 0 8px; font: 500 30px/1 var(--display); }:global(.profile-grid span), :global(.territory span) { color: var(--sage); font-size: 14px; line-height: 1.42; }.territory { margin-top: 20px; padding: 21px; background: rgba(217,212,200,.4); }.account-panel { display: grid; gap: 12px; margin-top: 64px; padding: 28px; border: 1px solid var(--line); background: rgba(255,255,255,.32); }.avatar-editor { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px 16px; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--line); }.account-avatar { display: grid; place-items: center; width: 58px; height: 58px; overflow: hidden; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font: 500 31px var(--display); }.account-avatar img { width: 100%; height: 100%; object-fit: cover; }.avatar-editor label { display: grid; gap: 5px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }.avatar-editor label span { color: var(--sage); font: 600 8px var(--sans); }.outline-button { padding: 10px 12px; border-color: var(--line); color: var(--terre); background: transparent; }.name { margin: 0; font: 500 42px/.95 var(--display); }.email { margin: 0; color: var(--sage); }.admin-link { justify-self: start; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }.logout { background: transparent; color: var(--terre); border-color: var(--line); }@media (max-width: 650px) { .account { width: min(100% - 32px, 850px); padding-top: 68px; }.stats { grid-template-columns: repeat(2, 1fr); }.stats article { min-height: 114px; padding: 16px; }.stats strong { font-size: 44px; }.overview, .account-section { padding: 56px 0; }.record-form, .collection, .profile-grid { grid-template-columns: 1fr; }.avatar-editor { grid-template-columns: 58px 1fr; }.avatar-editor .outline-button { grid-column: 2; }.account-panel { padding: 21px 17px; } }
 </style>

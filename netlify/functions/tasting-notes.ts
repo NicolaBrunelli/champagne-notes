@@ -3,9 +3,11 @@ import { getUser, verifyRequestOrigin } from '@netlify/identity';
 import { aromaIds } from '../../src/data/aromas';
 
 type SensoryProfile = { body: number; tannin: number; sweetness: number; acidity: number };
+type ExperienceProfile = { maturity: number; structure: number; tension: number; complexity: number };
 type Tasting = {
   id: string; wine: string; drunkAt: string; place: string; price?: number; rating: number; notes?: string;
   aromas: string[]; sensory: SensoryProfile; photo?: { id: string; mime: string };
+  experience?: ExperienceProfile; wouldRepurchase?: boolean;
   author: { id: string; name: string }; createdAt: string; updatedAt?: string;
 };
 type TastingIndex = { id: string; producerSlug: string; createdAt: string };
@@ -55,7 +57,15 @@ const parsePayload = (payload: Record<string, unknown>) => {
     body: boundedNumber(rawSensory?.body, 0, 100) ?? 50, tannin: boundedNumber(rawSensory?.tannin, 0, 100) ?? 50,
     sweetness: boundedNumber(rawSensory?.sweetness, 0, 100) ?? 50, acidity: boundedNumber(rawSensory?.acidity, 0, 100) ?? 50,
   };
+  const rawExperience = payload.experience as Record<string, unknown> | undefined;
+  const experience = rawExperience ? {
+    maturity: boundedNumber(rawExperience.maturity, 0, 100) ?? 50,
+    structure: boundedNumber(rawExperience.structure, 0, 100) ?? 50,
+    tension: boundedNumber(rawExperience.tension, 0, 100) ?? 50,
+    complexity: boundedNumber(rawExperience.complexity, 0, 100) ?? 50,
+  } satisfies ExperienceProfile : undefined;
   return { wine, place, drunkAt, rating, sensory, aromas: cleanAromas(payload.aromas),
+    experience, wouldRepurchase: typeof payload.wouldRepurchase === 'boolean' ? payload.wouldRepurchase : undefined,
     price: payload.price === null || payload.price === '' || payload.price === undefined ? undefined : boundedNumber(payload.price, 0, 100000),
     notes: typeof payload.notes === 'string' ? payload.notes.trim().slice(0, 3000) : undefined };
 };

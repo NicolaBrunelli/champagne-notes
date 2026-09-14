@@ -21,7 +21,7 @@ const producerStory = maisonStories[maison.name];
 ---
 
 <BaseLayout title={pageTitle} description={`Scheda di ${maison.name}, ${maison.area}.`}>
-  <article class="producer" data-producer-slug={maisonSlug(maison.name)}>
+  <article class="producer" data-producer-slug={maisonSlug(maison.name)} data-producer-name={maison.name}>
     <a class="back" href="/cantine-e-vini"><span aria-hidden="true">←</span> Archivio cantine</a>
 
     <header class="producer-header">
@@ -39,6 +39,7 @@ const producerStory = maisonStories[maison.name];
         ) : (
           <p class="verification">Sito ufficiale in verifica</p>
         )}
+        <aside class="personal-producer" data-personal-producer hidden aria-live="polite"></aside>
       </div>
     </header>
 
@@ -71,11 +72,11 @@ const producerStory = maisonStories[maison.name];
         <p class="intro">Referenze già predisposte per la cantina. Scegline una per iniziare una degustazione senza doverla riscrivere.</p>
         <div class="wine-grid">
           {producerWines.map((wine) => (
-            <article class="catalog-wine">
+            <article class="catalog-wine" data-catalog-wine={wine.name}>
               <p>{wine.family}</p>
               <h3>{wine.name}</h3>
               {wine.note && <p class="catalog-note">{wine.note}</p>}
-              <button type="button" data-wine-select={wine.name}>Degusta questa cuvée <span aria-hidden="true">→</span></button>
+              <div class="catalog-actions"><button type="button" data-wine-select={wine.name}>Degusta questa cuvée <span aria-hidden="true">→</span></button><button type="button" data-wishlist-select={wine.name}>Wishlist</button></div>
             </article>
           ))}
         </div>
@@ -125,24 +126,25 @@ const producerStory = maisonStories[maison.name];
                 {[0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((value) => <option value={value}>{value.toFixed(1)} / 5</option>)}
               </select>
             </label>
+            <fieldset class="repurchase wide"><legend>Lo ricompreresti?</legend><label><input name="wouldRepurchase" type="radio" value="yes" required /> Sì</label><label><input name="wouldRepurchase" type="radio" value="no" /> No</label></fieldset>
             <label class="wide">Foto della bottiglia <span>facoltativa, max 5 MB</span>
               <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" />
             </label>
           </div>
 
           <fieldset class="sensory-ratings">
-            <legend>Profilo al palato</legend>
+            <legend>La tua impressione <span>facoltativa</span></legend>
             <div class="sensory-row">
-              <label for="body">Leggero <input id="body" name="body" type="range" min="0" max="100" value="50" /> Strutturato</label>
+              <label for="maturity">Fresco <input id="maturity" name="maturity" type="range" min="0" max="100" value="50" /> Maturo</label>
             </div>
             <div class="sensory-row">
-              <label for="tannin">Morbido <input id="tannin" name="tannin" type="range" min="0" max="100" value="50" /> Tannico</label>
+              <label for="structure">Leggero <input id="structure" name="structure" type="range" min="0" max="100" value="50" /> Strutturato</label>
             </div>
             <div class="sensory-row">
-              <label for="sweetness">Secco <input id="sweetness" name="sweetness" type="range" min="0" max="100" value="50" /> Dolce</label>
+              <label for="tension">Morbido <input id="tension" name="tension" type="range" min="0" max="100" value="50" /> Teso</label>
             </div>
             <div class="sensory-row">
-              <label for="acidity">Piatto <input id="acidity" name="acidity" type="range" min="0" max="100" value="50" /> Acidulo</label>
+              <label for="complexity">Semplice <input id="complexity" name="complexity" type="range" min="0" max="100" value="50" /> Complesso</label>
             </div>
           </fieldset>
           <fieldset class="aroma-picker">
@@ -183,6 +185,8 @@ const producerStory = maisonStories[maison.name];
     notes?: string;
     aromas?: string[];
     sensory: { body: number; tannin: number; sweetness: number; acidity: number };
+    experience?: { maturity: number; structure: number; tension: number; complexity: number };
+    wouldRepurchase?: boolean;
     photo?: { id: string; mime: string };
     author: { id: string; name: string };
     averageRating: number;
@@ -199,6 +203,8 @@ const producerStory = maisonStories[maison.name];
   const logoutButton = document.querySelector<HTMLButtonElement>('[data-logout]');
   const saveButton = document.querySelector<HTMLButtonElement>('[data-save-tasting]');
   const slug = producer?.dataset.producerSlug;
+  const producerName = producer?.dataset.producerName || '';
+  const personalProducer = document.querySelector<HTMLElement>('[data-personal-producer]');
   const aromaLabels = new Map(Array.from(document.querySelectorAll<HTMLElement>('[data-aroma]')).map((element) => [element.dataset.aroma || '', {
     label: element.dataset.aromaLabel || '', emoji: element.dataset.aromaEmoji || '✦',
   }]));
@@ -265,6 +271,31 @@ const producerStory = maisonStories[maison.name];
     drawTastings(data.tastings);
   };
 
+  const loadPersonalContext = async () => {
+    if (!slug || !personalProducer) return;
+    const response = await fetch('/api/my-champagne', { headers: { Accept: 'application/json' } });
+    if (!response.ok) return;
+    const data = await response.json() as {
+      tastings: { wine: string; rating: number; drunkAt: string; wouldRepurchase?: boolean; producer: { slug: string } }[];
+      cellar: { producer: string; wine: string; quantity: number }[];
+      wishlist: { producer: string; wine: string }[];
+    };
+    const mine = data.tastings.filter((tasting) => tasting.producer.slug === slug);
+    if (mine.length) {
+      const average = mine.reduce((sum, tasting) => sum + tasting.rating, 0) / mine.length;
+      personalProducer.innerHTML = `<p>Il tuo percorso qui</p><strong>Hai degustato ${mine.length} ${mine.length === 1 ? 'Champagne' : 'Champagne'} di questa cantina · voto medio ${average.toFixed(1)} / 5</strong>`;
+      personalProducer.hidden = false;
+    }
+    document.querySelectorAll<HTMLElement>('[data-catalog-wine]').forEach((card) => {
+      const wine = card.dataset.catalogWine || '';
+      const tasting = mine.filter((item) => item.wine.trim().toLowerCase() === wine.trim().toLowerCase()).sort((a, b) => b.drunkAt.localeCompare(a.drunkAt))[0];
+      const bottleCount = data.cellar.filter((item) => item.producer.trim().toLowerCase() === producerName.trim().toLowerCase() && item.wine.trim().toLowerCase() === wine.trim().toLowerCase()).reduce((sum, item) => sum + item.quantity, 0);
+      const wished = data.wishlist.some((item) => item.producer.trim().toLowerCase() === producerName.trim().toLowerCase() && item.wine.trim().toLowerCase() === wine.trim().toLowerCase());
+      const signals = [tasting ? `Il tuo voto ${tasting.rating.toFixed(1)} / 5` : '', tasting?.wouldRepurchase === true ? 'lo ricompreresti' : '', bottleCount ? `${bottleCount} in cantina` : '', wished ? 'nella wishlist' : ''].filter(Boolean);
+      if (signals.length) card.insertAdjacentHTML('beforeend', `<p class="personal-wine">${signals.join(' · ')}</p>`);
+    });
+  };
+
   const startEditing = (id: string) => {
     if (!form) return;
     const tasting = records.get(id);
@@ -276,7 +307,9 @@ const producerStory = maisonStories[maison.name];
     (form.elements.namedItem('price') as HTMLInputElement).value = typeof tasting.price === 'number' ? String(tasting.price) : '';
     (form.elements.namedItem('rating') as HTMLSelectElement).value = String(tasting.rating);
     (form.elements.namedItem('notes') as HTMLTextAreaElement).value = tasting.notes || '';
-    ['body', 'tannin', 'sweetness', 'acidity'].forEach((key) => ((form.elements.namedItem(key) as HTMLInputElement).value = String(tasting.sensory[key as keyof Tasting['sensory']])));
+    const experience = tasting.experience || { maturity: 50, structure: tasting.sensory.body, tension: tasting.sensory.acidity, complexity: 50 };
+    ['maturity', 'structure', 'tension', 'complexity'].forEach((key) => ((form.elements.namedItem(key) as HTMLInputElement).value = String(experience[key as keyof typeof experience])));
+    form.querySelectorAll<HTMLInputElement>('input[name="wouldRepurchase"]').forEach((input) => { input.checked = tasting.wouldRepurchase === (input.value === 'yes'); });
     form.querySelectorAll<HTMLInputElement>('input[name="aromas"]').forEach((input) => { input.checked = Boolean(tasting.aromas?.includes(input.value)); });
     if (saveButton) saveButton.innerHTML = 'Aggiorna la bevuta <span aria-hidden="true">→</span>';
     if (status) status.textContent = 'Stai modificando questa annotazione. Lascia vuota la foto per conservarla.';
@@ -315,6 +348,15 @@ const producerStory = maisonStories[maison.name];
     });
   });
 
+  document.querySelectorAll<HTMLButtonElement>('[data-wishlist-select]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const user = await getCurrentUser();
+      if (!user) { window.location.href = `/accesso?continua=${encodeURIComponent(window.location.pathname)}`; return; }
+      const response = await fetch('/api/wishlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ producer: producerName, producerSlug: slug, wine: button.dataset.wishlistSelect || '' }) });
+      if (response.ok) { button.textContent = 'Nella wishlist'; button.disabled = true; }
+    });
+  });
+
   if (slug && gate && privateArea) {
     void (async () => {
       const user = await getCurrentUser();
@@ -322,6 +364,7 @@ const producerStory = maisonStories[maison.name];
       try {
         currentUserId = user.id;
         await loadTastings();
+        await loadPersonalContext();
         gate.hidden = true;
         privateArea.hidden = false;
         const editId = new URLSearchParams(window.location.search).get('modifica');
@@ -350,7 +393,9 @@ const producerStory = maisonStories[maison.name];
       rating: Number(fields.get('rating')),
       notes: String(fields.get('notes') || ''),
       aromas: fields.getAll('aromas').map(String),
-      sensory: ['body', 'tannin', 'sweetness', 'acidity'].reduce((ratings, key) => ({ ...ratings, [key]: Number(fields.get(key)) }), {}),
+      wouldRepurchase: fields.get('wouldRepurchase') === 'yes',
+      experience: ['maturity', 'structure', 'tension', 'complexity'].reduce((ratings, key) => ({ ...ratings, [key]: Number(fields.get(key)) }), {}),
+      sensory: { body: Number(fields.get('structure')), tannin: 50, sweetness: 50, acidity: Number(fields.get('tension')) },
       photo: photo instanceof File && photo.size ? await readPhoto(photo) : undefined,
     };
     try {
@@ -412,6 +457,10 @@ const producerStory = maisonStories[maison.name];
   .producer-title > p:not(.byline):not(.verification) { max-width: 510px; margin: 0; font-size: 20px; line-height: 1.5; }
   .official-link { display: inline-flex; gap: 11px; margin-top: 28px; padding-bottom: 5px; border-bottom: 1px solid var(--gold); color: var(--terre); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
   .official-link:hover { color: var(--gold); }
+  .personal-producer { margin-top: 23px; padding: 15px 17px; border-left: 2px solid var(--gold); background: rgba(217,212,200,.36); }
+  .personal-producer p, .personal-producer strong { margin: 0; }
+  .personal-producer p, .personal-wine { color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+  .personal-producer strong { display: block; margin-top: 5px; color: var(--ink); font: 500 18px/1.3 var(--serif); }
   .verification { margin: 26px 0 0; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
   .tasting-section { padding: 78px 0 0; }
   .maison-story { padding: 78px 0; border-bottom: 1px solid var(--line); }
@@ -433,7 +482,9 @@ const producerStory = maisonStories[maison.name];
   .catalog-wine > p { margin: 0; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
   .catalog-wine h3 { margin: 15px 0; color: var(--ink); font: 500 28px/.98 var(--display); letter-spacing: -.02em; }
   .catalog-wine .catalog-note { margin: -2px 0 17px; color: var(--sage); font: 400 14px/1.42 var(--serif); letter-spacing: 0; text-transform: none; }
-  .catalog-wine button { align-self: flex-start; margin-top: auto; padding: 0; border: 0; border-bottom: 1px solid var(--gold); color: var(--terre); background: transparent; font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+  .catalog-wine .personal-wine { margin: 16px 0 0; color: var(--sage); line-height: 1.45; }
+  .catalog-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: auto; }
+  .catalog-wine button { align-self: flex-start; padding: 0; border: 0; border-bottom: 1px solid var(--gold); color: var(--terre); background: transparent; font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
   .catalog-wine button:hover { color: var(--gold); }
   .tasting-gate { margin-top: 38px; padding: 25px 28px; border-left: 2px solid var(--gold); background: rgba(217,212,200,.42); }
   .tasting-gate p { margin: 0; font-size: 17px; }
@@ -458,12 +509,16 @@ const producerStory = maisonStories[maison.name];
   .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 25px 0; }
   .form-grid label, .notes { display: grid; gap: 8px; color: var(--ink); font: 700 10px var(--sans); letter-spacing: .09em; text-transform: uppercase; }
   .wide { grid-column: 1 / -1; }
+  .repurchase { display: flex; flex-wrap: wrap; gap: 12px 21px; align-items: center; margin: 0; padding: 0; border: 0; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .09em; text-transform: uppercase; }
+  .repurchase legend { width: 100%; padding: 0 0 3px; }
+  .repurchase label { display: inline-flex; gap: 7px; align-items: center; color: var(--ink); font: 500 15px var(--serif); letter-spacing: 0; text-transform: none; }
   input:not([type='range']), select, textarea { width: 100%; padding: 11px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; outline: none; color: var(--ink); background: transparent; font: 400 17px var(--serif); text-transform: none; }
   input:not([type='range']):focus, select:focus, textarea:focus { border-color: var(--gold); }
   input[type='file'] { font-size: 14px; }
   textarea { resize: vertical; }
   .sensory-ratings { margin: 0; padding: 25px 0; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .sensory-ratings legend { padding: 0; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .11em; text-transform: uppercase; }
+  .sensory-ratings legend span { margin-left: 8px; color: var(--sage); font-size: 9px; letter-spacing: .07em; }
   .sensory-row { margin-top: 16px; }
   .sensory-row label { display: grid; grid-template-columns: 70px minmax(0, 1fr) 70px; align-items: center; gap: 9px; font: 500 14px var(--serif); }
   .sensory-row label::first-line { text-align: left; }
