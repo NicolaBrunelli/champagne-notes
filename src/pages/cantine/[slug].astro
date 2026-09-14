@@ -28,14 +28,14 @@ const producerStory = maisonStories[maison.name];
       <p class="eyebrow">{maison.area}</p>
       <div class:list={['logo-frame', needsDarkLogoFrame(maison.logo, maison.logoTone) ? 'logo-frame--light-on-dark' : undefined, !maison.logo ? 'logo-frame--fallback' : undefined]} data-logo-frame>
         {maison.logo && <img src={maison.logo} alt={`Logo ${maison.name}`} width="258" height="258" referrerpolicy="no-referrer" data-logo-image />}
-        <span class="logo-placeholder" aria-label={`Monogramma ${maison.name}`}>{maison.name.split(/\s+/).map((part) => part[0]).slice(0, 2).join('')}</span>
+        <span class:list={['logo-placeholder', maison.logoText ? 'logo-placeholder--wordmark' : undefined]} aria-label={`Monogramma ${maison.name}`}>{maison.logoText ?? maison.name.split(/\s+/).map((part) => part[0]).slice(0, 2).join('')}</span>
       </div>
       <div class="producer-title">
         <p class="byline">Cantine e vini · Brunelli Nicola</p>
         <h1>{maison.name}</h1>
         <p>Una scheda in crescita: informazioni essenziali della cantina e le degustazioni raccolte dalla comunità registrata.</p>
         {maison.website ? (
-          <a class="official-link" href={maison.website} target="_blank" rel="noopener noreferrer">Visita il sito ufficiale <span aria-hidden="true">↗</span></a>
+          <a class="official-link" href={maison.website} target="_blank" rel="noopener noreferrer">{maison.websiteLabel ?? 'Visita il sito ufficiale'} <span aria-hidden="true">↗</span></a>
         ) : (
           <p class="verification">Sito ufficiale in verifica</p>
         )}
@@ -404,6 +404,7 @@ const producerStory = maisonStories[maison.name];
   .logo-frame--light-on-dark { background: var(--ink); }
   .logo-frame--light-on-dark img { mix-blend-mode: normal; filter: none; }
   .logo-placeholder { display: grid; place-items: center; width: 100%; height: 100%; color: var(--gold); border: 1px solid var(--line); border-radius: 50%; font: 500 58px/1 var(--display); }
+  .logo-placeholder--wordmark { padding: 18px; border-radius: 0; font-size: clamp(25px, 2.7vw, 37px); line-height: .93; letter-spacing: -.04em; text-align: center; }
   .logo-frame:not(.logo-frame--fallback) .logo-placeholder { display: none; }
   .logo-frame--fallback img { display: none; }
   .byline { color: var(--sage); margin-bottom: 23px; }
@@ -493,6 +494,7 @@ const producerStory = maisonStories[maison.name];
     .producer { width: min(100% - 32px, 850px); }
     .producer-header { grid-template-columns: 1fr; gap: 26px; padding: 50px 0 60px; }
     .logo-frame { width: min(180px, 55vw); }
+    .logo-placeholder--wordmark { font-size: 29px; }
     .maison-story { padding: 58px 0; }
     .story-layout { grid-template-columns: 1fr; gap: 24px; }
     .story-text p { font-size: 18px; }

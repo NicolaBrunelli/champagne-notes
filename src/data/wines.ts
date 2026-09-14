@@ -355,6 +355,30 @@ export const catalogWines: CatalogWine[] = [
   { producer: 'G.H. Mumm', name: 'RSRV Blanc de Noirs', family: 'Blanc de Noirs' },
   { producer: 'G.H. Mumm', name: 'RSRV Cuvée Lalou', family: 'Prestige' },
   { producer: 'G.H. Mumm', name: 'RSRV 4.5', family: 'Prestige' },
+
+  { producer: 'Dom Pérignon', name: 'Vintage', family: 'Prestige' },
+  { producer: 'Dom Pérignon', name: 'Rosé Vintage', family: 'Rosé' },
+  { producer: 'Dom Pérignon', name: 'P2', family: 'Prestige' },
+  { producer: 'Dom Pérignon', name: 'P3', family: 'Prestige' },
+
+  { producer: 'Franck Pascal', name: 'Fluence Brut Nature', family: 'Bio' },
+  { producer: 'Franck Pascal', name: 'Reliance Brut Nature', family: 'Bio' },
+  { producer: 'Franck Pascal', name: 'Tolérance Rosé', family: 'Rosé' },
+  { producer: 'Franck Pascal', name: 'Harmonie', family: 'Millesimato' },
+  { producer: 'Franck Pascal', name: 'Quinte-Essence', family: 'Millesimato' },
+  { producer: 'Franck Pascal', name: 'Pacifiance', family: 'Bio' },
+  { producer: 'Franck Pascal', name: 'Sérénité', family: 'Millesimato' },
+  { producer: 'Franck Pascal', name: 'Confiance Blanc', family: 'Stile libero' },
+
+  { producer: 'Aurore Casanova', name: 'Aure', family: 'Firma della maison' },
+  { producer: 'Aurore Casanova', name: 'Rosé', family: 'Rosé' },
+  { producer: 'Aurore Casanova', name: 'Les Petites Vignes Pinot Noir', family: 'Parcella' },
+  { producer: 'Aurore Casanova', name: 'Les Petites Vignes Chardonnay', family: 'Parcella' },
+  { producer: 'Aurore Casanova', name: 'Malo', family: 'Parcella' },
+
+  { producer: 'Élise Bougy', name: 'Le Mont-Chainqueux', family: 'Blanc de Noirs' },
+  { producer: 'Élise Bougy', name: 'Les Coullemets', family: 'Blanc de Blancs' },
+  { producer: 'Élise Bougy', name: 'Chétillon de Haut', family: 'Blanc de Blancs' },
 ];
 
 const editorialNotes: Record<string, string> = {
@@ -385,6 +409,14 @@ const editorialNotes: Record<string, string> = {
   'Telmont|Réserve de la Terre': 'Una cuvée pensata come manifesto dell’impegno ambientale della Maison.',
   'Cattier|Clos du Moulin': 'Un clos della Montagne de Reims custodito dalla famiglia Cattier da più generazioni.',
   'Nicolas Feuillatte|Palmes d’Or': 'La cuvée di prestigio prende il nome dal dettaglio dorato che firma la sua veste.',
+  'Dom Pérignon|P2': 'La seconda Plénitude: lo stesso millesimo prosegue il suo percorso di maturazione sui lieviti.',
+  'Dom Pérignon|P3': 'La terza Plénitude è la più rara fase di evoluzione del millesimo nelle cave della Maison.',
+  'Franck Pascal|Fluence Brut Nature': 'Una delle cuvée che introduce al linguaggio biodinamico del domaine.',
+  'Franck Pascal|Quinte-Essence': "Il nome concentra l'idea di una ricerca di profondità e di tempo.",
+  'Aurore Casanova|Aure': "La cuvée che porta nel nome l'identità della fondatrice.",
+  'Aurore Casanova|Les Petites Vignes Pinot Noir': 'Una lettura parcellare del Grand Cru di Puisieulx.',
+  'Élise Bougy|Le Mont-Chainqueux': "Parcella familiare di Les Mesneux: il nome è la sua precisa carta d'identità.",
+  'Élise Bougy|Les Coullemets': 'Blanc de Blancs da Le Mesnil-sur-Oger, nel cuore gessoso della Côte des Blancs.',
 };
 
 export const winesForMaison = (producer: string) => catalogWines

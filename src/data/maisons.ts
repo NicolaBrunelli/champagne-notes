@@ -4,8 +4,12 @@ export interface Maison {
   name: string;
   area: MaisonArea;
   logo?: string;
+  /** Wordmark editoriale usato quando l'asset del produttore non è tecnicamente affidabile. */
+  logoText?: string;
   /** Added as each official source is verified. Never infer a website URL. */
   website?: string;
+  /** Use a precise label when the producer has no working standalone website. */
+  websiteLabel?: string;
   /** Official white logo supplied by the producer, shown on an ink background. */
   logoTone?: 'light-on-dark';
 }
@@ -1690,5 +1694,32 @@ export const maisons: Maison[] = [
     "area": "Côte des Blancs",
     "website": "https://www.diebolt-vallois.com/",
     "logo": "https://www.diebolt-vallois.com/images/logo.svg"
+  },
+  {
+    "name": "Dom Pérignon",
+    "area": "Vallée de la Marne",
+    "website": "https://www.domperignon.com/",
+    "logo": "https://www.domperignon.com/_next/static/media/logo-white.c10ddeae.svg",
+    "logoTone": "light-on-dark"
+  },
+  {
+    "name": "Franck Pascal",
+    "area": "Vallée de la Marne",
+    "website": "https://www.deschampagnespourlavie.com/",
+    "logo": "https://www.deschampagnespourlavie.com/wp-content/uploads/2020/04/Vector-Smart-Object-300x86.png"
+  },
+  {
+    "name": "Aurore Casanova",
+    "area": "Montagne de Reims",
+    "website": "https://www.vigneronsmardeuil.fr/les-authentiques/champagne-aurore-casanova",
+    "websiteLabel": "Apri la scheda della cantina",
+    "logoText": "Aurore Casanova"
+  },
+  {
+    "name": "Élise Bougy",
+    "area": "Montagne de Reims",
+    "website": "https://www.instagram.com/elisebougy/",
+    "websiteLabel": "Visita il profilo ufficiale",
+    "logo": "https://champavin.com/images/producers/logos/logo_elise-bougy.webp"
   }
 ];

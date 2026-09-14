@@ -182,4 +182,20 @@ export const maisonStories: Record<string, MaisonStory> = {
     history: ["Vilmart & Cie è un domaine familiare fondato a Rilly-la-Montagne nel 1890. Il suo cuore è la Montagne de Reims, con vigneti in villaggi selezionati.", "La famiglia ha costruito una reputazione discreta e solida, molto amata dagli appassionati per la precisione delle proprie cuvée."],
     curiosities: ["Rilly-la-Montagne è un Premier Cru della Montagne de Reims.", "Coeur de Cuvée è una delle etichette emblematiche del domaine."],
   },
+  "Dom Pérignon": {
+    history: ["Dom Pérignon prende il nome dal monaco benedettino Pierre Pérignon, cellerario dell'abbazia di Hautvillers dal 1668 al 1715. La cuvée contemporanea ne raccoglie l'ambizione: inseguire l'armonia soltanto quando una vendemmia la rende possibile.", "La Maison non produce una cuvée sans année: ogni uscita è un millesimo e, se la vendemmia non risponde ai suoi criteri, semplicemente non viene dichiarata."],
+    curiosities: ["Hautvillers, il villaggio dell'abbazia, si trova sui versanti settentrionali della Vallée de la Marne.", "Le Plénitudes raccontano diversi momenti di maturazione di uno stesso millesimo."],
+  },
+  "Franck Pascal": {
+    history: ["Franck Pascal guida con Isabelle un domaine familiare di Baslieux-sous-Châtillon, sulla riva destra della Marna. La famiglia coltiva qui da generazioni e il progetto porta il nome evocativo Des Champagnes pour la Vie.", "Dal 1994 il domaine ha progressivamente scelto agricoltura biologica e biodinamica, ponendo il rapporto con il suolo e con il vivente al centro del lavoro."],
+    curiosities: ["Il Meunier è il vitigno-simbolo del territorio di Baslieux-sous-Châtillon.", "Fluence, Reliance e Pacifiance sono nomi che riflettono il linguaggio umano e naturale della maison."],
+  },
+  "Aurore Casanova": {
+    history: ["Aurore Casanova ha creato il domaine con Jean-Baptiste Robinet a partire dalle vigne familiari della Montagne de Reims e da parcelle nelle altre zone della Champagne. La storia nasce dall'incontro fra una ex danzatrice internazionale e il lavoro quotidiano in vigna.", "Il progetto, con sede a Mardeuil, privilegia l'osservazione delle parcelle, il rispetto dell'ambiente e una lettura molto personale dei cru."],
+    curiosities: ["Puisieulx, da cui provengono alcune cuvée, è un Grand Cru della Montagne de Reims.", "Il cuore nel segno grafico della Maison rappresenta la cura dedicata alla terra e alle vigne."],
+  },
+  "Élise Bougy": {
+    history: ["Élise Bougy ha ripreso il piccolo domaine di famiglia a Les Mesneux nel 2016, dopo gli studi di enologia. Il suo lavoro collega la Montagne de Reims con alcune parcelle di Le Mesnil-sur-Oger, nella Côte des Blancs.", "La vigna è il punto di partenza di una produzione artigianale, biologica e sempre più orientata a restituire la precisione di ogni singolo lieu-dit."],
+    curiosities: ["Le Mont-Chainqueux è una parcella Premier Cru di Les Mesneux, piantata dai nonni di Élise nel 1965.", "Les Coullemets e Chétillon de Haut raccontano invece due luoghi di Le Mesnil-sur-Oger."],
+  },
 };
