@@ -40,7 +40,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <input name="password" type="password" autocomplete="new-password" minlength="8" required />
         </label>
         <p data-code-status aria-live="polite"></p>
-        <button type="submit">Crea il tuo account <span aria-hidden="true">→</span></button>
+        <button type="submit">Crea il tuo passaporto <span aria-hidden="true">→</span></button>
         <button class="text-button" type="button" data-login-trigger>Torna all’accesso</button>
       </form>
     </div>
@@ -70,7 +70,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
     <div class="access-panel" data-reset-panel hidden>
       <form data-reset-form>
-        <p>Scegli una nuova password per il tuo account.</p>
+        <p>Scegli una nuova password per il tuo passaporto.</p>
         <label>Nuova password
           <input name="password" type="password" autocomplete="new-password" minlength="8" required />
         </label>
@@ -147,7 +147,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   codeForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!codeStatus) return;
-    codeStatus.textContent = 'Creazione dell’account in corso…';
+    codeStatus.textContent = 'Creazione del passaporto in corso…';
     try {
       const fields = new FormData(codeForm);
       const email = String(fields.get('email'));
@@ -157,11 +157,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         body: JSON.stringify({ code: fields.get('code'), handle: fields.get('handle'), email, password }),
       });
       const result = await response.json() as { error?: string };
-      if (!response.ok) throw new Error(result.error || 'Non è stato possibile creare l’account.');
+      if (!response.ok) throw new Error(result.error || 'Non è stato possibile creare il passaporto.');
       await login(email, password);
       goToArchive();
     } catch (error) {
-      codeStatus.textContent = error instanceof Error ? error.message : 'Non è stato possibile creare l’account.';
+      codeStatus.textContent = error instanceof Error ? error.message : 'Non è stato possibile creare il passaporto.';
     }
   });
 

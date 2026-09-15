@@ -49,7 +49,7 @@ const isCurrent = (href: string) => href === '/' ? path === '/' : path.startsWit
             ))}
           </ul>
         </nav>
-        <a class="account-link" href="/accesso" data-account-link>Accedi al tuo account <span aria-hidden="true">↗</span></a>
+        <a class="account-link" href="/accesso" data-account-link>Accedi al tuo passaporto <span aria-hidden="true">↗</span></a>
       </div>
     </header>
     <main><slot /></main>
@@ -76,7 +76,7 @@ const isCurrent = (href: string) => href === '/' ? path === '/' : path.startsWit
         if (!accountLink || !user) return;
         if (friendsNavigation) friendsNavigation.hidden = false;
         accountLink.href = '/account';
-        accountLink.innerHTML = 'Il tuo account <span aria-hidden="true">↗</span>';
+        accountLink.innerHTML = 'Il tuo passaporto <span aria-hidden="true">↗</span>';
       })().catch(() => undefined);
     </script>
   </body>
