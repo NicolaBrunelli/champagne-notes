@@ -4,33 +4,68 @@ import { maisons } from '../data/maisons';
 ---
 
 <BaseLayout title="My Champagne — Lo Champagne, con calma">
-  <section class="account" data-account-page>
-    <header class="account-hero">
+  <section class="passport-shell" data-account-page data-passport-shell>
+    <header class="passport-intro">
       <p class="eyebrow">My Champagne</p>
       <h1>Il tuo viaggio<br /><em>nello Champagne.</em></h1>
-      <p class="intro">Un atlante personale di bottiglie, luoghi e scoperte. Più annoti, più questa pagina prende la forma del tuo gusto.</p>
-      <nav class="account-nav" aria-label="Sezioni My Champagne">
-        <a href="#overview">Overview</a><a href="#degustazioni">Degustazioni</a><a href="#cantina">Cantina</a><a href="#wishlist">Wishlist</a><a href="#gusto">Il mio gusto</a>
-      </nav>
+      <p>Il tuo taccuino diventa un passaporto: bottiglie, luoghi e scoperte da sfogliare con calma.</p>
     </header>
 
-    <section id="overview" class="overview" aria-labelledby="overview-title">
+    <div class="passport-tabs" aria-label="Indice del Champagne Passport" role="navigation">
+      <button type="button" data-passport-go="1"><b>01</b> Intro</button>
+      <button type="button" data-passport-go="2"><b>02</b> Overview</button>
+      <button type="button" data-passport-go="3"><b>03</b> Degustazioni</button>
+      <button type="button" data-passport-go="4"><b>04</b> Cantina</button>
+      <button type="button" data-passport-go="5"><b>05</b> Wishlist</button>
+      <button type="button" data-passport-go="6"><b>06</b> Il mio gusto</button>
+      <button type="button" data-passport-go="7"><b>07</b> Profilo</button>
+    </div>
+
+    <div class="passport-stage" data-passport-stage>
+      <div class="passport-book" data-passport-book>
+        <section class="passport-cover" data-passport-page="0" aria-label="Copertina Champagne Passport">
+          <div class="cover-grain" aria-hidden="true"></div>
+          <div class="cover-border" aria-hidden="true"></div>
+          <p>Brunelli Nicola</p>
+          <div class="cover-mark" aria-hidden="true"><span>C</span><i></i><i></i><i></i></div>
+          <h2>Champagne<br /><em>Passport</em></h2>
+          <small>Le voyage en Champagne</small>
+          <button type="button" data-passport-open>Apri il passaporto <span aria-hidden="true">→</span></button>
+        </section>
+
+        <section class="passport-page identity-page" data-passport-page="1" id="intro" aria-labelledby="passport-identity-title" hidden>
+          <div class="passport-page-head"><span>01 — Identità</span><span data-passport-number>CH-000000</span></div>
+          <div class="identity-grid">
+            <span class="passport-avatar"><img data-avatar-image alt="Foto profilo" hidden /><b data-avatar-fallback>?</b></span>
+            <div><p class="passport-label">Champagne Passport</p><h2 id="passport-identity-title" data-passport-handle>Il tuo nome</h2><em data-passport-signature>Il tuo viaggio</em></div>
+          </div>
+          <dl class="identity-data"><div><dt>Membro dal</dt><dd data-passport-since>—</dd></div><div><dt>Passaporto</dt><dd data-passport-number>CH-000000</dd></div><div><dt>Destinazione</dt><dd>Champagne, France</dd></div></dl>
+          <div class="passport-watermark" aria-hidden="true">CHAMPAGNE · CRAIE · VIGNE · MÉMOIRE</div>
+          <div class="passport-page-foot"><span>My Champagne Passport</span><b>01</b></div>
+        </section>
+
+        <section id="overview" class="passport-page overview" data-passport-page="2" aria-labelledby="overview-title" hidden>
+          <div class="passport-page-head"><span>02 — Overview</span><span>Journal de bord</span></div>
       <div class="section-heading"><p>01 — Overview</p><h2 id="overview-title">Il tuo atlante.</h2></div>
       <div class="stats" data-overview-stats><p class="loading">Sto aprendo il tuo taccuino…</p></div>
       <section class="discover" aria-labelledby="discover-title">
         <p class="label">Continua a scoprire</p><h3 id="discover-title">Il prossimo capitolo.</h3>
         <div data-suggestions><p class="empty">Registra una prima bottiglia: da lì potremo suggerire un prossimo confronto con un perché chiaro.</p></div>
       </section>
-    </section>
+          <div class="passport-page-foot"><span>Champagne Passport</span><b>02</b></div>
+        </section>
 
-    <section id="degustazioni" class="account-section" aria-labelledby="tastings-title">
+        <section id="degustazioni" class="passport-page account-section" data-passport-page="3" aria-labelledby="tastings-title" hidden>
+          <div class="passport-page-head"><span>03 — Degustazioni</span><span>Entrées</span></div>
       <div class="section-heading"><p>02 — Degustazioni</p><h2 id="tastings-title">Il taccuino.</h2></div>
       <p class="intro">Le bottiglie bevute restano una storia separata dal semplice possesso. Ogni pagina di cantina permette di aggiungerne una nuova.</p>
       <p class="status" data-tasting-status aria-live="polite"></p>
       <div data-my-tastings aria-live="polite"><p class="loading">Caricamento delle degustazioni…</p></div>
-    </section>
+          <div class="passport-page-foot"><span>Champagne Passport</span><b>03</b></div>
+        </section>
 
-    <section id="cantina" class="account-section" aria-labelledby="cellar-title">
+        <section id="cantina" class="passport-page account-section" data-passport-page="4" aria-labelledby="cellar-title" hidden>
+          <div class="passport-page-head"><span>04 — Cantina</span><span>Registre de cave</span></div>
       <div class="section-heading"><p>03 — Cantina</p><h2 id="cellar-title">In attesa.</h2></div>
       <p class="intro">Le bottiglie che possiedi, senza confonderle con ciò che hai già degustato.</p>
       <form class="record-form" data-cellar-form>
@@ -41,9 +76,11 @@ import { maisons } from '../data/maisons';
         <button type="submit">Aggiungi in cantina <span aria-hidden="true">→</span></button><p class="status" data-cellar-status aria-live="polite"></p>
       </form>
       <div class="collection" data-cellar-collection aria-live="polite"><p class="loading">Caricamento della cantina…</p></div>
-    </section>
+          <div class="passport-page-foot"><span>Champagne Passport</span><b>04</b></div>
+        </section>
 
-    <section id="wishlist" class="account-section" aria-labelledby="wishlist-title">
+        <section id="wishlist" class="passport-page account-section" data-passport-page="5" aria-labelledby="wishlist-title" hidden>
+          <div class="passport-page-head"><span>05 — Wishlist</span><span>Prochaines découvertes</span></div>
       <div class="section-heading"><p>04 — Wishlist</p><h2 id="wishlist-title">Da incontrare.</h2></div>
       <p class="intro">Una lista essenziale di Champagne che vuoi provare o acquistare. Puoi aggiungere una cuvée dalle pagine dei produttori oppure annotarla qui.</p>
       <form class="record-form" data-wishlist-form>
@@ -53,19 +90,27 @@ import { maisons } from '../data/maisons';
       </form>
       <datalist id="maison-options">{maisons.map((maison) => <option value={maison.name} />)}</datalist>
       <div class="collection wishlist-collection" data-wishlist-collection aria-live="polite"><p class="loading">Caricamento della wishlist…</p></div>
-    </section>
+          <div class="passport-page-foot"><span>Champagne Passport</span><b>05</b></div>
+        </section>
 
-    <section id="gusto" class="account-section taste" aria-labelledby="taste-title">
+        <section id="gusto" class="passport-page account-section taste" data-passport-page="6" aria-labelledby="taste-title" hidden>
+          <div class="passport-page-head"><span>06 — Il mio gusto</span><span>Profil de goût</span></div>
       <div class="section-heading"><p>05 — Il mio gusto</p><h2 id="taste-title">La tua impronta.</h2></div>
       <div data-taste-profile><p class="loading">Sto leggendo le tracce del tuo percorso…</p></div>
-    </section>
+          <div class="passport-page-foot"><span>Champagne Passport</span><b>06</b></div>
+        </section>
 
-    <aside class="account-panel" aria-label="Impostazioni account">
+        <aside class="passport-page account-panel" data-passport-page="7" id="profilo" aria-label="Profilo personale" hidden>
+          <div class="passport-page-head"><span>07 — Profilo</span><span>Identité</span></div>
       <p class="label">Il tuo profilo</p>
-      <div class="avatar-editor"><span class="account-avatar"><img data-avatar-image alt="Foto profilo" hidden /><b data-avatar-fallback>?</b></span><label>Foto profilo <input data-avatar-file type="file" accept="image/jpeg,image/png,image/webp" /><span>JPG, PNG o WebP · max 2 MB</span></label><button type="button" class="outline-button" data-avatar-save>Salva foto</button></div>
+      <div class="avatar-editor"><span class="account-avatar"><img data-profile-avatar-image alt="Foto profilo" hidden /><b data-profile-avatar-fallback>?</b></span><label>Foto profilo <input data-avatar-file type="file" accept="image/jpeg,image/png,image/webp" /><span>JPG, PNG o WebP · max 2 MB</span></label><button type="button" class="outline-button" data-avatar-save>Salva foto</button></div>
       <p class="name" data-user-name>Caricamento profilo…</p><p class="email" data-user-email></p><p class="status" data-avatar-status aria-live="polite"></p>
       <a class="admin-link" href="/admin" data-admin-link hidden>Gestisci inviti <span aria-hidden="true">→</span></a><button type="button" class="logout" data-logout>Esci dal tuo account</button>
-    </aside>
+          <div class="passport-page-foot"><span>Champagne Passport</span><b>07</b></div>
+        </aside>
+      </div>
+      <div class="passport-controls" aria-label="Sfoglia il passaporto"><button type="button" data-passport-prev aria-label="Pagina precedente">←</button><span data-passport-position>Copertina</span><button type="button" data-passport-next aria-label="Pagina successiva">→</button></div>
+    </div>
   </section>
 </BaseLayout>
 
@@ -82,6 +127,67 @@ import { maisons } from '../data/maisons';
   const tastingList = qs<HTMLElement>('[data-my-tastings]'); const cellarList = qs<HTMLElement>('[data-cellar-collection]'); const wishlistList = qs<HTMLElement>('[data-wishlist-collection]');
   const overview = qs<HTMLElement>('[data-overview-stats]'); const profileBox = qs<HTMLElement>('[data-taste-profile]'); const suggestions = qs<HTMLElement>('[data-suggestions]');
   const tastingStatus = qs<HTMLElement>('[data-tasting-status]'); const cellarStatus = qs<HTMLElement>('[data-cellar-status]'); const wishlistStatus = qs<HTMLElement>('[data-wishlist-status]');
+  const passportPages = Array.from(document.querySelectorAll<HTMLElement>('[data-passport-page]'));
+  const passportTabs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-passport-go]'));
+  const passportPosition = qs<HTMLElement>('[data-passport-position]');
+  const passportStage = qs<HTMLElement>('[data-passport-stage]');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let passportPage = 0;
+  let lastPassportTurn = 0;
+  const pageNames = ['Copertina', 'Intro', 'Overview', 'Degustazioni', 'Cantina', 'Wishlist', 'Il mio gusto', 'Profilo'];
+  const mobilePassport = () => window.matchMedia('(max-width: 760px)').matches;
+  const clampPage = (value: number) => Math.max(0, Math.min(passportPages.length - 1, value));
+  const renderPassport = (next: number, direction = 1, animate = true) => {
+    const previous = passportPage;
+    passportPage = clampPage(next);
+    const visible = new Set<number>(passportPage === 0 || mobilePassport() ? [passportPage] : [passportPage, passportPage + 1].filter((index) => index < passportPages.length));
+    passportPages.forEach((page, index) => {
+      const shouldShow = visible.has(index);
+      page.hidden = !shouldShow;
+      page.setAttribute('aria-hidden', String(!shouldShow));
+      page.classList.remove('is-turning-forward', 'is-turning-back');
+      if (shouldShow && animate && previous !== passportPage && !prefersReducedMotion.matches) {
+        page.classList.add(direction > 0 ? 'is-turning-forward' : 'is-turning-back');
+        window.setTimeout(() => page.classList.remove('is-turning-forward', 'is-turning-back'), 720);
+      }
+    });
+    passportTabs.forEach((tab) => tab.setAttribute('aria-current', String(Number(tab.dataset.passportGo) === passportPage)));
+    if (passportPosition) passportPosition.textContent = passportPage === 0 ? 'Copertina' : mobilePassport() ? `${String(passportPage).padStart(2, '0')} · ${pageNames[passportPage]}` : `${String(passportPage).padStart(2, '0')}–${String(Math.min(passportPage + 1, 7)).padStart(2, '0')} · ${pageNames[passportPage]}`;
+  };
+  const turnPassport = (direction: number) => {
+    const step = mobilePassport() ? 1 : 2;
+    if (passportPage === 0 && direction < 0) return;
+    renderPassport(passportPage === 0 ? 1 : passportPage + (direction * step), direction);
+  };
+  const activatePassport = () => {
+    const alreadyOpened = sessionStorage.getItem('champagne-passport-opened') === 'true';
+    renderPassport(alreadyOpened ? 1 : 0, 1, false);
+    qs<HTMLButtonElement>('[data-passport-open]')?.addEventListener('click', () => { sessionStorage.setItem('champagne-passport-opened', 'true'); renderPassport(1); });
+    qs<HTMLButtonElement>('[data-passport-prev]')?.addEventListener('click', () => turnPassport(-1));
+    qs<HTMLButtonElement>('[data-passport-next]')?.addEventListener('click', () => turnPassport(1));
+    passportTabs.forEach((tab) => tab.addEventListener('click', () => renderPassport(Number(tab.dataset.passportGo))));
+    window.addEventListener('resize', () => renderPassport(passportPage, 1, false));
+    document.addEventListener('keydown', (event) => {
+      if ((event.target as HTMLElement | null)?.matches('input, textarea, select')) return;
+      if (event.key === 'ArrowRight') turnPassport(1);
+      if (event.key === 'ArrowLeft') turnPassport(-1);
+    });
+    passportStage?.addEventListener('wheel', (event) => {
+      if (mobilePassport() || Math.abs(event.deltaY) < 18 || Date.now() - lastPassportTurn < 620) return;
+      const page = passportPages[passportPage];
+      const scrolling = page?.scrollHeight > page?.clientHeight + 4;
+      const atTop = !page || page.scrollTop <= 1;
+      const atBottom = !page || page.scrollTop + page.clientHeight >= page.scrollHeight - 1;
+      if (scrolling && !((event.deltaY > 0 && atBottom) || (event.deltaY < 0 && atTop))) return;
+      if (passportPage === 0 || (event.deltaY > 0 && passportPage < passportPages.length - 1) || (event.deltaY < 0 && passportPage > 0)) {
+        event.preventDefault(); lastPassportTurn = Date.now(); turnPassport(event.deltaY > 0 ? 1 : -1);
+      }
+    }, { passive: false });
+    let touchStart: { x: number; y: number } | undefined;
+    passportStage?.addEventListener('touchstart', (event) => { const touch = event.changedTouches[0]; touchStart = { x: touch.clientX, y: touch.clientY }; }, { passive: true });
+    passportStage?.addEventListener('touchend', (event) => { const touch = event.changedTouches[0]; if (!touchStart) return; const x = touch.clientX - touchStart.x; const y = touch.clientY - touchStart.y; touchStart = undefined; if (Math.abs(x) > 56 && Math.abs(x) > Math.abs(y) * 1.4) turnPassport(x < 0 ? 1 : -1); }, { passive: true });
+  };
+  activatePassport();
   const escapeHTML = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] || character));
   const formatDate = (value: string) => new Intl.DateTimeFormat('it-IT', { dateStyle: 'long' }).format(new Date(`${value}T12:00:00`));
   const aromaById = new Map<string, { label: string; emoji: string }>(aromas.map(([id, label, emoji]) => [id, { label, emoji }]));
@@ -106,14 +212,14 @@ import { maisons } from '../data/maisons';
   };
   const load = async () => { const response = await fetch('/api/my-champagne', { headers: { Accept: 'application/json' } }); if (!response.ok) throw new Error(); draw(await response.json() as Atlas); };
   const readPhoto = (file: File) => new Promise<string>((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(String(reader.result)); reader.onerror = () => reject(new Error()); reader.readAsDataURL(file); });
-  void (async () => { const user = await getCurrentUser(); if (!user) { window.location.href = '/accesso'; return; } const handle = typeof user.userMetadata?.handle === 'string' ? user.userMetadata.handle : user.name || 'Membro'; const name = qs<HTMLElement>('[data-user-name]'); const email = qs<HTMLElement>('[data-user-email]'); const fallback = qs<HTMLElement>('[data-avatar-fallback]'); const avatar = qs<HTMLImageElement>('[data-avatar-image]'); if (name) name.textContent = handle; if (email) email.textContent = user.email || ''; if (fallback) fallback.textContent = handle.slice(0, 1).toUpperCase(); if (avatar) { avatar.src = '/api/profilo/avatar'; avatar.onload = () => { avatar.hidden = false; if (fallback) fallback.hidden = true; }; } const admin = qs<HTMLElement>('[data-admin-link]'); if (admin && user.roles?.includes('admin')) admin.hidden = false; await load(); })().catch(() => { if (overview) overview.innerHTML = '<p class="empty">Non è stato possibile aprire il tuo atlante. Riprova tra poco.</p>'; });
+  void (async () => { const user = await getCurrentUser(); if (!user) { window.location.href = '/accesso'; return; } const handle = typeof user.userMetadata?.handle === 'string' ? user.userMetadata.handle : user.name || 'Membro'; const name = qs<HTMLElement>('[data-user-name]'); const email = qs<HTMLElement>('[data-user-email]'); const fallback = Array.from(document.querySelectorAll<HTMLElement>('[data-avatar-fallback], [data-profile-avatar-fallback]')); const avatar = Array.from(document.querySelectorAll<HTMLImageElement>('[data-avatar-image], [data-profile-avatar-image]')); const signature = qs<HTMLElement>('[data-passport-signature]'); const passportHandle = qs<HTMLElement>('[data-passport-handle]'); const since = qs<HTMLElement>('[data-passport-since]'); const emailSeed = user.email || handle; const passportCode = `CH-${String(Math.abs(Array.from(emailSeed).reduce((total, character) => ((total << 5) - total) + character.charCodeAt(0), 0)) % 1000000).padStart(6, '0')}`; const createdAt = (user as { createdAt?: string }).createdAt; const memberSince = createdAt && !Number.isNaN(new Date(createdAt).getTime()) ? String(new Date(createdAt).getFullYear()) : new Date().getFullYear().toString(); if (name) name.textContent = handle; if (email) email.textContent = user.email || ''; if (passportHandle) passportHandle.textContent = handle; if (signature) signature.textContent = handle; if (since) since.textContent = memberSince; document.querySelectorAll<HTMLElement>('[data-passport-number]').forEach((element) => element.textContent = passportCode); fallback.forEach((element) => element.textContent = handle.slice(0, 1).toUpperCase()); avatar.forEach((image) => { image.src = '/api/profilo/avatar'; image.onload = () => { image.hidden = false; fallback.forEach((element) => element.hidden = true); }; }); const admin = qs<HTMLElement>('[data-admin-link]'); if (admin && user.roles?.includes('admin')) admin.hidden = false; await load(); })().catch(() => { if (overview) overview.innerHTML = '<p class="empty">Non è stato possibile aprire il tuo atlante. Riprova tra poco.</p>'; });
   qs<HTMLButtonElement>('[data-logout]')?.addEventListener('click', async () => { await logout(); window.location.href = '/'; });
   qs<HTMLFormElement>('[data-cellar-form]')?.addEventListener('submit', async (event) => { event.preventDefault(); const form = event.currentTarget as HTMLFormElement; if (cellarStatus) cellarStatus.textContent = 'Aggiornamento in corso…'; try { const values = new FormData(form); const response = await fetch('/api/cantina-personale', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ producer: values.get('producer'), wine: values.get('wine'), vintage: values.get('vintage'), quantity: Number(values.get('quantity')) }) }); if (!response.ok) throw new Error(); form.reset(); if (cellarStatus) cellarStatus.textContent = 'Bottiglia aggiunta alla cantina.'; await load(); } catch { if (cellarStatus) cellarStatus.textContent = 'Non è stato possibile aggiornare la cantina.'; } });
   qs<HTMLFormElement>('[data-wishlist-form]')?.addEventListener('submit', async (event) => { event.preventDefault(); const form = event.currentTarget as HTMLFormElement; if (wishlistStatus) wishlistStatus.textContent = 'Aggiornamento in corso…'; try { const values = new FormData(form); const response = await fetch('/api/wishlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ producer: values.get('producer'), wine: values.get('wine') }) }); if (!response.ok) throw new Error(); form.reset(); if (wishlistStatus) wishlistStatus.textContent = 'Champagne aggiunto alla wishlist.'; await load(); } catch { if (wishlistStatus) wishlistStatus.textContent = 'Non è stato possibile aggiornare la wishlist.'; } });
   cellarList?.addEventListener('click', async (event) => { const id = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-remove-cellar]')?.dataset.removeCellar; if (!id || !confirm('Rimuovere questa bottiglia dalla cantina?')) return; await fetch(`/api/cantina-personale?id=${encodeURIComponent(id)}`, { method: 'DELETE' }); await load(); });
   wishlistList?.addEventListener('click', async (event) => { const id = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-remove-wish]')?.dataset.removeWish; if (!id || !confirm('Rimuovere questo Champagne dalla wishlist?')) return; await fetch(`/api/wishlist?id=${encodeURIComponent(id)}`, { method: 'DELETE' }); await load(); });
   tastingList?.addEventListener('click', async (event) => { const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-delete-tasting]'); const id = button?.dataset.deleteTasting; const producer = button?.dataset.producer; if (!button || !id || !producer || !confirm(`Eliminare “${button.dataset.wine || 'questa bevuta'}” dal taccuino?`)) return; if (tastingStatus) tastingStatus.textContent = 'Eliminazione in corso…'; try { const response = await fetch(`/api/cantine/${encodeURIComponent(producer)}/bevute?id=${encodeURIComponent(id)}`, { method: 'DELETE' }); if (!response.ok) throw new Error(); await load(); if (tastingStatus) tastingStatus.textContent = 'Bevuta eliminata dal taccuino.'; } catch { if (tastingStatus) tastingStatus.textContent = 'Non è stato possibile eliminare la bevuta.'; } });
-  qs<HTMLButtonElement>('[data-avatar-save]')?.addEventListener('click', async () => { const file = qs<HTMLInputElement>('[data-avatar-file]')?.files?.[0]; const status = qs<HTMLElement>('[data-avatar-status]'); if (!file || !status) return; if (file.size > 2 * 1024 * 1024) { status.textContent = 'La foto supera il limite di 2 MB.'; return; } status.textContent = 'Salvataggio foto…'; try { const response = await fetch('/api/profilo/avatar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photo: await readPhoto(file) }) }); if (!response.ok) throw new Error(); const avatar = qs<HTMLImageElement>('[data-avatar-image]'); if (avatar) { avatar.src = `/api/profilo/avatar?aggiornata=${Date.now()}`; avatar.hidden = false; } const fallback = qs<HTMLElement>('[data-avatar-fallback]'); if (fallback) fallback.hidden = true; status.textContent = 'Foto profilo aggiornata.'; } catch { status.textContent = 'Non è stato possibile salvare la foto.'; } });
+  qs<HTMLButtonElement>('[data-avatar-save]')?.addEventListener('click', async () => { const file = qs<HTMLInputElement>('[data-avatar-file]')?.files?.[0]; const status = qs<HTMLElement>('[data-avatar-status]'); if (!file || !status) return; if (file.size > 2 * 1024 * 1024) { status.textContent = 'La foto supera il limite di 2 MB.'; return; } status.textContent = 'Salvataggio foto…'; try { const response = await fetch('/api/profilo/avatar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photo: await readPhoto(file) }) }); if (!response.ok) throw new Error(); document.querySelectorAll<HTMLImageElement>('[data-avatar-image], [data-profile-avatar-image]').forEach((avatar) => { avatar.src = `/api/profilo/avatar?aggiornata=${Date.now()}`; avatar.hidden = false; }); document.querySelectorAll<HTMLElement>('[data-avatar-fallback], [data-profile-avatar-fallback]').forEach((fallback) => fallback.hidden = true); status.textContent = 'Foto profilo aggiornata.'; } catch { status.textContent = 'Non è stato possibile salvare la foto.'; } });
 </script>
 
 <style>
@@ -132,4 +238,40 @@ import { maisons } from '../data/maisons';
   :global(.tasting) { padding: 26px 0; border-bottom: 1px solid var(--line); }:global(.tasting > p), :global(.bottle > p) { margin: 0 0 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }:global(.tasting h3), :global(.bottle h3) { margin: 0; font: 500 31px/1 var(--display); }:global(.tasting > a) { display: inline-block; margin-top: 9px; border-bottom: 1px solid var(--gold); color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }:global(.tasting > strong) { display: block; margin-top: 13px; color: var(--gold); font: 700 11px var(--sans); }:global(.tasting > small) { display: block; margin-top: 5px; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .07em; text-transform: uppercase; }:global(.aromas) { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }:global(.aromas span) { padding: 4px 7px; border: 1px solid var(--line); color: var(--terre); font: 600 9px var(--sans); }:global(.notes) { margin-top: 13px; line-height: 1.58; white-space: pre-line; }:global(.actions) { display: flex; gap: 14px; margin: 18px 0 0 !important; }:global(.actions a), :global(.actions button), :global(.bottle button) { padding: 0; border: 0; border-bottom: 1px solid currentColor; color: var(--terre); background: transparent; font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }:global(.actions button), :global(.bottle button) { color: #9d4031; }
   .record-form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 29px; padding: 24px; border: 1px solid var(--line); background: rgba(255,255,255,.22); }.record-form label { display: grid; gap: 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }.record-form input { width: 100%; padding: 10px 0; border: 0; border-bottom: 1px solid var(--line); outline: 0; color: var(--ink); background: transparent; font: 400 16px var(--serif); }.record-form input:focus { border-color: var(--gold); }button { justify-self: start; padding: 13px 18px; border: 1px solid var(--ink); color: var(--paper); background: var(--ink); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }.collection { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 23px; }:global(.bottle) { padding: 20px; border: 1px solid var(--line); background: rgba(255,255,255,.22); }:global(.bottle h3 span) { color: var(--terre); font-style: italic; font-weight: 400; }:global(.bottle strong) { display: block; margin-top: 12px; color: var(--sage); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }:global(.bottle button) { margin-top: 15px; }.taste { border-bottom: 0; }.profile-empty { max-width: 620px; padding: 28px; border-left: 2px solid var(--gold); background: rgba(217,212,200,.4); }.profile-empty p, :global(.profile-grid article p), :global(.territory p) { margin: 0; color: var(--gold); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }.profile-empty h3 { margin: 11px 0; font: 500 37px/1 var(--display); }.profile-empty span { color: var(--sage); }.profile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; border: 1px solid var(--line); background: var(--line); }:global(.profile-grid article) { padding: 23px; background: rgba(255,255,255,.28); }:global(.profile-grid h3) { margin: 10px 0 8px; font: 500 30px/1 var(--display); }:global(.profile-grid span), :global(.territory span) { color: var(--sage); font-size: 14px; line-height: 1.42; }.territory { margin-top: 20px; padding: 21px; background: rgba(217,212,200,.4); }.account-panel { display: grid; gap: 12px; margin-top: 64px; padding: 28px; border: 1px solid var(--line); background: rgba(255,255,255,.32); }.avatar-editor { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px 16px; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--line); }.account-avatar { display: grid; place-items: center; width: 58px; height: 58px; overflow: hidden; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font: 500 31px var(--display); }.account-avatar img { width: 100%; height: 100%; object-fit: cover; }.avatar-editor label { display: grid; gap: 5px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }.avatar-editor label span { color: var(--sage); font: 600 8px var(--sans); }.outline-button { padding: 10px 12px; border-color: var(--line); color: var(--terre); background: transparent; }.name { margin: 0; font: 500 42px/.95 var(--display); }.email { margin: 0; color: var(--sage); }.admin-link { justify-self: start; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }.logout { background: transparent; color: var(--terre); border-color: var(--line); }
   @media (max-width: 650px) { .account { width: min(100% - 32px, 850px); padding-top: 68px; }.stats { grid-template-columns: repeat(2, 1fr); }:global(.stats > article) { min-height: 120px; padding: 17px 15px; }:global(.stats > article:nth-child(odd)) { border-left: 0; }:global(.stats > article:nth-child(even)) { border-right: 0; }:global(.stats > article > strong) { font-size: 45px; }:global(.stats > article > span) { margin-top: 14px; font-size: 8px; }.overview, .account-section { padding: 56px 0; }.record-form, .collection, .profile-grid { grid-template-columns: 1fr; }.avatar-editor { grid-template-columns: 58px 1fr; }.avatar-editor .outline-button { grid-column: 2; }.account-panel { padding: 21px 17px; } }
+</style>
+
+<style>
+  .passport-shell { width: min(1240px, calc(100% - 48px)); margin: auto; padding: 74px 0 46px; }
+  .passport-intro { max-width: 650px; margin-bottom: 34px; }
+  .eyebrow, .passport-label, .section-heading > p, .label { margin: 0; color: var(--gold); font: 700 10px var(--sans); letter-spacing: .14em; text-transform: uppercase; }
+  .passport-intro h1 { margin: 16px 0 15px; font: 500 clamp(54px, 7vw, 88px)/.86 var(--display); letter-spacing: -.045em; }
+  .passport-intro h1 em { color: var(--terre); font-weight: 400; }
+  .passport-intro > p:last-child { margin: 0; color: var(--sage); font-size: 18px; line-height: 1.5; }
+  .passport-tabs { display: flex; justify-content: flex-end; gap: 0; margin: 0 0 -25px auto; position: relative; z-index: 3; width: max-content; max-width: 100%; }
+  .passport-tabs button { min-width: 32px; padding: 11px 6px; border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--line)); border-bottom: 0; color: var(--terre); background: #e8e0d0; font: 700 8px/1 var(--sans); letter-spacing: .07em; text-transform: uppercase; writing-mode: vertical-rl; cursor: pointer; transition: transform .22s ease, background .22s ease, color .22s ease; }
+  .passport-tabs button + button { margin-left: -1px; }.passport-tabs button b { margin-bottom: 6px; color: var(--gold); font-size: 8px; }.passport-tabs button:hover, .passport-tabs button[aria-current='true'] { color: var(--ink); background: var(--paper); transform: translateY(-5px); }
+  .passport-stage { position: relative; perspective: 2200px; }
+  .passport-book { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; min-height: min(760px, 75vh); padding: 11px; border: 1px solid rgba(41, 54, 43, .32); border-radius: 9px; background: linear-gradient(90deg, #ded7c9, #bbb3a5 49%, #746e63 50%, #bcb4a7 51%, #e0d8cc); box-shadow: 0 27px 55px rgba(23, 35, 28, .16), 0 6px 12px rgba(23, 35, 28, .13); isolation: isolate; }
+  .passport-book::before { position: absolute; z-index: 3; top: 7px; bottom: 7px; left: 50%; width: 15px; content: ''; transform: translateX(-50%); pointer-events: none; background: linear-gradient(90deg, rgba(40,40,33,.18), rgba(255,255,255,.34) 32%, rgba(28,31,25,.32) 52%, rgba(255,255,255,.18)); box-shadow: 0 0 13px rgba(0,0,0,.24); }
+  .passport-book::after { position: absolute; z-index: -1; inset: 15px -7px -10px 16px; content: ''; border-radius: 7px; background: #c8c0b2; box-shadow: 0 12px 0 #b7aea0, 0 19px 0 #e2dad0; }
+  .passport-page, .passport-cover { position: relative; min-width: 0; min-height: min(735px, 72vh); padding: 32px 34px 46px; overflow: auto; overscroll-behavior: contain; color: #28362e; border: 1px solid rgba(87,75,52,.22); border-radius: 3px; background-color: #f6f1e6; background-image: radial-gradient(rgba(55,60,47,.055) .55px, transparent .7px), linear-gradient(120deg, rgba(255,255,255,.68), rgba(235,228,213,.36)); background-size: 7px 7px, auto; box-shadow: inset 0 0 29px rgba(86,68,38,.09); scrollbar-color: var(--gold) transparent; transform-style: preserve-3d; }
+  .passport-page:nth-of-type(odd) { border-radius: 4px 1px 1px 4px; }.passport-page:nth-of-type(even) { border-radius: 1px 4px 4px 1px; }
+  .passport-page::before { position: absolute; inset: 12px; content: ''; pointer-events: none; border: 1px solid rgba(138,101,44,.17); }.passport-page::after { position: absolute; top: 16px; right: 19px; width: 52px; height: 52px; content: ''; pointer-events: none; opacity: .21; border: 1px solid var(--terre); border-radius: 50%; background: repeating-radial-gradient(circle at center, transparent 0 4px, rgba(146,106,67,.24) 4.5px 5px); }
+  .passport-page.is-turning-forward { z-index: 2; transform-origin: left center; animation: passport-turn-forward .68s cubic-bezier(.2,.7,.2,1) both; }.passport-page.is-turning-back { z-index: 2; transform-origin: right center; animation: passport-turn-back .68s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes passport-turn-forward { 0% { opacity: .5; transform: rotateY(-78deg) translateZ(0); filter: brightness(.84); } 55% { opacity: 1; box-shadow: -20px 5px 26px rgba(20,26,20,.28); } 100% { opacity: 1; transform: rotateY(0); filter: none; } }
+  @keyframes passport-turn-back { 0% { opacity: .5; transform: rotateY(78deg) translateZ(0); filter: brightness(.84); } 55% { opacity: 1; box-shadow: 20px 5px 26px rgba(20,26,20,.28); } 100% { opacity: 1; transform: rotateY(0); filter: none; } }
+  .passport-page-head, .passport-page-foot { position: relative; z-index: 1; display: flex; justify-content: space-between; gap: 12px; color: var(--terre); font: 700 8px var(--sans); letter-spacing: .13em; text-transform: uppercase; }.passport-page-head { padding-bottom: 13px; border-bottom: 1px solid rgba(32,52,43,.2); }.passport-page-foot { position: absolute; right: 32px; bottom: 18px; left: 32px; align-items: center; padding-top: 10px; border-top: 1px solid rgba(32,52,43,.18); }.passport-page-foot b { color: var(--gold); font: 500 20px/.8 var(--display); }
+  .passport-cover { grid-column: 1 / -1; display: grid; place-items: center; align-content: center; min-height: min(735px, 72vh); overflow: hidden; color: #d8b878; border: 0; border-radius: 3px; background: #1e332b; background-image: linear-gradient(135deg, rgba(255,255,255,.035), transparent 38%), repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 5px); box-shadow: inset 0 0 58px rgba(0,0,0,.35); text-align: center; }
+  .cover-grain { position: absolute; inset: 0; opacity: .35; background-image: radial-gradient(rgba(255,255,255,.12) .45px, transparent .6px), radial-gradient(rgba(0,0,0,.28) .5px, transparent .7px); background-position: 1px 1px, 4px 5px; background-size: 6px 6px, 9px 9px; mix-blend-mode: soft-light; }.cover-border { position: absolute; inset: 19px; border: 1px solid rgba(216,184,120,.68); box-shadow: inset 0 0 0 3px rgba(216,184,120,.08); }.passport-cover > p { position: relative; margin: 0 0 45px; color: rgba(235,211,157,.88); font: 700 9px var(--sans); letter-spacing: .21em; text-transform: uppercase; }.cover-mark { position: relative; display: grid; place-items: center; width: 74px; height: 74px; margin-bottom: 24px; border: 1px solid currentColor; border-radius: 50%; }.cover-mark span { padding-right: 4px; font: 500 46px/.7 var(--display); }.cover-mark i { position: absolute; display: block; border: 1px solid currentColor; border-radius: 50%; }.cover-mark i:nth-of-type(1) { top: 17px; right: 16px; width: 9px; height: 9px; }.cover-mark i:nth-of-type(2) { top: 29px; right: 11px; width: 5px; height: 5px; }.cover-mark i:nth-of-type(3) { top: 12px; right: 28px; width: 5px; height: 5px; }.passport-cover h2 { position: relative; margin: 0; font: 500 clamp(56px, 7vw, 88px)/.78 var(--display); letter-spacing: -.04em; text-transform: uppercase; }.passport-cover h2 em { font-weight: 400; }.passport-cover small { position: relative; margin-top: 23px; font: 700 9px var(--sans); letter-spacing: .23em; text-transform: uppercase; }.passport-cover button { position: relative; margin-top: 68px; padding: 12px 16px; border: 1px solid rgba(216,184,120,.72); color: #e5c987; background: transparent; font: 700 9px var(--sans); letter-spacing: .13em; text-transform: uppercase; cursor: pointer; transition: background .25s ease, color .25s ease, transform .25s ease; }.passport-cover button:hover { color: #1e332b; background: #e5c987; transform: translateY(-2px); }
+  .identity-page { display: flex; flex-direction: column; }.identity-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 23px; align-items: center; margin: auto 0 29px; }.passport-avatar { display: grid; place-items: center; width: 108px; height: 128px; overflow: hidden; border: 1px solid var(--gold); color: var(--gold); background: rgba(204,192,168,.35); font: 500 65px/1 var(--display); }.passport-avatar img { width: 100%; height: 100%; object-fit: cover; filter: sepia(.18) contrast(.95); }.identity-grid h2 { margin: 8px 0; font: 500 clamp(41px, 4.5vw, 62px)/.84 var(--display); letter-spacing: -.04em; }.identity-grid em { color: var(--terre); font: 400 25px/1 var(--display); }.identity-data { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 0; border-top: 1px solid var(--line); }.identity-data div { padding: 13px 0; border-bottom: 1px solid var(--line); }.identity-data div:nth-child(odd) { padding-right: 16px; }.identity-data dt { color: var(--terre); font: 700 8px var(--sans); letter-spacing: .11em; text-transform: uppercase; }.identity-data dd { margin: 5px 0 0; color: var(--ink); font: 500 22px/1 var(--display); }.passport-watermark { position: relative; z-index: 1; margin-top: 22px; color: var(--gold); font: 600 7px/1.6 var(--sans); letter-spacing: .17em; opacity: .65; }
+  .passport-page .section-heading h2 { position: relative; z-index: 1; margin: 8px 0 16px; font: 500 clamp(39px, 4.4vw, 58px)/.89 var(--display); letter-spacing: -.035em; }.passport-page .intro { position: relative; z-index: 1; margin: 0; color: var(--sage); font-size: 16px; line-height: 1.5; }.passport-page.overview, .passport-page.account-section { padding: 32px 34px 46px; border: 1px solid rgba(87,75,52,.22); }.passport-page .section-heading > p { font-size: 8px; }.passport-page .status { position: relative; z-index: 1; }
+  .passport-page .stats { position: relative; z-index: 1; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid rgba(32,52,43,.2); background: transparent; }.passport-page :global(.stats > article) { min-height: 116px; padding: 16px 13px; border: 0; border-right: 1px solid rgba(32,52,43,.18); border-bottom: 1px solid rgba(32,52,43,.18); background: transparent; }.passport-page :global(.stats > article:nth-child(3n)) { border-right: 0; }.passport-page :global(.stats > article:nth-last-child(-n + 3)) { border-bottom: 0; }.passport-page :global(.stats > article > strong) { color: var(--terre); font-size: 46px; }.passport-page :global(.stats > article > span) { margin-top: 11px; color: var(--ink); font-size: 7px; letter-spacing: .08em; }
+  .passport-page .discover { position: relative; z-index: 1; margin-top: 26px; padding: 15px 0 0; border-top: 1px solid var(--line); }.passport-page .discover h3 { margin: 7px 0 12px; font-size: 30px; }.passport-page :global(.suggestion) { padding: 12px 0; }.passport-page :global(.suggestion h3) { font-size: 22px; }.passport-page :global(.suggestion span) { font-size: 14px; }
+  .passport-page :global(.tasting) { position: relative; padding: 18px 0 20px 13px; border-bottom: 1px dashed rgba(32,52,43,.34); }.passport-page :global(.tasting)::before { position: absolute; top: 16px; left: 0; width: 5px; height: 5px; content: ''; border: 1px solid var(--terre); border-radius: 50%; box-shadow: 0 0 0 3px rgba(146,106,67,.1); }.passport-page :global(.tasting:nth-child(odd))::before { border-radius: 0; transform: rotate(45deg); }.passport-page :global(.tasting h3), .passport-page :global(.bottle h3) { font-size: 27px; }.passport-page :global(.tasting > p), .passport-page :global(.bottle > p) { font-size: 8px; }.passport-page :global(.tasting > strong) { color: var(--terre); font-size: 10px; }.passport-page :global(.aromas span) { background: rgba(255,255,255,.18); font-size: 8px; }.passport-page :global(.actions a), .passport-page :global(.actions button), .passport-page :global(.bottle button) { font-size: 8px; }
+  .passport-page .record-form { position: relative; z-index: 1; gap: 13px 18px; margin-top: 20px; padding: 17px 0; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: transparent; }.passport-page .record-form label { font-size: 8px; }.passport-page .record-form input { padding: 7px 0; font-size: 15px; }.passport-page button { padding: 10px 12px; font-size: 8px; }.passport-page .collection { position: relative; z-index: 1; gap: 0; margin-top: 18px; border-top: 1px solid var(--line); }.passport-page :global(.bottle) { padding: 15px 13px; border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: transparent; }.passport-page :global(.bottle:nth-child(even)) { border-right: 0; }.passport-page :global(.bottle strong) { font-size: 8px; }
+  .passport-page .profile-empty { position: relative; z-index: 1; padding: 22px 17px; border-left: 1px solid var(--gold); background: rgba(213,202,182,.3); }.passport-page .profile-empty h3 { font-size: 31px; }.passport-page .profile-grid { position: relative; z-index: 1; border: 1px solid var(--line); background: transparent; }.passport-page :global(.profile-grid article) { padding: 17px; background: transparent; }.passport-page :global(.profile-grid h3) { font-size: 25px; }.passport-page .territory { position: relative; z-index: 1; padding: 17px; background: rgba(213,202,182,.3); }
+  .passport-page.account-panel { display: grid; align-content: start; gap: 12px; margin: 0; border: 1px solid rgba(87,75,52,.22); background-color: #f6f1e6; }.passport-page .avatar-editor { grid-template-columns: 57px 1fr; gap: 11px; padding: 14px 0; }.passport-page .avatar-editor .outline-button { grid-column: 2; }.passport-page .account-avatar { width: 55px; height: 65px; border-radius: 0; }.passport-page .name { font-size: 40px; }.passport-page .logout { align-self: start; }
+  .passport-controls { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 23px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .13em; text-transform: uppercase; }.passport-controls button { width: 34px; height: 34px; padding: 0; border: 1px solid var(--line); color: var(--terre); background: rgba(255,255,255,.24); font: 400 21px/1 var(--display); transition: background .2s ease, transform .2s ease; }.passport-controls button:hover { background: #e6ddca; transform: translateY(-2px); }.passport-controls span { min-width: 165px; text-align: center; }
+  @media (max-width: 760px) { .passport-shell { width: min(100% - 28px, 620px); padding-top: 53px; }.passport-intro { margin-bottom: 22px; }.passport-intro h1 { font-size: 53px; }.passport-intro > p:last-child { font-size: 16px; }.passport-tabs { justify-content: flex-start; width: 100%; margin: 0 0 -1px; overflow-x: auto; }.passport-tabs button { min-width: auto; padding: 10px 11px; writing-mode: initial; white-space: nowrap; }.passport-tabs button b { margin: 0 5px 0 0; }.passport-book { display: block; min-height: 70vh; padding: 7px; border-radius: 6px; }.passport-book::before { top: auto; right: 10px; bottom: 6px; left: 10px; width: auto; height: 7px; transform: none; background: linear-gradient(180deg, rgba(34,40,31,.25), rgba(255,255,255,.3)); }.passport-page, .passport-cover { min-height: 68vh; max-height: 76vh; padding: 25px 21px 42px; }.passport-page::before { inset: 9px; }.passport-page::after { top: 12px; right: 14px; width: 40px; height: 40px; }.passport-page-foot { right: 21px; bottom: 14px; left: 21px; }.identity-grid { grid-template-columns: 83px minmax(0, 1fr); gap: 16px; }.passport-avatar { width: 80px; height: 102px; font-size: 50px; }.identity-grid h2 { font-size: 45px; }.identity-data { grid-template-columns: 1fr; }.identity-data div:nth-child(odd) { padding-right: 0; }.passport-page .stats { grid-template-columns: repeat(2, 1fr); }.passport-page :global(.stats > article) { min-height: 105px; }.passport-page :global(.stats > article:nth-child(3n)) { border-right: 1px solid rgba(32,52,43,.18); }.passport-page :global(.stats > article:nth-child(even)) { border-right: 0; }.passport-page :global(.stats > article:nth-last-child(-n + 3)) { border-bottom: 1px solid rgba(32,52,43,.18); }.passport-page :global(.stats > article:nth-last-child(-n + 2)) { border-bottom: 0; }.passport-page :global(.stats > article > strong) { font-size: 42px; }.passport-page .record-form, .passport-page .collection, .passport-page .profile-grid { grid-template-columns: 1fr; }.passport-page :global(.bottle) { border-right: 0; }.passport-page .profile-grid { gap: 0; }.passport-cover h2 { font-size: 59px; }.passport-cover button { margin-top: 48px; }.passport-controls { margin-top: 17px; }.passport-controls span { min-width: 145px; font-size: 8px; } }
+  @media (prefers-reduced-motion: reduce) { .passport-page.is-turning-forward, .passport-page.is-turning-back { animation: none; }.passport-tabs button, .passport-controls button, .passport-cover button { transition: none; } }
 </style>
