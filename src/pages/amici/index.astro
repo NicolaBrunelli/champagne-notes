@@ -37,7 +37,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
 <script>
   import { getCurrentUser } from '../../scripts/identity-session';
-  type Friend = { handle: string; avatar: boolean; tastingCount: number; cellarCount: number };
+  type Friend = { handle: string; avatar: boolean; avatarId: string; tastingCount: number; cellarCount: number };
   const grid = document.querySelector<HTMLElement>('[data-friend-grid]');
   const inviteDesk = document.querySelector<HTMLElement>('[data-invite-desk]');
   const inviteForm = document.querySelector<HTMLFormElement>('[data-invite-create]');
@@ -53,7 +53,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     if (!grid) return;
     if (!friends.length) { grid.innerHTML = '<p class="empty">Non ci sono ancora taccuini da esplorare.</p>'; return; }
     grid.innerHTML = friends.map((friend) => `<a class="friend-card" href="/amici/profilo?utente=${encodeURIComponent(friend.handle)}">
-      <span class="friend-avatar">${friend.avatar ? `<img src="/api/profilo/avatar?utente=${encodeURIComponent(friend.handle)}" alt="Foto profilo di ${escapeHTML(friend.handle)}" loading="lazy">` : escapeHTML(friend.handle.slice(0, 1).toUpperCase())}</span>
+      <span class="friend-avatar">${friend.avatar ? `<img src="/api/profilo/avatar?id=${encodeURIComponent(friend.avatarId)}" alt="Foto profilo di ${escapeHTML(friend.handle)}" loading="lazy">` : escapeHTML(friend.handle.slice(0, 1).toUpperCase())}</span>
       <span class="friend-number">Champagne Passport</span><span class="friend-handle">${escapeHTML(friend.handle)}</span>
       <span class="friend-meta">${friend.tastingCount} ${friend.tastingCount === 1 ? 'bevuta' : 'bevute'} · ${friend.cellarCount} in cantina</span>
       <span class="friend-arrow" aria-hidden="true">→</span>

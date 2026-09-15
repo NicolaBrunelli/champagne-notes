@@ -21,9 +21,6 @@ export default async (request: Request) => {
     const users = await admin.listUsers({ perPage: 1000 });
     const usedByAnotherUser = users.some((user) => user.id !== viewer.id && cleanHandle(user.userMetadata?.handle || user.name) === handle);
     if (usedByAnotherUser) return json({ error: 'Questo username è già in uso.' }, 409);
-    await admin.updateUser(viewer.id, {
-      user_metadata: { ...(viewer.userMetadata || {}), full_name: handle, handle },
-    });
     const store = getStore({ name: 'champagne-tasting-notes', consistency: 'strong' });
     const existing = (await store.get('community/participants.json', { type: 'json' }) || []) as CommunityMember[];
     const withoutDuplicates = existing.filter((member) => member?.id && member.id !== viewer.id && member.handle !== handle);

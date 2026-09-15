@@ -23,7 +23,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     notes?: string; aromas?: string[]; sensory: SensoryProfile; averageSensory: SensoryProfile; photo?: { id: string; mime: string }; producer: { slug: string; name: string };
   };
   type Bottle = { producer: string; wine: string; vintage?: string; quantity: number };
-  type ProfileData = { profile: { handle: string; avatar: boolean; isSelf: boolean }; tastings: Tasting[]; cellar: Bottle[] };
+  type ProfileData = { profile: { handle: string; avatar: boolean; avatarId: string; isSelf: boolean }; tastings: Tasting[]; cellar: Bottle[] };
   const aromaFlags = (ids: string[] = []) => ids.map((id) => { const aroma = aromaById.get(id); return aroma ? `<span class="aroma-flag">${aroma.emoji} ${escapeHTML(aroma.label)}</span>` : ''; }).join('');
   const meter = (left: string, value: number, right: string) => `<div class="profile-meter"><span>${left}</span><i><b style="width:${Math.max(0, Math.min(100, Math.round(value)))}%"></b></i><span>${right}</span></div>`;
   const sensoryProfile = (sensory: SensoryProfile) => `<div class="sensory-profile" aria-label="Profilo al palato">
@@ -33,7 +33,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     if (!content) return;
     document.title = `${profile.handle} — Amici · Lo Champagne, con calma`;
     content.innerHTML = `<header class="profile-header">
-      <span class="profile-avatar">${profile.avatar ? `<img src="/api/profilo/avatar?utente=${encodeURIComponent(profile.handle)}" alt="Foto profilo di ${escapeHTML(profile.handle)}">` : escapeHTML(profile.handle.slice(0, 1).toUpperCase())}</span>
+      <span class="profile-avatar">${profile.avatar ? `<img src="/api/profilo/avatar?id=${encodeURIComponent(profile.avatarId)}" alt="Foto profilo di ${escapeHTML(profile.handle)}">` : escapeHTML(profile.handle.slice(0, 1).toUpperCase())}</span>
       <p>Amico dell'archivio</p><h1>${escapeHTML(profile.handle)}</h1>
       ${profile.isSelf ? '<a href="/account">Gestisci il tuo taccuino →</a>' : ''}
     </header>

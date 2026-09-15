@@ -58,13 +58,13 @@ export default async (request: Request) => {
       store.get(`cellars/${user.id}.json`, { type: 'json' }),
       store.getMetadata(`avatars/${user.id}`),
     ]);
-    return json({ profile: { handle: user.handle, avatar: Boolean(avatar), isSelf: user.id === viewer.id }, tastings, cellar: (cellar || []) as CellarBottle[] });
+    return json({ profile: { handle: user.handle, avatar: Boolean(avatar), avatarId: user.id, isSelf: user.id === viewer.id }, tastings, cellar: (cellar || []) as CellarBottle[] });
   }
   const friends = (await Promise.all(community.map(async (user) => {
     const [tastingIndex, cellar, avatar] = await Promise.all([
       store.get(`users/${user.id}.json`, { type: 'json' }), store.get(`cellars/${user.id}.json`, { type: 'json' }), store.getMetadata(`avatars/${user.id}`),
     ]);
-    return { handle: user.handle, avatar: Boolean(avatar), tastingCount: Array.isArray(tastingIndex) ? tastingIndex.length : 0, cellarCount: Array.isArray(cellar) ? cellar.reduce((sum, bottle) => sum + Number(bottle?.quantity || 0), 0) : 0 };
+    return { handle: user.handle, avatar: Boolean(avatar), avatarId: user.id, tastingCount: Array.isArray(tastingIndex) ? tastingIndex.length : 0, cellarCount: Array.isArray(cellar) ? cellar.reduce((sum, bottle) => sum + Number(bottle?.quantity || 0), 0) : 0 };
   }))).filter(Boolean).sort((a, b) => String(a?.handle).localeCompare(String(b?.handle)));
   return json({ friends });
 };

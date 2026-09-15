@@ -1,13 +1,10 @@
 import { getStore } from '@netlify/blobs';
-import { admin, getUser, verifyRequestOrigin } from '@netlify/identity';
+import { getUser, verifyRequestOrigin } from '@netlify/identity';
 
 type AvatarMetadata = { mime: string };
 const avatarKey = (id: string) => `avatars/${id}`;
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'private, no-store' } });
-const handleFor = (user: { userMetadata?: Record<string, unknown>; name?: string | null }) => {
-  const value = user.userMetadata?.handle || user.name;
-  return typeof value === 'string' ? value.trim().toLowerCase().replace(/[^a-z0-9._-]/g, '').slice(0, 32) : '';
-};
+const validId = (value: string | null) => Boolean(value && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value));
 const imageFromDataUrl = (value: unknown) => {
   if (typeof value !== 'string') return undefined;
   const match = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(value);
@@ -21,18 +18,16 @@ export default async (request: Request) => {
   if (!viewer) return new Response('Accesso riservato agli utenti registrati.', { status: 401, headers: { 'Cache-Control': 'private, no-store' } });
   const store = getStore({ name: 'champagne-tasting-notes', consistency: 'strong' });
   if (request.method === 'GET') {
-    const handle = new URL(request.url).searchParams.get('utente')?.trim().toLowerCase();
-    let id = viewer.id;
-    if (handle) {
-      const users = await admin.listUsers({ perPage: 1000 });
-      const user = users.find((candidate) => handleFor(candidate) === handle);
-      if (!user) return new Response('Profilo non trovato.', { status: 404 });
-      id = user.id;
-    }
-    const image = await store.getWithMetadata(avatarKey(id), { type: 'arrayBuffer' });
+    const requestedId = new URL(request.url).searchParams.get('id');
+    if (requestedId && !validId(requestedId)) return new Response('Profilo non trovato.', { status: 404 });
+    const id = requestedId || viewer.id;
+    const [image, details] = await Promise.all([
+      store.get(avatarKey(id), { type: 'arrayBuffer' }),
+      store.getMetadata(avatarKey(id)),
+    ]);
     if (!image) return new Response('Foto profilo non trovata.', { status: 404, headers: { 'Cache-Control': 'private, no-store' } });
-    const mime = typeof image.metadata?.mime === 'string' ? image.metadata.mime : 'image/jpeg';
-    return new Response(image.data, { headers: { 'Content-Type': mime, 'Cache-Control': 'private, no-store' } });
+    const mime = typeof details?.metadata?.mime === 'string' ? details.metadata.mime : 'image/jpeg';
+    return new Response(image, { headers: { 'Content-Type': mime, 'Cache-Control': 'private, no-store' } });
   }
   if (request.method !== 'POST') return json({ error: 'Metodo non supportato.' }, 405);
   try {
