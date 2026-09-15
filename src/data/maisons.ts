@@ -1,3 +1,5 @@
+import { leRecoltantMaisons } from './recoltant-vignerons';
+
 export type MaisonArea = 'Côte des Blancs' | 'Vallée de la Marne' | 'Montagne de Reims' | 'Côte des Bar';
 
 export interface Maison {
@@ -1721,5 +1723,6 @@ export const maisons: Maison[] = [
     "website": "https://www.instagram.com/elisebougy/",
     "websiteLabel": "Visita il profilo ufficiale",
     "logo": "https://champavin.com/images/producers/logos/logo_elise-bougy.webp"
-  }
+  },
+  ...leRecoltantMaisons
 ];

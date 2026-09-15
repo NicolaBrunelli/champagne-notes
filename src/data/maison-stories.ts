@@ -1,3 +1,5 @@
+import { leRecoltantStories } from './recoltant-vignerons';
+
 export type MaisonStory = {
   history: string[];
   curiosities: string[];
@@ -198,4 +200,5 @@ export const maisonStories: Record<string, MaisonStory> = {
     history: ["Élise Bougy ha ripreso il piccolo domaine di famiglia a Les Mesneux nel 2016, dopo gli studi di enologia. Il suo lavoro collega la Montagne de Reims con alcune parcelle di Le Mesnil-sur-Oger, nella Côte des Blancs.", "La vigna è il punto di partenza di una produzione artigianale, biologica e sempre più orientata a restituire la precisione di ogni singolo lieu-dit."],
     curiosities: ["Le Mont-Chainqueux è una parcella Premier Cru di Les Mesneux, piantata dai nonni di Élise nel 1965.", "Les Coullemets e Chétillon de Haut raccontano invece due luoghi di Le Mesnil-sur-Oger."],
   },
+  ...leRecoltantStories,
 };

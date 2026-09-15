@@ -1,3 +1,5 @@
+import { leRecoltantWines } from './recoltant-vignerons';
+
 export type WineFamily = 'Firma della maison' | 'Rosé' | 'Millesimato' | 'Prestige' | 'Parcella' | 'Stile libero' | 'Extra Brut' | 'Blanc de Blancs' | 'Blanc de Noirs' | 'Demi-Sec' | 'Bio';
 
 export type CatalogWine = {
@@ -379,6 +381,7 @@ export const catalogWines: CatalogWine[] = [
   { producer: 'Élise Bougy', name: 'Le Mont-Chainqueux', family: 'Blanc de Noirs' },
   { producer: 'Élise Bougy', name: 'Les Coullemets', family: 'Blanc de Blancs' },
   { producer: 'Élise Bougy', name: 'Chétillon de Haut', family: 'Blanc de Blancs' },
+  ...leRecoltantWines,
 ];
 
 const editorialNotes: Record<string, string> = {
