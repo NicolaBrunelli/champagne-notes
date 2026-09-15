@@ -1,4 +1,4 @@
-import { admin, getUser, verifyRequestOrigin } from '@netlify/identity';
+import { getUser, verifyRequestOrigin } from '@netlify/identity';
 import { getStore } from '@netlify/blobs';
 
 type CommunityMember = { id: string; handle: string };
@@ -18,11 +18,10 @@ export default async (request: Request) => {
     verifyRequestOrigin(request);
     const handle = cleanHandle((await request.json() as Record<string, unknown>).handle);
     if (handle.length < 3) return json({ error: 'Lo username deve contenere almeno 3 caratteri.' }, 422);
-    const users = await admin.listUsers({ perPage: 1000 });
-    const usedByAnotherUser = users.some((user) => user.id !== viewer.id && cleanHandle(user.userMetadata?.handle || user.name) === handle);
-    if (usedByAnotherUser) return json({ error: 'Questo username è già in uso.' }, 409);
     const store = getStore({ name: 'champagne-tasting-notes', consistency: 'strong' });
     const existing = (await store.get('community/participants.json', { type: 'json' }) || []) as CommunityMember[];
+    const usedByAnotherUser = existing.some((member) => member?.id !== viewer.id && cleanHandle(member?.handle) === handle);
+    if (usedByAnotherUser) return json({ error: 'Questo username è già in uso.' }, 409);
     const withoutDuplicates = existing.filter((member) => member?.id && member.id !== viewer.id && member.handle !== handle);
     withoutDuplicates.push({ id: viewer.id, handle });
     await store.set('community/participants.json', JSON.stringify(withoutDuplicates));

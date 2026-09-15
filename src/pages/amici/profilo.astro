@@ -32,12 +32,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   const draw = ({ profile, tastings, cellar }: ProfileData) => {
     if (!content) return;
     document.title = `${profile.handle} — Amici · Lo Champagne, con calma`;
-    content.innerHTML = `<header class="profile-header">
+    content.innerHTML = `<header class="profile-header" id="passaporto">
       <span class="profile-avatar">${profile.avatar ? `<img src="/api/profilo/avatar?id=${encodeURIComponent(profile.avatarId)}" alt="Foto profilo di ${escapeHTML(profile.handle)}">` : escapeHTML(profile.handle.slice(0, 1).toUpperCase())}</span>
       <p>Amico dell'archivio</p><h1>${escapeHTML(profile.handle)}</h1>
       ${profile.isSelf ? '<a href="/account">Gestisci il tuo taccuino →</a>' : ''}
     </header>
-    <section><p class="eyebrow">Vini bevuti · ${tastings.length}</p><h2>${profile.isSelf ? 'Le tue degustazioni.' : 'Le sue degustazioni.'}</h2>
+    <section id="degustazioni"><p class="eyebrow">Vini bevuti · ${tastings.length}</p><h2>${profile.isSelf ? 'Le tue degustazioni.' : 'Le sue degustazioni.'}</h2>
     <div class="profile-list">${tastings.length ? tastings.map((tasting) => `<article class="profile-entry">${tasting.photo ? `<img class="tasting-photo" src="/api/foto/${encodeURIComponent(tasting.photo.id)}" alt="Bottiglia di ${escapeHTML(tasting.wine)}" loading="lazy">` : ''}<div class="tasting-copy"><p>${formatDate(tasting.drunkAt)} · ${escapeHTML(tasting.place)}${typeof tasting.price === 'number' ? ` · € ${tasting.price.toFixed(2)}` : ''}</p><h3>${escapeHTML(tasting.wine)}</h3><a href="/cantine/${encodeURIComponent(tasting.producer.slug)}">${escapeHTML(tasting.producer.name)} →</a><strong>${tasting.rating.toFixed(1)} / 5 <small>· media storica ${tasting.averageRating.toFixed(1)} (${tasting.ratingCount})</small></strong>${sensoryProfile(tasting.sensory)}${aromaFlags(tasting.aromas)}${tasting.notes ? `<div class="tasting-notes">${escapeHTML(tasting.notes)}</div>` : ''}</div></article>`).join('') : '<p class="empty">Nessuna degustazione condivisa per ora.</p>'}</div></section>
     <section><p class="eyebrow">Cantina personale · ${cellar.reduce((sum, bottle) => sum + bottle.quantity, 0)}</p><h2>Le bottiglie in attesa.</h2>
     <div class="cellar-list">${cellar.length ? cellar.map((bottle) => `<article><p>${escapeHTML(bottle.producer)}</p><h3>${escapeHTML(bottle.wine)}${bottle.vintage ? ` <span>${escapeHTML(bottle.vintage)}</span>` : ''}</h3><strong>${bottle.quantity} ${bottle.quantity === 1 ? 'bottiglia' : 'bottiglie'}</strong></article>`).join('') : '<p class="empty">Nessuna bottiglia in cantina per ora.</p>'}</div></section>`;

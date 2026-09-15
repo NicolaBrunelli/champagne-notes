@@ -1,10 +1,12 @@
 import { admin, verifyRequestOrigin } from '@netlify/identity';
+import { getStore } from '@netlify/blobs';
 import { cleanCode, hashCode, json, listInvites, saveInvite } from './_shared/invites';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const cleanHandle = (value: unknown) => typeof value === 'string'
   ? value.trim().toLowerCase().replace(/[^a-z0-9._-]/g, '').slice(0, 32)
   : '';
+type CommunityMember = { id: string; handle: string };
 
 export default async (request: Request) => {
   if (request.method !== 'POST') return json({ error: 'Metodo non supportato.' }, 405);
@@ -37,7 +39,10 @@ export default async (request: Request) => {
     });
     current.redeemedAt = new Date().toISOString();
     current.redeemedBy = user.id;
-    await saveInvite(current);
+    const community = getStore({ name: 'champagne-tasting-notes', consistency: 'strong' });
+    const existing = (await community.get('community/participants.json', { type: 'json' }) || []) as CommunityMember[];
+    const withoutDuplicate = existing.filter((member) => member?.id && member.id !== user.id && member.handle !== handle);
+    await Promise.all([saveInvite(current), community.setJSON('community/participants.json', [...withoutDuplicate, { id: user.id, handle }])]);
     return json({ email, handle }, 201);
   } catch (error) {
     const message = error instanceof Error && /already exists|already registered/i.test(error.message)

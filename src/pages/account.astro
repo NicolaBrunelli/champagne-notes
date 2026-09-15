@@ -144,6 +144,24 @@ import { maisons } from '../data/maisons';
           <div class="passport-page-foot"><span>Champagne Passport</span><b>12</b></div>
         </section>
       </div>
+      <dialog class="tasting-editor" data-tasting-editor aria-labelledby="tasting-editor-title">
+        <form data-tasting-editor-form>
+          <div class="tasting-editor-head"><p>Modifica degustazione</p><button type="button" data-tasting-editor-close aria-label="Chiudi">×</button></div>
+          <h2 id="tasting-editor-title">Il taccuino.</h2>
+          <p class="tasting-editor-producer" data-tasting-editor-producer></p>
+          <div class="tasting-editor-fields">
+            <label>Champagne<input name="wine" required maxlength="160" /></label>
+            <label>Data<input name="drunkAt" type="date" required /></label>
+            <label>Luogo<input name="place" required maxlength="160" /></label>
+            <label>Prezzo <input name="price" type="number" min="0" step="0.01" inputmode="decimal" /></label>
+            <label>Voto<select name="rating" required><option value="0.5">0,5 / 5</option><option value="1">1 / 5</option><option value="1.5">1,5 / 5</option><option value="2">2 / 5</option><option value="2.5">2,5 / 5</option><option value="3">3 / 5</option><option value="3.5">3,5 / 5</option><option value="4">4 / 5</option><option value="4.5">4,5 / 5</option><option value="5">5 / 5</option></select></label>
+            <label>Lo ricompreresti?<select name="wouldRepurchase"><option value="">Non indicato</option><option value="yes">Sì</option><option value="no">No</option></select></label>
+          </div>
+          <label class="tasting-editor-notes">Note personali<textarea name="notes" rows="4" maxlength="3000"></textarea></label>
+          <p class="status" data-tasting-editor-status aria-live="polite"></p>
+          <div class="tasting-editor-actions"><button type="button" class="outline-button" data-tasting-editor-close>Annulla</button><button type="submit">Salva modifica <span aria-hidden="true">→</span></button></div>
+        </form>
+      </dialog>
       <div class="passport-controls" aria-label="Sfoglia il passaporto"><button type="button" data-passport-prev aria-label="Pagina precedente">←</button><span data-passport-position>Copertina</span><button type="button" data-passport-next aria-label="Pagina successiva">→</button></div>
     </div>
   </section>
@@ -154,7 +172,9 @@ import { maisons } from '../data/maisons';
   import { aromas } from '../data/aromas';
   import { getCurrentUser } from '../scripts/identity-session';
 
-  type Tasting = { id: string; wine: string; drunkAt: string; place: string; rating: number; notes?: string; aromas?: string[]; wouldRepurchase?: boolean; producer: { slug: string; name: string } };
+  type SensoryProfile = { body: number; tannin: number; sweetness: number; acidity: number };
+  type ExperienceProfile = { maturity: number; structure: number; tension: number; complexity: number };
+  type Tasting = { id: string; wine: string; drunkAt: string; place: string; price?: number; rating: number; notes?: string; aromas?: string[]; sensory?: SensoryProfile; experience?: ExperienceProfile; wouldRepurchase?: boolean; producer: { slug: string; name: string } };
   type Bottle = { id: string; producer: string; wine: string; vintage?: string; quantity: number };
   type Wish = { id: string; producer: string; producerSlug?: string; wine: string };
   type Atlas = { tastings: Tasting[]; cellar: Bottle[]; wishlist: Wish[]; overview: { tasted: number; cellarBottles: number; wishlist: number; producers: number; areas: number; crus: number }; profile: { enough: boolean; sampleSize: number; styles: { favorite?: string; covered: number }; grapes: { favorite?: string; covered: number }; dosage: { favorite?: string; covered: number }; producers: { producer: string; rating: number }[]; territory: { areas: string[]; crus: string[] }; repurchase?: { yes: number; total: number; percent: number }; experience?: { count: number; description: string[] } }; suggestions: { title: string; reason: string; producer?: string; wine?: string }[] };
@@ -162,6 +182,7 @@ import { maisons } from '../data/maisons';
   const tastingList = qs<HTMLElement>('[data-my-tastings]'); const tastingListSecondary = qs<HTMLElement>('[data-my-tastings-secondary]'); const cellarList = qs<HTMLElement>('[data-cellar-collection]'); const wishlistList = qs<HTMLElement>('[data-wishlist-collection]');
   const overview = qs<HTMLElement>('[data-overview-stats]'); const profileBox = qs<HTMLElement>('[data-taste-profile]'); const profileBoxSecondary = qs<HTMLElement>('[data-taste-profile-secondary]'); const suggestions = Array.from(document.querySelectorAll<HTMLElement>('[data-suggestions]'));
   const tastingStatus = qs<HTMLElement>('[data-tasting-status]'); const cellarStatus = qs<HTMLElement>('[data-cellar-status]'); const wishlistStatus = qs<HTMLElement>('[data-wishlist-status]');
+  const tastingEditor = qs<HTMLDialogElement>('[data-tasting-editor]'); const tastingEditorForm = qs<HTMLFormElement>('[data-tasting-editor-form]'); const tastingEditorStatus = qs<HTMLElement>('[data-tasting-editor-status]'); const tastingEditorProducer = qs<HTMLElement>('[data-tasting-editor-producer]');
   const passportPages = Array.from(document.querySelectorAll<HTMLElement>('[data-passport-page]'));
   const passportTabs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-passport-go]'));
   const passportPosition = qs<HTMLElement>('[data-passport-position]');
@@ -170,6 +191,8 @@ import { maisons } from '../data/maisons';
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let passportPage = 0;
   let lastPassportTurn = 0;
+  let editingTasting: Tasting | undefined;
+  const personalTastings = new Map<string, Tasting>();
   const pageNames = ['Copertina', 'Overview', 'Overview', 'Degustazioni', 'Degustazioni', 'Cantina', 'Cantina', 'Wishlist', 'Wishlist', 'Il mio gusto', 'Il mio gusto', 'Profilo', 'Profilo'];
   const mobilePassport = () => window.matchMedia('(max-width: 760px)').matches;
   const clampPage = (value: number) => Math.max(0, Math.min(passportPages.length - 1, value));
@@ -240,12 +263,14 @@ import { maisons } from '../data/maisons';
   const aromaById = new Map<string, { label: string; emoji: string }>(aromas.map(([id, label, emoji]) => [id, { label, emoji }]));
 
   const draw = (data: Atlas) => {
+    personalTastings.clear();
+    data.tastings.forEach((item) => personalTastings.set(item.id, item));
     if (overview) overview.innerHTML = [['Champagne degustati', data.overview.tasted], ['Bottiglie in cantina', data.overview.cellarBottles], ['Nella wishlist', data.overview.wishlist], ['Produttori scoperti', data.overview.producers], ['Aree esplorate', data.overview.areas], ['Cru con dati certi', data.overview.crus]].map(([label, value]) => `<article><strong>${value}</strong><span>${label}</span></article>`).join('');
     const suggestionMarkup = data.suggestions.length ? data.suggestions.map((item) => `<article class="suggestion"><p>${escapeHTML(item.title)}</p>${item.producer && item.wine ? `<h3>${escapeHTML(item.producer)} · ${escapeHTML(item.wine)}</h3>` : ''}<span>${escapeHTML(item.reason)}</span></article>`).join('') : '<p class="empty">Registra una prima bottiglia: il tuo atlante inizierà a suggerire confronti coerenti e spiegati.</p>';
     suggestions.forEach((section) => section.innerHTML = suggestionMarkup);
     const renderTasting = (item: Tasting) => {
       const flags = (item.aromas || []).map((id) => { const aroma = aromaById.get(id); return aroma ? `<span>${aroma.emoji} ${escapeHTML(aroma.label)}</span>` : ''; }).join('');
-      return `<article class="tasting"><p>${formatDate(item.drunkAt)} · ${escapeHTML(item.place)}</p><h3>${escapeHTML(item.wine)}</h3><a href="/cantine/${encodeURIComponent(item.producer.slug)}">${escapeHTML(item.producer.name)} →</a><strong>${item.rating.toFixed(1)} / 5</strong>${item.wouldRepurchase === true ? '<small>Lo ricompreresti: sì</small>' : item.wouldRepurchase === false ? '<small>Lo ricompreresti: no</small>' : ''}${flags ? `<div class="aromas">${flags}</div>` : ''}${item.notes ? `<div class="notes">${escapeHTML(item.notes)}</div>` : ''}<p class="actions"><a href="/cantine/${encodeURIComponent(item.producer.slug)}?modifica=${encodeURIComponent(item.id)}">Modifica</a><button type="button" data-delete-tasting="${item.id}" data-producer="${escapeHTML(item.producer.slug)}" data-wine="${escapeHTML(item.wine)}">Elimina</button></p></article>`;
+      return `<article class="tasting"><p>${formatDate(item.drunkAt)} · ${escapeHTML(item.place)}</p><h3>${escapeHTML(item.wine)}</h3><a href="/cantine/${encodeURIComponent(item.producer.slug)}">${escapeHTML(item.producer.name)} →</a><strong>${item.rating.toFixed(1)} / 5</strong>${item.wouldRepurchase === true ? '<small>Lo ricompreresti: sì</small>' : item.wouldRepurchase === false ? '<small>Lo ricompreresti: no</small>' : ''}${flags ? `<div class="aromas">${flags}</div>` : ''}${item.notes ? `<div class="notes">${escapeHTML(item.notes)}</div>` : ''}<p class="actions"><button type="button" data-edit-tasting="${item.id}">Modifica</button><button type="button" data-delete-tasting="${item.id}" data-producer="${escapeHTML(item.producer.slug)}" data-wine="${escapeHTML(item.wine)}">Elimina</button></p></article>`;
     };
     const tastingEmpty = '<p class="empty">Il tuo taccuino è ancora vuoto. Apri una cantina e annota la tua prima bevuta.</p>';
     if (tastingList) tastingList.innerHTML = data.tastings.length ? data.tastings.slice(0, 3).map(renderTasting).join('') : tastingEmpty;
@@ -270,7 +295,46 @@ import { maisons } from '../data/maisons';
   qs<HTMLFormElement>('[data-wishlist-form]')?.addEventListener('submit', async (event) => { event.preventDefault(); const form = event.currentTarget as HTMLFormElement; if (wishlistStatus) wishlistStatus.textContent = 'Aggiornamento in corso…'; try { const values = new FormData(form); const response = await fetch('/api/wishlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ producer: values.get('producer'), wine: values.get('wine') }) }); if (!response.ok) throw new Error(); form.reset(); if (wishlistStatus) wishlistStatus.textContent = 'Champagne aggiunto alla wishlist.'; await load(); } catch { if (wishlistStatus) wishlistStatus.textContent = 'Non è stato possibile aggiornare la wishlist.'; } });
   cellarList?.addEventListener('click', async (event) => { const id = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-remove-cellar]')?.dataset.removeCellar; if (!id || !confirm('Rimuovere questa bottiglia dalla cantina?')) return; await fetch(`/api/cantina-personale?id=${encodeURIComponent(id)}`, { method: 'DELETE' }); await load(); });
   wishlistList?.addEventListener('click', async (event) => { const id = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-remove-wish]')?.dataset.removeWish; if (!id || !confirm('Rimuovere questo Champagne dalla wishlist?')) return; await fetch(`/api/wishlist?id=${encodeURIComponent(id)}`, { method: 'DELETE' }); await load(); });
-  [tastingList, tastingListSecondary].forEach((list) => list?.addEventListener('click', async (event) => { const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-delete-tasting]'); const id = button?.dataset.deleteTasting; const producer = button?.dataset.producer; if (!button || !id || !producer || !confirm(`Eliminare “${button.dataset.wine || 'questa bevuta'}” dal taccuino?`)) return; if (tastingStatus) tastingStatus.textContent = 'Eliminazione in corso…'; try { const response = await fetch(`/api/cantine/${encodeURIComponent(producer)}/bevute?id=${encodeURIComponent(id)}`, { method: 'DELETE' }); if (!response.ok) throw new Error(); await load(); if (tastingStatus) tastingStatus.textContent = 'Bevuta eliminata dal taccuino.'; } catch { if (tastingStatus) tastingStatus.textContent = 'Non è stato possibile eliminare la bevuta.'; } }));
+  const openTastingEditor = (item: Tasting) => {
+    if (!tastingEditor || !tastingEditorForm) return;
+    editingTasting = item;
+    (tastingEditorForm.elements.namedItem('wine') as HTMLInputElement).value = item.wine;
+    (tastingEditorForm.elements.namedItem('drunkAt') as HTMLInputElement).value = item.drunkAt;
+    (tastingEditorForm.elements.namedItem('place') as HTMLInputElement).value = item.place;
+    (tastingEditorForm.elements.namedItem('price') as HTMLInputElement).value = typeof item.price === 'number' ? String(item.price) : '';
+    (tastingEditorForm.elements.namedItem('rating') as HTMLSelectElement).value = String(item.rating);
+    (tastingEditorForm.elements.namedItem('wouldRepurchase') as HTMLSelectElement).value = item.wouldRepurchase === true ? 'yes' : item.wouldRepurchase === false ? 'no' : '';
+    (tastingEditorForm.elements.namedItem('notes') as HTMLTextAreaElement).value = item.notes || '';
+    if (tastingEditorProducer) tastingEditorProducer.textContent = item.producer.name;
+    if (tastingEditorStatus) tastingEditorStatus.textContent = '';
+    tastingEditor.showModal();
+  };
+  [tastingList, tastingListSecondary].forEach((list) => list?.addEventListener('click', async (event) => {
+    const target = event.target as HTMLElement;
+    const edit = target.closest<HTMLButtonElement>('[data-edit-tasting]');
+    if (edit?.dataset.editTasting) { const item = personalTastings.get(edit.dataset.editTasting); if (item) openTastingEditor(item); return; }
+    const button = target.closest<HTMLButtonElement>('[data-delete-tasting]'); const id = button?.dataset.deleteTasting; const producer = button?.dataset.producer;
+    if (!button || !id || !producer || !confirm(`Eliminare “${button.dataset.wine || 'questa bevuta'}” dal taccuino?`)) return;
+    if (tastingStatus) tastingStatus.textContent = 'Eliminazione in corso…';
+    try { const response = await fetch(`/api/cantine/${encodeURIComponent(producer)}/bevute?id=${encodeURIComponent(id)}`, { method: 'DELETE' }); if (!response.ok) throw new Error(); await load(); if (tastingStatus) tastingStatus.textContent = 'Bevuta eliminata dal taccuino.'; } catch { if (tastingStatus) tastingStatus.textContent = 'Non è stato possibile eliminare la bevuta.'; }
+  }));
+  document.querySelectorAll<HTMLButtonElement>('[data-tasting-editor-close]').forEach((button) => button.addEventListener('click', () => tastingEditor?.close()));
+  tastingEditorForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!editingTasting || !tastingEditorStatus) return;
+    tastingEditorStatus.textContent = 'Aggiornamento del taccuino…';
+    const values = new FormData(tastingEditorForm);
+    try {
+      const response = await fetch(`/api/cantine/${encodeURIComponent(editingTasting.producer.slug)}/bevute`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        id: editingTasting.id, wine: values.get('wine'), drunkAt: values.get('drunkAt'), place: values.get('place'), price: values.get('price'), rating: Number(values.get('rating')),
+        notes: values.get('notes'), wouldRepurchase: values.get('wouldRepurchase') === 'yes' ? true : values.get('wouldRepurchase') === 'no' ? false : undefined,
+        aromas: editingTasting.aromas || [], sensory: editingTasting.sensory || { body: 50, tannin: 50, sweetness: 50, acidity: 50 }, experience: editingTasting.experience,
+      }) });
+      const data = await response.json() as { error?: string };
+      if (!response.ok) throw new Error(data.error || 'Non è stato possibile salvare la modifica.');
+      await load(); tastingEditor?.close(); if (tastingStatus) tastingStatus.textContent = 'Degustazione aggiornata nel taccuino e nel passaporto.';
+    } catch (error) { tastingEditorStatus.textContent = error instanceof Error ? error.message : 'Non è stato possibile salvare la modifica.'; }
+  });
   qs<HTMLButtonElement>('[data-avatar-save]')?.addEventListener('click', async () => { const file = qs<HTMLInputElement>('[data-avatar-file]')?.files?.[0]; const status = qs<HTMLElement>('[data-avatar-status]'); if (!file || !status) return; if (file.size > 2 * 1024 * 1024) { status.textContent = 'La foto supera il limite di 2 MB.'; return; } status.textContent = 'Salvataggio foto…'; try { const response = await fetch('/api/profilo/avatar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photo: await readPhoto(file) }) }); if (!response.ok) throw new Error(); document.querySelectorAll<HTMLImageElement>('[data-avatar-image], [data-profile-avatar-image]').forEach((avatar) => { avatar.src = `/api/profilo/avatar?aggiornata=${Date.now()}`; avatar.hidden = false; }); document.querySelectorAll<HTMLElement>('[data-avatar-fallback], [data-profile-avatar-fallback]').forEach((fallback) => fallback.hidden = true); status.textContent = 'Foto profilo aggiornata.'; } catch { status.textContent = 'Non è stato possibile salvare la foto.'; } });
   qs<HTMLFormElement>('[data-handle-form]')?.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -307,6 +371,34 @@ import { maisons } from '../data/maisons';
   :global(.tasting) { padding: 26px 0; border-bottom: 1px solid var(--line); }:global(.tasting > p), :global(.bottle > p) { margin: 0 0 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }:global(.tasting h3), :global(.bottle h3) { margin: 0; font: 500 31px/1 var(--display); }:global(.tasting > a) { display: inline-block; margin-top: 9px; border-bottom: 1px solid var(--gold); color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }:global(.tasting > strong) { display: block; margin-top: 13px; color: var(--gold); font: 700 11px var(--sans); }:global(.tasting > small) { display: block; margin-top: 5px; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .07em; text-transform: uppercase; }:global(.aromas) { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }:global(.aromas span) { padding: 4px 7px; border: 1px solid var(--line); color: var(--terre); font: 600 9px var(--sans); }:global(.notes) { margin-top: 13px; line-height: 1.58; white-space: pre-line; }:global(.actions) { display: flex; gap: 14px; margin: 18px 0 0 !important; }:global(.actions a), :global(.actions button), :global(.bottle button) { padding: 0; border: 0; border-bottom: 1px solid currentColor; color: var(--terre); background: transparent; font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }:global(.actions button), :global(.bottle button) { color: #9d4031; }
   .record-form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 29px; padding: 24px; border: 1px solid var(--line); background: rgba(255,255,255,.22); }.record-form label { display: grid; gap: 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }.record-form input { width: 100%; padding: 10px 0; border: 0; border-bottom: 1px solid var(--line); outline: 0; color: var(--ink); background: transparent; font: 400 16px var(--serif); }.record-form input:focus { border-color: var(--gold); }button { justify-self: start; padding: 13px 18px; border: 1px solid var(--ink); color: var(--paper); background: var(--ink); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }.collection { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 23px; }:global(.bottle) { padding: 20px; border: 1px solid var(--line); background: rgba(255,255,255,.22); }:global(.bottle h3 span) { color: var(--terre); font-style: italic; font-weight: 400; }:global(.bottle strong) { display: block; margin-top: 12px; color: var(--sage); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }:global(.bottle button) { margin-top: 15px; }.taste { border-bottom: 0; }.profile-empty { max-width: 620px; padding: 28px; border-left: 2px solid var(--gold); background: rgba(217,212,200,.4); }.profile-empty p, :global(.profile-grid article p), :global(.territory p) { margin: 0; color: var(--gold); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }.profile-empty h3 { margin: 11px 0; font: 500 37px/1 var(--display); }.profile-empty span { color: var(--sage); }.profile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; border: 1px solid var(--line); background: var(--line); }:global(.profile-grid article) { padding: 23px; background: rgba(255,255,255,.28); }:global(.profile-grid h3) { margin: 10px 0 8px; font: 500 30px/1 var(--display); }:global(.profile-grid span), :global(.territory span) { color: var(--sage); font-size: 14px; line-height: 1.42; }.territory { margin-top: 20px; padding: 21px; background: rgba(217,212,200,.4); }.account-panel { display: grid; gap: 12px; margin-top: 64px; padding: 28px; border: 1px solid var(--line); background: rgba(255,255,255,.32); }.avatar-editor { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px 16px; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--line); }.account-avatar { display: grid; place-items: center; width: 58px; height: 58px; overflow: hidden; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font: 500 31px var(--display); }.account-avatar img { width: 100%; height: 100%; object-fit: cover; }.avatar-editor label { display: grid; gap: 5px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }.avatar-editor label span { color: var(--sage); font: 600 8px var(--sans); }.outline-button { padding: 10px 12px; border-color: var(--line); color: var(--terre); background: transparent; }.name { margin: 0; font: 500 42px/.95 var(--display); }.email { margin: 0; color: var(--sage); }.admin-link { justify-self: start; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }.logout { background: transparent; color: var(--terre); border-color: var(--line); }
   @media (max-width: 650px) { .account { width: min(100% - 32px, 850px); padding-top: 68px; }.stats { grid-template-columns: repeat(2, 1fr); }:global(.stats > article) { min-height: 120px; padding: 17px 15px; }:global(.stats > article:nth-child(odd)) { border-left: 0; }:global(.stats > article:nth-child(even)) { border-right: 0; }:global(.stats > article > strong) { font-size: 45px; }:global(.stats > article > span) { margin-top: 14px; font-size: 8px; }.overview, .account-section { padding: 56px 0; }.record-form, .collection, .profile-grid { grid-template-columns: 1fr; }.avatar-editor { grid-template-columns: 58px 1fr; }.avatar-editor .outline-button { grid-column: 2; }.account-panel { padding: 21px 17px; } }
+</style>
+
+<style>
+  /* Scheda di modifica: è esterna al libro per non alterare né tagliare le pagine. */
+  .tasting-editor { width: min(620px, calc(100% - 32px)); max-height: min(760px, calc(100svh - 32px)); padding: 0; overflow: auto; border: 1px solid var(--line); color: var(--ink); background: var(--paper); box-shadow: 0 24px 70px rgba(23,35,28,.28); }
+  .tasting-editor::backdrop { background: rgba(22,36,29,.54); backdrop-filter: blur(3px); }
+  .tasting-editor form { padding: 29px; background-image: radial-gradient(rgba(55,60,47,.055) .55px, transparent .7px); background-size: 7px 7px; }
+  .tasting-editor-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+  .tasting-editor-head p, .tasting-editor-producer { margin: 0; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .12em; text-transform: uppercase; }
+  .tasting-editor-head button { width: 30px; height: 30px; padding: 0; border: 1px solid var(--line); color: var(--terre); background: transparent; font: 400 22px/1 var(--display); cursor: pointer; }
+  .tasting-editor h2 { margin: 20px 0 8px; font: 500 clamp(37px, 7vw, 54px)/.9 var(--display); letter-spacing: -.04em; }
+  .tasting-editor-producer { color: var(--gold); }
+  .tasting-editor-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 22px; margin-top: 27px; }
+  .tasting-editor label { display: grid; gap: 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  .tasting-editor input, .tasting-editor select, .tasting-editor textarea { width: 100%; padding: 8px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; outline: 0; color: var(--ink); background: transparent; font: 400 18px var(--serif); }
+  .tasting-editor textarea { resize: vertical; line-height: 1.45; }.tasting-editor-notes { margin-top: 22px; }
+  .tasting-editor-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 23px; }.tasting-editor-actions button { padding: 11px 14px; border: 1px solid var(--ink); color: var(--paper); background: var(--ink); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }.tasting-editor-actions .outline-button { color: var(--terre); border-color: var(--line); background: transparent; }
+  @media (max-width: 760px) {
+    .passport-book:not(.is-closed) { height: min(710px, calc(100svh - 132px)); min-height: 0; }
+    .passport-page { padding: 20px 17px 36px !important; }
+    .passport-page-foot { right: 17px; bottom: 11px; left: 17px; padding-top: 7px; font-size: 7px; }
+    .passport-page :global(.tasting) { padding: 8px 5px 9px 10px; }.passport-page :global(.tasting h3), .passport-page :global(.bottle h3) { font-size: 18px; }.passport-page :global(.tasting > p) { min-height: 0; font-size: 6px; }.passport-page :global(.tasting > a), .passport-page :global(.tasting > strong), .passport-page :global(.tasting > small) { font-size: 7px; }.passport-page :global(.actions) { margin-top: 5px !important; }
+    .passport-page :global(.collection .bottle:nth-child(n + 3)) { display: none; }.passport-page :global(.collection) { max-height: none; }
+    .passport-page[data-passport-page="9"] :global(.profile-grid article) { grid-template-columns: 80px minmax(0, 1fr); padding: 9px 0; }.passport-page[data-passport-page="9"] :global(.profile-grid h3) { font-size: 18px; }.passport-page[data-passport-page="9"] :global(.profile-grid span) { font-size: 9px; }
+    .passport-page[data-passport-page="10"] :global([data-suggestions]) { min-height: 185px !important; padding: 12px !important; }.passport-page[data-passport-page="10"] :global(.suggestion h3) { font-size: 21px !important; }.passport-page[data-passport-page="10"] :global(.suggestion span) { font-size: 10px !important; }
+    .passport-page[data-passport-page="11"] .avatar-editor { margin-top: 15px; }.passport-page[data-passport-page="11"] .handle-editor { margin-top: 8px; padding: 9px 0; }.passport-page[data-passport-page="11"] .label { font-size: 8px; }.passport-page[data-passport-page="11"] .avatar-editor { padding: 8px 0; }.passport-page[data-passport-page="11"] .account-avatar { width: 47px; height: 55px; }
+    .tasting-editor form { padding: 21px 18px; }.tasting-editor-fields { grid-template-columns: 1fr; gap: 13px; margin-top: 20px; }.tasting-editor h2 { font-size: 40px; }.tasting-editor-actions { justify-content: stretch; }.tasting-editor-actions button { flex: 1; }
+  }
 </style>
 
 <style>
@@ -432,4 +524,18 @@ import { maisons } from '../data/maisons';
   .passport-page[data-passport-page="11"] .avatar-editor { margin-top: 38px; }.passport-page[data-passport-page="11"] .label { text-align: center; }.passport-page[data-passport-page="11"] .admin-link, .passport-page[data-passport-page="11"] .logout { justify-self: center; }
   .passport-turn-leaf { background-color: #f6f1e6; background-image: radial-gradient(rgba(55,60,47,.055) .55px, transparent .7px), linear-gradient(120deg, rgba(255,255,255,.68), rgba(235,228,213,.36)); background-size: 7px 7px, auto; border: 1px solid rgba(87,75,52,.2); }
   @media (max-width: 760px) { .passport-book.is-closed { display: grid; height: min(690px, calc(100svh - 125px)); min-height: 500px; padding: 0; }.passport-book.is-closed .passport-cover { width: min(100%, 430px); }.passport-book.is-closed .passport-cover h2 { font-size: clamp(40px, 12vw, 57px); }.passport-page :global([data-my-tastings]), .passport-page :global([data-my-tastings-secondary]) { grid-template-columns: 1fr; }.passport-page :global(.tasting:nth-child(n + 3)) { display: none; }.passport-page :global(.collection) { grid-template-columns: 1fr; }.passport-page[data-passport-page="6"] .record-form, .passport-page[data-passport-page="8"] .record-form { margin-top: 58px; }.passport-page[data-passport-page="9"] :global(.profile-grid article) { grid-template-columns: 92px minmax(0, 1fr); }.passport-page[data-passport-page="10"] :global([data-suggestions]) { min-height: 290px; } }
+</style>
+
+<style>
+  /* Ultima correzione mobile: una pagina leggibile, senza tagli né sovrapposizioni. */
+  @media (max-width: 760px) {
+    .passport-book:not(.is-closed) { height: min(710px, calc(100svh - 132px)); min-height: 0; }
+    .passport-page { padding: 20px 17px 36px !important; }
+    .passport-page-foot { right: 17px; bottom: 11px; left: 17px; padding-top: 7px; font-size: 7px; }
+    .passport-page :global(.tasting) { padding: 8px 5px 9px 10px; }.passport-page :global(.tasting h3), .passport-page :global(.bottle h3) { font-size: 18px; }.passport-page :global(.tasting > p) { min-height: 0; font-size: 6px; }.passport-page :global(.tasting > a), .passport-page :global(.tasting > strong), .passport-page :global(.tasting > small) { font-size: 7px; }.passport-page :global(.actions) { margin-top: 5px !important; }
+    .passport-page :global(.collection .bottle:nth-child(n + 3)) { display: none; }.passport-page :global(.collection) { max-height: none; }
+    .passport-page[data-passport-page="9"] :global(.profile-grid article) { grid-template-columns: 80px minmax(0, 1fr); padding: 9px 0; }.passport-page[data-passport-page="9"] :global(.profile-grid h3) { font-size: 18px; }.passport-page[data-passport-page="9"] :global(.profile-grid span) { font-size: 9px; }
+    .passport-page[data-passport-page="10"] :global([data-suggestions]) { min-height: 185px !important; padding: 12px !important; }.passport-page[data-passport-page="10"] :global(.suggestion h3) { font-size: 21px !important; }.passport-page[data-passport-page="10"] :global(.suggestion span) { font-size: 10px !important; }
+    .passport-page[data-passport-page="11"] .avatar-editor { margin-top: 15px; padding: 8px 0; }.passport-page[data-passport-page="11"] .handle-editor { margin-top: 8px; padding: 9px 0; }.passport-page[data-passport-page="11"] .label { font-size: 8px; }.passport-page[data-passport-page="11"] .account-avatar { width: 47px; height: 55px; }
+  }
 </style>
