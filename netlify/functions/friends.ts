@@ -1,5 +1,5 @@
 import { getStore } from '@netlify/blobs';
-import { admin, getUser } from '@netlify/identity';
+import { getUser } from '@netlify/identity';
 import { maisonSlug, maisons } from '../../src/data/maisons';
 
 type SensoryProfile = { body: number; tannin: number; sweetness: number; acidity: number };
@@ -10,6 +10,7 @@ type Tasting = {
 };
 type TastingIndex = { id: string; producerSlug: string; createdAt: string };
 type CellarBottle = { id: string; producer: string; wine: string; vintage?: string; quantity: number; createdAt: string };
+type CommunityMember = { id: string; handle: string };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'private, no-store' } });
 const handleFor = (user: { userMetadata?: Record<string, unknown>; name?: string | null }) => {
   const value = user.userMetadata?.handle || user.name;
@@ -41,25 +42,29 @@ export default async (request: Request) => {
   const viewer = await getUser();
   if (!viewer) return json({ error: 'Accesso riservato agli utenti registrati.' }, 401);
   const store = getStore({ name: 'champagne-tasting-notes', consistency: 'strong' });
-  const users = await admin.listUsers({ perPage: 1000 });
+  const viewerHandle = handleFor(viewer);
+  const storedCommunity = (await store.get('community/participants.json', { type: 'json' }) || []) as CommunityMember[];
+  const community = storedCommunity.filter((member): member is CommunityMember => Boolean(member?.id && member?.handle));
+  if (viewerHandle && !community.some((member) => member.id === viewer.id)) {
+    community.push({ id: viewer.id, handle: viewerHandle });
+    await store.set('community/participants.json', JSON.stringify(community));
+  }
   const handle = new URL(request.url).searchParams.get('utente')?.trim().toLowerCase();
   if (handle) {
-    const user = users.find((candidate) => handleFor(candidate) === handle);
+    const user = community.find((candidate) => candidate.handle === handle);
     if (!user) return json({ error: 'Profilo non trovato.' }, 404);
     const [tastings, cellar, avatar] = await Promise.all([
       tastingsFor(store, user.id),
       store.get(`cellars/${user.id}.json`, { type: 'json' }),
       store.getMetadata(`avatars/${user.id}`),
     ]);
-    return json({ profile: { handle: handleFor(user), avatar: Boolean(avatar), isSelf: user.id === viewer.id }, tastings, cellar: (cellar || []) as CellarBottle[] });
+    return json({ profile: { handle: user.handle, avatar: Boolean(avatar), isSelf: user.id === viewer.id }, tastings, cellar: (cellar || []) as CellarBottle[] });
   }
-  const friends = (await Promise.all(users.map(async (user) => {
-    const publicHandle = handleFor(user);
-    if (!publicHandle) return undefined;
+  const friends = (await Promise.all(community.map(async (user) => {
     const [tastingIndex, cellar, avatar] = await Promise.all([
       store.get(`users/${user.id}.json`, { type: 'json' }), store.get(`cellars/${user.id}.json`, { type: 'json' }), store.getMetadata(`avatars/${user.id}`),
     ]);
-    return { handle: publicHandle, avatar: Boolean(avatar), tastingCount: Array.isArray(tastingIndex) ? tastingIndex.length : 0, cellarCount: Array.isArray(cellar) ? cellar.reduce((sum, bottle) => sum + Number(bottle?.quantity || 0), 0) : 0 };
+    return { handle: user.handle, avatar: Boolean(avatar), tastingCount: Array.isArray(tastingIndex) ? tastingIndex.length : 0, cellarCount: Array.isArray(cellar) ? cellar.reduce((sum, bottle) => sum + Number(bottle?.quantity || 0), 0) : 0 };
   }))).filter(Boolean).sort((a, b) => String(a?.handle).localeCompare(String(b?.handle)));
   return json({ friends });
 };
