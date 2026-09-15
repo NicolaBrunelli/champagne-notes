@@ -127,6 +127,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
   })();
 
+  const suppliedCode = new URLSearchParams(window.location.search).get('codice')?.trim();
+  if (suppliedCode && codeForm) {
+    const field = codeForm.elements.namedItem('code');
+    if (field instanceof HTMLInputElement) field.value = suppliedCode;
+    showPanel(codePanel);
+  }
+
   codeTrigger?.addEventListener('click', () => showPanel(codePanel));
   recoveryTrigger?.addEventListener('click', () => showPanel(recoveryPanel));
   loginTrigger?.addEventListener('click', () => showPanel(authPanel));

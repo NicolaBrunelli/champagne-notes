@@ -41,3 +41,5 @@ export const listInvites = async () => {
 };
 
 export const saveInvite = (record: InviteRecord) => store().setJSON(keyFor(record.id), record);
+export const getInvite = (id: string) => store().get(keyFor(id), { type: 'json' }) as Promise<InviteRecord | null>;
+export const deleteInvite = (id: string) => store().delete(keyFor(id));
