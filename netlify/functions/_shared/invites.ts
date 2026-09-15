@@ -3,6 +3,8 @@ import { getStore } from '@netlify/blobs';
 export type InviteRecord = {
   id: string;
   codeHash: string;
+  /** Stored only in the private admin invite store, so an administrator can retrieve the sharing link later. */
+  code?: string;
   label: string;
   createdAt: string;
   expiresAt: string;
