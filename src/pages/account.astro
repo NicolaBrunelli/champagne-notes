@@ -43,7 +43,7 @@ import { maisons } from '../data/maisons';
           <div class="passport-page-foot"><span>My Champagne Passport</span><b>01</b></div>
         </section>
 
-        <section id="overview" class="passport-page overview" data-passport-page="2" aria-labelledby="overview-title" hidden>
+        <section id="overview" class="passport-page overview continuation-page" data-passport-page="2" aria-labelledby="overview-title" hidden>
           <div class="passport-page-head"><span>02 — Overview</span><span>Journal de bord</span></div>
       <div class="section-heading"><h2 id="overview-title">Overview</h2></div>
       <div class="stats" data-overview-stats><p class="loading">Sto aprendo il tuo taccuino…</p></div>
@@ -351,6 +351,13 @@ import { maisons } from '../data/maisons';
   .continuation-page .section-heading { margin-top: 42px; }
   .continuation-page :global(.suggestion), .continuation-page :global(.suggestion p), .continuation-page :global(.suggestion h3) { text-align: center; }
   .passport-cover > p, .passport-cover h2, .passport-cover small, .passport-cover button, .cover-mark { justify-self: center; }
+  /* Una sola intestazione per spread: la pagina destra è sempre il seguito. */
+  .passport-page .section-heading { display: none; }
+  .passport-page .intro { display: none; }
+  .passport-page.continuation-page .passport-page-head { display: none; }
+  .passport-page.continuation-page { padding-top: 42px; }
+  .passport-page.continuation-page .passport-note { margin-top: 70px; }
+  .passport-page :global(.tasting:first-child) { margin-top: 8px; }
   .passport-turn-leaf { position: absolute; z-index: 20; top: 11px; bottom: 11px; width: calc(50% - 11px); overflow: hidden; pointer-events: none; backface-visibility: hidden; }
   .passport-turn-leaf.turn-forward { left: 11px; transform-origin: right center; }.passport-turn-leaf.turn-back { right: 11px; transform-origin: left center; }
   .passport-turn-leaf.is-flipping.turn-forward { animation: leaf-forward .64s cubic-bezier(.2,.68,.2,1) both; }.passport-turn-leaf.is-flipping.turn-back { animation: leaf-back .64s cubic-bezier(.2,.68,.2,1) both; }
