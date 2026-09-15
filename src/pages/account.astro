@@ -13,11 +13,11 @@ import { maisons } from '../data/maisons';
 
     <div class="passport-tabs" aria-label="Indice del Champagne Passport" role="navigation">
       <button type="button" data-passport-go="1"><b>01–02</b> Overview</button>
-      <button type="button" data-passport-go="3"><b>03</b> Degustazioni</button>
-      <button type="button" data-passport-go="5"><b>05</b> Cantina</button>
-      <button type="button" data-passport-go="7"><b>07</b> Wishlist</button>
-      <button type="button" data-passport-go="9"><b>09</b> Il mio gusto</button>
-      <button type="button" data-passport-go="11"><b>11</b> Profilo</button>
+      <button type="button" data-passport-go="3"><b>03–04</b> Degustazioni</button>
+      <button type="button" data-passport-go="5"><b>05–06</b> Cantina</button>
+      <button type="button" data-passport-go="7"><b>07–08</b> Wishlist</button>
+      <button type="button" data-passport-go="9"><b>09–10</b> Il mio gusto</button>
+      <button type="button" data-passport-go="11"><b>11–12</b> Profilo</button>
     </div>
 
     <div class="passport-stage" data-passport-stage>
@@ -70,13 +70,7 @@ import { maisons } from '../data/maisons';
           <div class="passport-page-head"><span>05 — Cantina</span><span>Registre de cave</span></div>
       <div class="section-heading"><h2 id="cellar-title">Cantina</h2></div>
       <p class="intro">Le bottiglie che possiedi, senza confonderle con ciò che hai già degustato.</p>
-      <form class="record-form" data-cellar-form>
-        <label>Produttore<input name="producer" list="maison-options" required placeholder="Es. Jacques Selosse" /></label>
-        <label>Champagne<input name="wine" required placeholder="Es. Substance" /></label>
-        <label>Annata <input name="vintage" inputmode="numeric" maxlength="12" placeholder="Es. 2014" /></label>
-        <label>Quantità <input name="quantity" type="number" min="1" max="99" value="1" required /></label>
-        <button type="submit">Aggiungi in cantina <span aria-hidden="true">→</span></button><p class="status" data-cellar-status aria-live="polite"></p>
-      </form>
+      <div class="passport-note">Qui custodisci le bottiglie che possiedi. La loro storia resta distinta dalle degustazioni: quando ne aprirai una, potrai annotarla nel taccuino senza perderne traccia.</div>
       <div class="collection" data-cellar-collection aria-live="polite"><p class="loading">Caricamento della cantina…</p></div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>05</b></div>
         </section>
@@ -84,7 +78,13 @@ import { maisons } from '../data/maisons';
         <section class="passport-page account-section continuation-page" data-passport-page="6" aria-label="Cantina, seconda pagina" hidden>
           <div class="passport-page-head"><span>06 — Cantina</span><span>Inventaire</span></div>
           <div class="section-heading"><h2>Cantina</h2></div>
-          <div class="passport-note">Registra qui le bottiglie che vuoi custodire. Quando le berrai, entreranno nel taccuino senza scomparire dalla tua storia.</div>
+          <form class="record-form" data-cellar-form>
+            <label>Produttore<input name="producer" list="maison-options" required placeholder="Es. Jacques Selosse" /></label>
+            <label>Champagne<input name="wine" required placeholder="Es. Substance" /></label>
+            <label>Annata <input name="vintage" inputmode="numeric" maxlength="12" placeholder="Es. 2014" /></label>
+            <label>Quantità <input name="quantity" type="number" min="1" max="99" value="1" required /></label>
+            <button type="submit">Aggiungi in cantina <span aria-hidden="true">→</span></button><p class="status" data-cellar-status aria-live="polite"></p>
+          </form>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>06</b></div>
         </section>
 
@@ -92,12 +92,7 @@ import { maisons } from '../data/maisons';
           <div class="passport-page-head"><span>07 — Wishlist</span><span>Prochaines découvertes</span></div>
       <div class="section-heading"><h2 id="wishlist-title">Wishlist</h2></div>
       <p class="intro">Una lista essenziale di Champagne che vuoi provare o acquistare. Puoi aggiungere una cuvée dalle pagine dei produttori oppure annotarla qui.</p>
-      <form class="record-form" data-wishlist-form>
-        <label>Produttore<input name="producer" list="maison-options" required placeholder="Es. Bollinger" /></label>
-        <label>Champagne<input name="wine" required placeholder="Es. La Grande Année" /></label>
-        <button type="submit">Aggiungi alla wishlist <span aria-hidden="true">→</span></button><p class="status" data-wishlist-status aria-live="polite"></p>
-      </form>
-      <datalist id="maison-options">{maisons.map((maison) => <option value={maison.name} />)}</datalist>
+      <div class="passport-note">Una lista di indirizzi da seguire: Champagne da provare, acquistare o ritrovare quando sarà il momento giusto.</div>
       <div class="collection wishlist-collection" data-wishlist-collection aria-live="polite"><p class="loading">Caricamento della wishlist…</p></div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>07</b></div>
         </section>
@@ -105,7 +100,12 @@ import { maisons } from '../data/maisons';
         <section class="passport-page account-section continuation-page" data-passport-page="8" aria-label="Wishlist, seconda pagina" hidden>
           <div class="passport-page-head"><span>08 — Wishlist</span><span>À découvrir</span></div>
           <div class="section-heading"><h2>Wishlist</h2></div>
-          <div class="passport-note">Usa la wishlist come una lista di indirizzi: ciò che vuoi provare, acquistare o ritrovare.</div>
+          <form class="record-form" data-wishlist-form>
+            <label>Produttore<input name="producer" list="maison-options" required placeholder="Es. Bollinger" /></label>
+            <label>Champagne<input name="wine" required placeholder="Es. La Grande Année" /></label>
+            <button type="submit">Aggiungi alla wishlist <span aria-hidden="true">→</span></button><p class="status" data-wishlist-status aria-live="polite"></p>
+          </form>
+          <datalist id="maison-options">{maisons.map((maison) => <option value={maison.name} />)}</datalist>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>08</b></div>
         </section>
 
@@ -124,17 +124,16 @@ import { maisons } from '../data/maisons';
         </section>
 
         <aside class="passport-page account-panel" data-passport-page="11" id="profilo" aria-label="Profilo personale" hidden>
-          <div class="passport-page-head"><span>11 — Profilo</span><span>Identité</span></div>
-      <p class="label">Il tuo profilo</p>
+          <div class="passport-page-head"><span>11 — Impostazioni</span><span>Votre sceau</span></div>
+      <p class="label">Personalizza il passaporto</p>
       <div class="avatar-editor"><span class="account-avatar"><img data-profile-avatar-image alt="Foto profilo" hidden /><b data-profile-avatar-fallback>?</b></span><label>Foto profilo <input data-avatar-file type="file" accept="image/jpeg,image/png,image/webp" /><span>JPG, PNG o WebP · max 2 MB</span></label><button type="button" class="outline-button" data-avatar-save>Salva foto</button></div>
-      <p class="name" data-user-name>Caricamento profilo…</p><p class="email" data-user-email></p><p class="status" data-avatar-status aria-live="polite"></p>
-      <a class="admin-link" href="/admin" data-admin-link hidden>Gestisci inviti <span aria-hidden="true">→</span></a><button type="button" class="logout" data-logout>Esci dal tuo passaporto</button>
+      <p class="status" data-avatar-status aria-live="polite"></p>
+      <a class="admin-link" href="/amici#inviti" data-admin-link hidden>Inviti e codici <span aria-hidden="true">→</span></a><button type="button" class="logout" data-logout>Esci dal tuo passaporto</button>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>11</b></div>
         </aside>
         <section class="passport-page account-section continuation-page" data-passport-page="12" aria-label="Profilo, seconda pagina" hidden>
-          <div class="passport-page-head"><span>12 — Profilo</span><span>Fin du voyage</span></div>
-          <div class="section-heading"><h2>Profilo</h2></div>
-          <div class="passport-note">Ogni valutazione, bottiglia e appunto rimane nel tuo profilo personale.</div>
+          <div class="passport-page-head"><span>12 — Il tuo archivio</span><span>À conserver</span></div>
+          <div class="passport-note">Ogni valutazione, bottiglia e appunto resta nel tuo archivio personale: un passaporto che prende forma pagina dopo pagina.</div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>12</b></div>
         </section>
       </div>
@@ -169,11 +168,9 @@ import { maisons } from '../data/maisons';
   const clampPage = (value: number) => Math.max(0, Math.min(passportPages.length - 1, value));
   const animateLeaf = (from: number, direction: number) => {
     if (!passportBook || prefersReducedMotion.matches || from === 0) return;
-    const source = passportPages[direction > 0 || mobilePassport() ? from : Math.min(from + 1, passportPages.length - 1)];
-    if (!source) return;
-    const leaf = source.cloneNode(true) as HTMLElement;
-    leaf.removeAttribute('id'); leaf.hidden = false; leaf.setAttribute('aria-hidden', 'true');
-    leaf.classList.remove('is-turning-forward', 'is-turning-back'); leaf.classList.add('passport-turn-leaf', direction > 0 ? 'turn-forward' : 'turn-back');
+    const leaf = document.createElement('div');
+    leaf.setAttribute('aria-hidden', 'true');
+    leaf.classList.add('passport-turn-leaf', direction > 0 ? 'turn-forward' : 'turn-back');
     passportBook.append(leaf);
     requestAnimationFrame(() => leaf.classList.add('is-flipping'));
     window.setTimeout(() => leaf.remove(), 680);
@@ -200,10 +197,9 @@ import { maisons } from '../data/maisons';
     renderPassport(passportPage === 0 ? 1 : passportPage + (direction * step), direction);
   };
   const activatePassport = () => {
-    const alreadyOpened = sessionStorage.getItem('champagne-passport-opened') === 'true';
-    renderPassport(alreadyOpened ? 1 : 0, 1, false);
-    qs<HTMLButtonElement>('[data-passport-open]')?.addEventListener('click', () => { sessionStorage.setItem('champagne-passport-opened', 'true'); renderPassport(1); });
-    const openCover = () => { sessionStorage.setItem('champagne-passport-opened', 'true'); renderPassport(1); };
+    renderPassport(0, 1, false);
+    qs<HTMLButtonElement>('[data-passport-open]')?.addEventListener('click', () => renderPassport(1));
+    const openCover = () => renderPassport(1);
     const cover = qs<HTMLElement>('[data-passport-cover]');
     cover?.addEventListener('click', openCover);
     cover?.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openCover(); } });
@@ -289,6 +285,24 @@ import { maisons } from '../data/maisons';
 </style>
 
 <style>
+  /* Correzioni di impaginazione: una copertina sola, spread fissi e contenuti senza scorrimento. */
+  .passport-book.is-closed { display: grid; grid-template-columns: 1fr; place-items: center; height: min(700px, calc(100svh - 160px)); min-height: 560px; padding: 0; }
+  .passport-book.is-closed .passport-cover { grid-column: 1; width: min(500px, calc(100% - 56px)); min-width: 0; height: 100%; max-height: 700px; }
+  .passport-book.is-closed .passport-cover h2 { max-width: 100%; padding: 0 18px; font-size: clamp(46px, 5.15vw, 70px); line-height: .82; overflow-wrap: anywhere; }
+  .passport-book.is-closed .passport-cover > p { margin-bottom: 28px; }.passport-book.is-closed .cover-mark { margin-bottom: 18px; }.passport-book.is-closed .passport-cover button { margin-top: 44px; }
+  .passport-page { min-width: 0; min-height: 0; overflow: hidden; }
+  .passport-page :global([data-my-tastings]), .passport-page :global([data-my-tastings-secondary]) { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; margin-top: 8px; border-top: 1px solid rgba(32,52,43,.18); }
+  .passport-page :global(.tasting) { min-width: 0; min-height: 0; padding: 12px 8px 13px 13px; }.passport-page :global(.tasting::before) { top: 15px; }.passport-page :global(.tasting h3) { font-size: clamp(17px, 1.75vw, 23px); overflow-wrap: anywhere; }.passport-page :global(.tasting > p) { min-height: 17px; }.passport-page :global(.aromas span:nth-child(n + 4)) { display: none; }.passport-page :global(.actions) { margin-top: 7px !important; }.passport-page :global(.actions a), .passport-page :global(.actions button) { font-size: 7px; }
+  .passport-page :global(.collection) { grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: 350px; overflow: hidden; }.passport-page :global(.collection .bottle) { min-width: 0; }.passport-page :global(.collection .bottle h3) { overflow-wrap: anywhere; }
+  .passport-page .passport-note { max-width: 390px; margin: 32px auto 16px; font-size: 17px; text-align: center; }.passport-page .collection + .passport-page-foot { z-index: 2; }
+  .passport-page[data-passport-page="6"] .record-form, .passport-page[data-passport-page="8"] .record-form { margin-top: 86px; }.passport-page[data-passport-page="6"] .record-form { margin-bottom: 0; }
+  .passport-page[data-passport-page="9"] :global(.profile-grid) { display: block; border: 0; background: transparent; }.passport-page[data-passport-page="9"] :global(.profile-grid article) { display: grid; grid-template-columns: 118px minmax(0, 1fr); column-gap: 15px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid rgba(32,52,43,.2); }.passport-page[data-passport-page="9"] :global(.profile-grid article p) { grid-row: span 2; }.passport-page[data-passport-page="9"] :global(.profile-grid h3) { margin: 0; font-size: clamp(20px, 2.2vw, 29px); }.passport-page[data-passport-page="9"] :global(.profile-grid span) { grid-column: 2; margin-top: 4px; font-size: 11px; }.passport-page[data-passport-page="9"] :global(.territory) { margin-top: 14px; border: 1px solid rgba(146,106,67,.25); background: transparent; text-align: center; }.passport-page[data-passport-page="10"] :global([data-suggestions]) { position: relative; z-index: 1; display: grid; place-items: center; min-height: 330px; padding: 18px; border: 1px solid rgba(146,106,67,.25); background: radial-gradient(circle at center, rgba(205,183,130,.16), transparent 63%); text-align: center; }.passport-page[data-passport-page="10"] :global(.suggestion) { max-width: 310px; padding: 0; border: 0; }.passport-page[data-passport-page="10"] :global(.suggestion::before) { display: block; width: 62px; height: 62px; margin: 0 auto 16px; content: '✦'; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font: 400 30px/62px var(--display); }.passport-page[data-passport-page="10"] :global(.suggestion p) { margin-bottom: 10px; }.passport-page[data-passport-page="10"] :global(.suggestion h3) { font-size: 30px; }.passport-page[data-passport-page="10"] :global(.empty) { max-width: 290px; color: var(--sage); text-align: center; }
+  .passport-page[data-passport-page="11"] .avatar-editor { margin-top: 38px; }.passport-page[data-passport-page="11"] .label { text-align: center; }.passport-page[data-passport-page="11"] .admin-link, .passport-page[data-passport-page="11"] .logout { justify-self: center; }
+  .passport-turn-leaf { background-color: #f6f1e6; background-image: radial-gradient(rgba(55,60,47,.055) .55px, transparent .7px), linear-gradient(120deg, rgba(255,255,255,.68), rgba(235,228,213,.36)); background-size: 7px 7px, auto; border: 1px solid rgba(87,75,52,.2); }
+  @media (max-width: 760px) { .passport-book.is-closed { display: grid; height: min(690px, calc(100svh - 125px)); min-height: 500px; padding: 0; }.passport-book.is-closed .passport-cover { width: min(100%, 430px); }.passport-book.is-closed .passport-cover h2 { font-size: clamp(40px, 12vw, 57px); }.passport-page :global([data-my-tastings]), .passport-page :global([data-my-tastings-secondary]) { grid-template-columns: 1fr; }.passport-page :global(.tasting:nth-child(n + 3)) { display: none; }.passport-page :global(.collection) { grid-template-columns: 1fr; }.passport-page[data-passport-page="6"] .record-form, .passport-page[data-passport-page="8"] .record-form { margin-top: 58px; }.passport-page[data-passport-page="9"] :global(.profile-grid article) { grid-template-columns: 92px minmax(0, 1fr); }.passport-page[data-passport-page="10"] :global([data-suggestions]) { min-height: 290px; } }
+</style>
+
+<style>
   .passport-shell { width: min(1240px, calc(100% - 48px)); min-height: calc(100svh - 82px); margin: auto; padding: 26px 0 46px; }
   .passport-intro { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
   .eyebrow, .passport-label, .section-heading > p, .label { margin: 0; color: var(--gold); font: 700 10px var(--sans); letter-spacing: .14em; text-transform: uppercase; }
@@ -364,4 +378,22 @@ import { maisons } from '../data/maisons';
   @keyframes leaf-forward { 0% { transform: rotateY(0); box-shadow: -4px 0 10px rgba(0,0,0,.18); } 50% { filter: brightness(.87); } 100% { transform: rotateY(-180deg); box-shadow: 17px 0 25px rgba(0,0,0,.25); } }
   @keyframes leaf-back { 0% { transform: rotateY(0); box-shadow: 4px 0 10px rgba(0,0,0,.18); } 50% { filter: brightness(.87); } 100% { transform: rotateY(180deg); box-shadow: -17px 0 25px rgba(0,0,0,.25); } }
   @media (max-width: 760px) { .passport-book.is-closed { display: block; padding: 7px; }.passport-book.is-closed .passport-cover { width: 100%; height: 100%; }.passport-page .section-heading h2 { font-size: clamp(34px, 10vw, 48px); }.passport-turn-leaf { top: 7px; right: 7px !important; bottom: 7px; left: 7px !important; width: auto; }.passport-turn-leaf.turn-forward, .passport-turn-leaf.turn-back { transform-origin: right center; } }
+</style>
+
+<style>
+  /* Regole finali del passaporto: queste prevalgono sugli esperimenti precedenti. */
+  .passport-book.is-closed { display: grid; grid-template-columns: 1fr; place-items: center; height: min(700px, calc(100svh - 160px)); min-height: 560px; padding: 0; }
+  .passport-book.is-closed .passport-cover { grid-column: 1; width: min(500px, calc(100% - 56px)); min-width: 0; height: 100%; max-height: 700px; }
+  .passport-book.is-closed .passport-cover h2 { max-width: 100%; padding: 0 18px; font-size: clamp(46px, 5.15vw, 70px); line-height: .82; overflow-wrap: anywhere; }
+  .passport-book.is-closed .passport-cover > p { margin-bottom: 28px; }.passport-book.is-closed .cover-mark { margin-bottom: 18px; }.passport-book.is-closed .passport-cover button { margin-top: 44px; }
+  .passport-page { min-width: 0; min-height: 0; overflow: hidden; }
+  .passport-page :global([data-my-tastings]), .passport-page :global([data-my-tastings-secondary]) { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; margin-top: 8px; border-top: 1px solid rgba(32,52,43,.18); }
+  .passport-page :global(.tasting) { min-width: 0; min-height: 0; padding: 12px 8px 13px 13px; }.passport-page :global(.tasting::before) { top: 15px; }.passport-page :global(.tasting h3) { font-size: clamp(17px, 1.75vw, 23px); overflow-wrap: anywhere; }.passport-page :global(.tasting > p) { min-height: 17px; }.passport-page :global(.aromas span:nth-child(n + 4)) { display: none; }.passport-page :global(.actions) { margin-top: 7px !important; }.passport-page :global(.actions a), .passport-page :global(.actions button) { font-size: 7px; }
+  .passport-page :global(.collection) { grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: 350px; overflow: hidden; }.passport-page :global(.collection .bottle) { min-width: 0; }.passport-page :global(.collection .bottle h3) { overflow-wrap: anywhere; }
+  .passport-page .passport-note { max-width: 390px; margin: 32px auto 16px; font-size: 17px; text-align: center; }.passport-page .collection + .passport-page-foot { z-index: 2; }
+  .passport-page[data-passport-page="6"] .record-form, .passport-page[data-passport-page="8"] .record-form { margin-top: 86px; }.passport-page[data-passport-page="6"] .record-form { margin-bottom: 0; }
+  .passport-page[data-passport-page="9"] :global(.profile-grid) { display: block; border: 0; background: transparent; }.passport-page[data-passport-page="9"] :global(.profile-grid article) { display: grid; grid-template-columns: 118px minmax(0, 1fr); column-gap: 15px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid rgba(32,52,43,.2); }.passport-page[data-passport-page="9"] :global(.profile-grid article p) { grid-row: span 2; }.passport-page[data-passport-page="9"] :global(.profile-grid h3) { margin: 0; font-size: clamp(20px, 2.2vw, 29px); }.passport-page[data-passport-page="9"] :global(.profile-grid span) { grid-column: 2; margin-top: 4px; font-size: 11px; }.passport-page[data-passport-page="9"] :global(.territory) { margin-top: 14px; border: 1px solid rgba(146,106,67,.25); background: transparent; text-align: center; }.passport-page[data-passport-page="10"] :global([data-suggestions]) { position: relative; z-index: 1; display: grid; place-items: center; min-height: 330px; padding: 18px; border: 1px solid rgba(146,106,67,.25); background: radial-gradient(circle at center, rgba(205,183,130,.16), transparent 63%); text-align: center; }.passport-page[data-passport-page="10"] :global(.suggestion) { max-width: 310px; padding: 0; border: 0; }.passport-page[data-passport-page="10"] :global(.suggestion::before) { display: block; width: 62px; height: 62px; margin: 0 auto 16px; content: '✦'; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font: 400 30px/62px var(--display); }.passport-page[data-passport-page="10"] :global(.suggestion p) { margin-bottom: 10px; }.passport-page[data-passport-page="10"] :global(.suggestion h3) { font-size: 30px; }.passport-page[data-passport-page="10"] :global(.empty) { max-width: 290px; color: var(--sage); text-align: center; }
+  .passport-page[data-passport-page="11"] .avatar-editor { margin-top: 38px; }.passport-page[data-passport-page="11"] .label { text-align: center; }.passport-page[data-passport-page="11"] .admin-link, .passport-page[data-passport-page="11"] .logout { justify-self: center; }
+  .passport-turn-leaf { background-color: #f6f1e6; background-image: radial-gradient(rgba(55,60,47,.055) .55px, transparent .7px), linear-gradient(120deg, rgba(255,255,255,.68), rgba(235,228,213,.36)); background-size: 7px 7px, auto; border: 1px solid rgba(87,75,52,.2); }
+  @media (max-width: 760px) { .passport-book.is-closed { display: grid; height: min(690px, calc(100svh - 125px)); min-height: 500px; padding: 0; }.passport-book.is-closed .passport-cover { width: min(100%, 430px); }.passport-book.is-closed .passport-cover h2 { font-size: clamp(40px, 12vw, 57px); }.passport-page :global([data-my-tastings]), .passport-page :global([data-my-tastings-secondary]) { grid-template-columns: 1fr; }.passport-page :global(.tasting:nth-child(n + 3)) { display: none; }.passport-page :global(.collection) { grid-template-columns: 1fr; }.passport-page[data-passport-page="6"] .record-form, .passport-page[data-passport-page="8"] .record-form { margin-top: 58px; }.passport-page[data-passport-page="9"] :global(.profile-grid article) { grid-template-columns: 92px minmax(0, 1fr); }.passport-page[data-passport-page="10"] :global([data-suggestions]) { min-height: 290px; } }
 </style>

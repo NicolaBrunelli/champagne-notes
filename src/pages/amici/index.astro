@@ -6,8 +6,24 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   <section class="friends" data-friends-page>
     <p class="eyebrow">Archivio condiviso</p>
     <h1>Gli<br /><em>amici.</em></h1>
-    <p class="intro">I taccuini delle persone invitate nell’archivio: bottiglie bevute, voti e cantine personali.</p>
+    <p class="intro">La raccolta dei passaporti della community: ogni copertina apre il percorso, le bottiglie e la cantina personale di un amico.</p>
+    <p class="section-label">Passaporti della community</p>
     <div class="friend-grid" data-friend-grid aria-live="polite"><p>Caricamento degli amici…</p></div>
+
+    <section class="invite-desk" id="inviti" data-invite-desk hidden aria-labelledby="invite-title">
+      <p class="eyebrow">Solo amministratore</p>
+      <h2 id="invite-title">Inviti e codici.</h2>
+      <p>Crea un codice personale, condividilo direttamente e lascia che l’ospite scelga username, email e password.</p>
+      <div class="invite-panel">
+        <form data-invite-create>
+          <label>Riferimento dell’invito<input name="label" required maxlength="80" placeholder="Es. Marco — settembre" /></label>
+          <label>Validità<select name="days"><option value="3">3 giorni</option><option value="7" selected>7 giorni</option><option value="14">14 giorni</option><option value="30">30 giorni</option></select></label>
+          <p data-create-status aria-live="polite"></p><button type="submit">Crea codice <span aria-hidden="true">→</span></button>
+        </form>
+        <div class="code-result" data-code-result hidden><p class="section-label">Codice da condividere ora</p><output data-invite-code></output><button type="button" class="copy" data-copy-code>Copia codice</button><p>Per sicurezza, il codice completo è visibile solo ora.</p></div>
+      </div>
+      <div class="invite-list"><p class="section-label">Inviti creati</p><div data-invite-list><p>Caricamento inviti…</p></div></div>
+    </section>
   </section>
 </BaseLayout>
 
@@ -15,24 +31,42 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   import { getCurrentUser } from '../../scripts/identity-session';
   type Friend = { handle: string; avatar: boolean; tastingCount: number; cellarCount: number };
   const grid = document.querySelector<HTMLElement>('[data-friend-grid]');
+  const inviteDesk = document.querySelector<HTMLElement>('[data-invite-desk]');
+  const inviteForm = document.querySelector<HTMLFormElement>('[data-invite-create]');
+  const inviteStatus = document.querySelector<HTMLElement>('[data-create-status]');
+  const codeResult = document.querySelector<HTMLElement>('[data-code-result]');
+  const codeOutput = document.querySelector<HTMLOutputElement>('[data-invite-code]');
+  const copyButton = document.querySelector<HTMLButtonElement>('[data-copy-code]');
+  const inviteList = document.querySelector<HTMLElement>('[data-invite-list]');
   const escapeHTML = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] || character));
   const draw = (friends: Friend[]) => {
     if (!grid) return;
     if (!friends.length) { grid.innerHTML = '<p class="empty">Non ci sono ancora taccuini da esplorare.</p>'; return; }
     grid.innerHTML = friends.map((friend) => `<a class="friend-card" href="/amici/profilo?utente=${encodeURIComponent(friend.handle)}">
       <span class="friend-avatar">${friend.avatar ? `<img src="/api/profilo/avatar?utente=${encodeURIComponent(friend.handle)}" alt="Foto profilo di ${escapeHTML(friend.handle)}">` : escapeHTML(friend.handle.slice(0, 1).toUpperCase())}</span>
-      <span class="friend-handle">${escapeHTML(friend.handle)}</span>
+      <span class="friend-number">Champagne Passport</span><span class="friend-handle">${escapeHTML(friend.handle)}</span>
       <span class="friend-meta">${friend.tastingCount} ${friend.tastingCount === 1 ? 'bevuta' : 'bevute'} · ${friend.cellarCount} in cantina</span>
       <span class="friend-arrow" aria-hidden="true">→</span>
     </a>`).join('');
   };
+  type Invite = { id: string; label: string; createdAt: string; expiresAt: string; redeemedAt?: string };
+  const formatDate = (value: string) => new Intl.DateTimeFormat('it-IT', { dateStyle: 'medium' }).format(new Date(value));
+  const drawInvites = (invites: Invite[]) => {
+    if (!inviteList) return;
+    if (!invites.length) { inviteList.innerHTML = '<p class="empty">Nessun codice creato.</p>'; return; }
+    inviteList.innerHTML = invites.map((invite) => { const state = invite.redeemedAt ? 'Utilizzato' : new Date(invite.expiresAt) <= new Date() ? 'Scaduto' : 'Attivo'; return `<article><div><strong>${escapeHTML(invite.label)}</strong><small>Creato ${formatDate(invite.createdAt)} · scade ${formatDate(invite.expiresAt)}</small></div><span class="state state--${state.toLowerCase()}">${state}</span></article>`; }).join('');
+  };
+  const loadInvites = async () => { const response = await fetch('/api/admin/inviti', { credentials: 'same-origin' }); if (!response.ok) throw new Error(); drawInvites((await response.json() as { invites: Invite[] }).invites); };
   void (async () => {
     const user = await getCurrentUser();
     if (!user) { window.location.href = '/accesso'; return; }
     const response = await fetch('/api/amici', { headers: { Accept: 'application/json' } });
     if (!response.ok) throw new Error();
     draw((await response.json() as { friends: Friend[] }).friends);
+    if (user.roles?.includes('admin')) { if (inviteDesk) inviteDesk.hidden = false; await loadInvites(); }
   })().catch(() => { if (grid) grid.innerHTML = '<p class="empty">Non è stato possibile caricare gli amici. Riprova tra poco.</p>'; });
+  inviteForm?.addEventListener('submit', async (event) => { event.preventDefault(); if (!inviteStatus) return; inviteStatus.textContent = 'Creazione in corso…'; try { const fields = new FormData(inviteForm); const response = await fetch('/api/admin/inviti', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ label: fields.get('label'), days: fields.get('days') }) }); const data = await response.json() as { code?: string; error?: string }; if (!response.ok || !data.code) throw new Error(data.error || 'Errore'); if (codeOutput) codeOutput.value = data.code; if (codeResult) codeResult.hidden = false; inviteStatus.textContent = 'Codice creato.'; inviteForm.reset(); await loadInvites(); } catch (error) { inviteStatus.textContent = error instanceof Error ? error.message : 'Non è stato possibile creare il codice.'; } });
+  copyButton?.addEventListener('click', async () => { if (!codeOutput?.value) return; await navigator.clipboard.writeText(codeOutput.value); copyButton.textContent = 'Copiato'; });
 </script>
 
 <style>
@@ -40,14 +74,17 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   .eyebrow { margin: 0; color: var(--gold); font: 700 10px var(--sans); letter-spacing: .13em; text-transform: uppercase; }
   h1 { margin: 22px 0 24px; font: 500 clamp(56px, 8vw, 86px)/.87 var(--display); letter-spacing: -.04em; } h1 em { color: var(--terre); font-weight: 400; }
   .intro { max-width: 570px; margin: 0; color: var(--sage); font-size: 19px; line-height: 1.55; }
-  .friend-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 48px; }
+  .section-label { margin: 47px 0 0; color: var(--gold); font: 700 9px var(--sans); letter-spacing: .13em; text-transform: uppercase; }
+  .friend-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
   :global(.friend-card) { position: relative; display: grid; gap: 9px; min-height: 210px; padding: 24px; border: 1px solid var(--line); background: rgba(255,255,255,.22); transition: transform .25s ease, background .25s ease, border-color .25s ease; }
   :global(.friend-card:hover) { border-color: var(--gold); background: rgba(255,255,255,.5); transform: translateY(-3px); }
   :global(.friend-avatar) { display: grid; place-items: center; width: 52px; height: 52px; overflow: hidden; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font: 500 28px/1 var(--display); }
   :global(.friend-avatar img) { width: 100%; height: 100%; object-fit: cover; }
   :global(.friend-handle) { font: 500 31px/1 var(--display); }
+  :global(.friend-number) { color: var(--gold); font: 700 8px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
   :global(.friend-meta) { align-self: end; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
   :global(.friend-arrow) { position: absolute; top: 25px; right: 23px; color: var(--terre); }
   :global(.empty) { color: var(--sage); }
-  @media (max-width: 720px) { .friends { width: min(100% - 32px, 950px); padding-top: 74px; } .friend-grid { grid-template-columns: 1fr; } :global(.friend-card) { min-height: 170px; } }
+  .invite-desk { margin-top: 82px; padding-top: 25px; border-top: 1px solid var(--line); }.invite-desk h2 { margin: 12px 0; font: 500 clamp(42px, 6vw, 62px)/.92 var(--display); letter-spacing: -.035em; }.invite-desk > p:not(.eyebrow):not(.section-label) { max-width: 570px; margin: 0; color: var(--sage); line-height: 1.5; }.invite-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, .75fr); gap: 28px; margin-top: 31px; padding: 26px; border: 1px solid var(--line); background: rgba(255,255,255,.22); }.invite-panel form { display: grid; gap: 16px; }.invite-panel label { display: grid; gap: 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .09em; text-transform: uppercase; }.invite-panel input, .invite-panel select { width: 100%; padding: 10px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; color: var(--ink); background: transparent; font: 400 17px var(--serif); }.invite-panel form p, .code-result p { margin: 0; color: var(--sage); font-size: 14px; }.invite-panel button { justify-self: start; padding: 12px 16px; border: 1px solid var(--ink); color: var(--paper); background: var(--ink); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }.invite-panel .copy { margin-top: 12px; color: var(--ink); background: transparent; }.code-result { padding-left: 28px; border-left: 1px solid var(--line); }.code-result output { display: block; margin: 12px 0 0; color: var(--terre); font: 700 18px/1.3 var(--sans); letter-spacing: .08em; overflow-wrap: anywhere; }.invite-list { margin-top: 32px; }.invite-list > .section-label { display: block; margin: 0 0 13px; }.invite-list article { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 15px 0; border-top: 1px solid var(--line); }.invite-list strong { display: block; font: 500 23px/1.1 var(--display); }.invite-list small { display: block; margin-top: 5px; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .07em; text-transform: uppercase; }.state { color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }.state--utilizzato { color: var(--sage); }.state--scaduto { color: #9a4e3d; }
+  @media (max-width: 720px) { .friends { width: min(100% - 32px, 950px); padding-top: 74px; } .friend-grid { grid-template-columns: 1fr; } :global(.friend-card) { min-height: 170px; }.invite-panel { grid-template-columns: 1fr; padding: 20px 17px; }.code-result { padding: 20px 0 0; border-top: 1px solid var(--line); border-left: 0; }.invite-list article { align-items: flex-start; flex-direction: column; gap: 7px; } }
 </style>
