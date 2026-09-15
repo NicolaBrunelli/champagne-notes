@@ -60,11 +60,16 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   void (async () => {
     const user = await getCurrentUser();
     if (!user) { window.location.href = '/accesso'; return; }
-    const response = await fetch('/api/amici', { headers: { Accept: 'application/json' } });
-    if (!response.ok) throw new Error();
-    draw((await response.json() as { friends: Friend[] }).friends);
-    if (user.roles?.includes('admin')) { if (inviteDesk) inviteDesk.hidden = false; await loadInvites(); }
-  })().catch(() => { if (grid) grid.innerHTML = '<p class="empty">Non è stato possibile caricare gli amici. Riprova tra poco.</p>'; });
+    if (user.roles?.includes('admin')) {
+      if (inviteDesk) inviteDesk.hidden = false;
+      void loadInvites().catch(() => { if (inviteStatus) inviteStatus.textContent = 'Non è stato possibile caricare gli inviti esistenti.'; });
+    }
+    try {
+      const response = await fetch('/api/amici', { headers: { Accept: 'application/json' } });
+      if (!response.ok) throw new Error();
+      draw((await response.json() as { friends: Friend[] }).friends);
+    } catch { if (grid) grid.innerHTML = '<p class="empty">Non è stato possibile caricare i passaporti della community. Riprova tra poco.</p>'; }
+  })().catch(() => { if (grid) grid.innerHTML = '<p class="empty">Non è stato possibile aprire l’archivio amici.</p>'; });
   inviteForm?.addEventListener('submit', async (event) => { event.preventDefault(); if (!inviteStatus) return; inviteStatus.textContent = 'Creazione in corso…'; try { const fields = new FormData(inviteForm); const response = await fetch('/api/admin/inviti', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ label: fields.get('label'), days: fields.get('days') }) }); const data = await response.json() as { code?: string; error?: string }; if (!response.ok || !data.code) throw new Error(data.error || 'Errore'); if (codeOutput) codeOutput.value = data.code; if (codeResult) codeResult.hidden = false; inviteStatus.textContent = 'Codice creato.'; inviteForm.reset(); await loadInvites(); } catch (error) { inviteStatus.textContent = error instanceof Error ? error.message : 'Non è stato possibile creare il codice.'; } });
   copyButton?.addEventListener('click', async () => { if (!codeOutput?.value) return; await navigator.clipboard.writeText(codeOutput.value); copyButton.textContent = 'Copiato'; });
 </script>
