@@ -45,14 +45,14 @@ import { maisons } from '../data/maisons';
 
         <section id="overview" class="passport-page overview" data-passport-page="2" aria-labelledby="overview-title" hidden>
           <div class="passport-page-head"><span>02 — Overview</span><span>Journal de bord</span></div>
-      <div class="section-heading"><h2 id="overview-title">Il tuo atlante.</h2></div>
+      <div class="section-heading"><h2 id="overview-title">Overview</h2></div>
       <div class="stats" data-overview-stats><p class="loading">Sto aprendo il tuo taccuino…</p></div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>02</b></div>
         </section>
 
         <section id="degustazioni" class="passport-page account-section" data-passport-page="3" aria-labelledby="tastings-title" hidden>
           <div class="passport-page-head"><span>03 — Degustazioni</span><span>Entrées</span></div>
-      <div class="section-heading"><h2 id="tastings-title">Il taccuino.</h2></div>
+      <div class="section-heading"><h2 id="tastings-title">Degustazioni</h2></div>
       <p class="intro">Le bottiglie bevute restano una storia separata dal semplice possesso. Ogni pagina di cantina permette di aggiungerne una nuova.</p>
       <p class="status" data-tasting-status aria-live="polite"></p>
       <div data-my-tastings aria-live="polite"><p class="loading">Caricamento delle degustazioni…</p></div>
@@ -61,15 +61,14 @@ import { maisons } from '../data/maisons';
 
         <section class="passport-page account-section continuation-page" data-passport-page="4" aria-label="Degustazioni, seconda pagina" hidden>
           <div class="passport-page-head"><span>04 — Degustazioni</span><span>Entrées · suite</span></div>
-          <div class="section-heading"><h2>Il registro.</h2></div>
-          <p class="intro">Le annotazioni più recenti restano ordinate nel tuo passaporto.</p>
+          <div class="section-heading"><h2>Degustazioni</h2></div>
           <div data-my-tastings-secondary aria-live="polite"><p class="loading">Caricamento delle degustazioni…</p></div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>04</b></div>
         </section>
 
         <section id="cantina" class="passport-page account-section" data-passport-page="5" aria-labelledby="cellar-title" hidden>
           <div class="passport-page-head"><span>05 — Cantina</span><span>Registre de cave</span></div>
-      <div class="section-heading"><h2 id="cellar-title">In attesa.</h2></div>
+      <div class="section-heading"><h2 id="cellar-title">Cantina</h2></div>
       <p class="intro">Le bottiglie che possiedi, senza confonderle con ciò che hai già degustato.</p>
       <form class="record-form" data-cellar-form>
         <label>Produttore<input name="producer" list="maison-options" required placeholder="Es. Jacques Selosse" /></label>
@@ -84,15 +83,14 @@ import { maisons } from '../data/maisons';
 
         <section class="passport-page account-section continuation-page" data-passport-page="6" aria-label="Cantina, seconda pagina" hidden>
           <div class="passport-page-head"><span>06 — Cantina</span><span>Inventaire</span></div>
-          <div class="section-heading"><h2>In attesa.</h2></div>
-          <p class="intro">Ogni bottiglia rimane separata dalla storia delle degustazioni.</p>
+          <div class="section-heading"><h2>Cantina</h2></div>
           <div class="passport-note">Registra qui le bottiglie che vuoi custodire. Quando le berrai, entreranno nel taccuino senza scomparire dalla tua storia.</div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>06</b></div>
         </section>
 
         <section id="wishlist" class="passport-page account-section" data-passport-page="7" aria-labelledby="wishlist-title" hidden>
           <div class="passport-page-head"><span>07 — Wishlist</span><span>Prochaines découvertes</span></div>
-      <div class="section-heading"><h2 id="wishlist-title">Da incontrare.</h2></div>
+      <div class="section-heading"><h2 id="wishlist-title">Wishlist</h2></div>
       <p class="intro">Una lista essenziale di Champagne che vuoi provare o acquistare. Puoi aggiungere una cuvée dalle pagine dei produttori oppure annotarla qui.</p>
       <form class="record-form" data-wishlist-form>
         <label>Produttore<input name="producer" list="maison-options" required placeholder="Es. Bollinger" /></label>
@@ -106,22 +104,21 @@ import { maisons } from '../data/maisons';
 
         <section class="passport-page account-section continuation-page" data-passport-page="8" aria-label="Wishlist, seconda pagina" hidden>
           <div class="passport-page-head"><span>08 — Wishlist</span><span>À découvrir</span></div>
-          <div class="section-heading"><h2>Da incontrare.</h2></div>
-          <p class="intro">Le bottiglie desiderate sono le prossime tappe del tuo viaggio.</p>
+          <div class="section-heading"><h2>Wishlist</h2></div>
           <div class="passport-note">Usa la wishlist come una lista di indirizzi: ciò che vuoi provare, acquistare o ritrovare.</div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>08</b></div>
         </section>
 
         <section id="gusto" class="passport-page account-section taste" data-passport-page="9" aria-labelledby="taste-title" hidden>
           <div class="passport-page-head"><span>09 — Il mio gusto</span><span>Profil de goût</span></div>
-      <div class="section-heading"><h2 id="taste-title">La tua impronta.</h2></div>
+      <div class="section-heading"><h2 id="taste-title">Il mio gusto</h2></div>
       <div data-taste-profile><p class="loading">Sto leggendo le tracce del tuo percorso…</p></div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>09</b></div>
         </section>
 
         <section class="passport-page account-section continuation-page" data-passport-page="10" aria-label="Il mio gusto, seconda pagina" hidden>
           <div class="passport-page-head"><span>10 — Il mio gusto</span><span>Continua a scoprire</span></div>
-          <div class="section-heading"><h2>Prossimo capitolo.</h2></div>
+          <div class="section-heading"><h2>Il mio gusto</h2></div>
           <div data-suggestions><p class="empty">Registra una prima bottiglia: da lì potremo suggerire un prossimo confronto con un perché chiaro.</p></div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>10</b></div>
         </section>
@@ -136,8 +133,7 @@ import { maisons } from '../data/maisons';
         </aside>
         <section class="passport-page account-section continuation-page" data-passport-page="12" aria-label="Profilo, seconda pagina" hidden>
           <div class="passport-page-head"><span>12 — Profilo</span><span>Fin du voyage</span></div>
-          <div class="section-heading"><p>My Champagne</p><h2>Il tuo passaporto.</h2></div>
-          <p class="intro">Questo archivio cresce con le tue bottiglie e conserva le tracce del tuo viaggio nello Champagne.</p>
+          <div class="section-heading"><h2>Profilo</h2></div>
           <div class="passport-note">Ogni valutazione, bottiglia e appunto rimane nel tuo profilo personale.</div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>12</b></div>
         </section>
@@ -171,20 +167,28 @@ import { maisons } from '../data/maisons';
   const pageNames = ['Copertina', 'Overview', 'Overview', 'Degustazioni', 'Degustazioni', 'Cantina', 'Cantina', 'Wishlist', 'Wishlist', 'Il mio gusto', 'Il mio gusto', 'Profilo', 'Profilo'];
   const mobilePassport = () => window.matchMedia('(max-width: 760px)').matches;
   const clampPage = (value: number) => Math.max(0, Math.min(passportPages.length - 1, value));
+  const animateLeaf = (from: number, direction: number) => {
+    if (!passportBook || prefersReducedMotion.matches || from === 0) return;
+    const source = passportPages[direction > 0 || mobilePassport() ? from : Math.min(from + 1, passportPages.length - 1)];
+    if (!source) return;
+    const leaf = source.cloneNode(true) as HTMLElement;
+    leaf.removeAttribute('id'); leaf.hidden = false; leaf.setAttribute('aria-hidden', 'true');
+    leaf.classList.remove('is-turning-forward', 'is-turning-back'); leaf.classList.add('passport-turn-leaf', direction > 0 ? 'turn-forward' : 'turn-back');
+    passportBook.append(leaf);
+    requestAnimationFrame(() => leaf.classList.add('is-flipping'));
+    window.setTimeout(() => leaf.remove(), 680);
+  };
   const renderPassport = (next: number, direction = 1, animate = true) => {
     const previous = passportPage;
     const requested = clampPage(next);
     passportPage = requested === 0 || mobilePassport() ? requested : requested - ((requested - 1) % 2);
     const visible = new Set<number>(passportPage === 0 || mobilePassport() ? [passportPage] : [passportPage, passportPage + 1].filter((index) => index < passportPages.length));
+    if (animate && previous !== passportPage) animateLeaf(previous, direction);
     passportPages.forEach((page, index) => {
       const shouldShow = visible.has(index);
       page.hidden = !shouldShow;
       page.setAttribute('aria-hidden', String(!shouldShow));
       page.classList.remove('is-turning-forward', 'is-turning-back');
-      if (shouldShow && index === passportPage && animate && previous !== passportPage && !prefersReducedMotion.matches) {
-        page.classList.add(direction > 0 ? 'is-turning-forward' : 'is-turning-back');
-        window.setTimeout(() => page.classList.remove('is-turning-forward', 'is-turning-back'), 720);
-      }
     });
     passportBook?.classList.toggle('is-closed', passportPage === 0);
     passportTabs.forEach((tab) => tab.setAttribute('aria-current', String(visible.has(Number(tab.dataset.passportGo)))));
@@ -347,5 +351,10 @@ import { maisons } from '../data/maisons';
   .continuation-page .section-heading { margin-top: 42px; }
   .continuation-page :global(.suggestion), .continuation-page :global(.suggestion p), .continuation-page :global(.suggestion h3) { text-align: center; }
   .passport-cover > p, .passport-cover h2, .passport-cover small, .passport-cover button, .cover-mark { justify-self: center; }
-  @media (max-width: 760px) { .passport-book.is-closed { display: block; padding: 7px; }.passport-book.is-closed .passport-cover { width: 100%; height: 100%; }.passport-page .section-heading h2 { font-size: clamp(34px, 10vw, 48px); } }
+  .passport-turn-leaf { position: absolute; z-index: 20; top: 11px; bottom: 11px; width: calc(50% - 11px); overflow: hidden; pointer-events: none; backface-visibility: hidden; }
+  .passport-turn-leaf.turn-forward { left: 11px; transform-origin: right center; }.passport-turn-leaf.turn-back { right: 11px; transform-origin: left center; }
+  .passport-turn-leaf.is-flipping.turn-forward { animation: leaf-forward .64s cubic-bezier(.2,.68,.2,1) both; }.passport-turn-leaf.is-flipping.turn-back { animation: leaf-back .64s cubic-bezier(.2,.68,.2,1) both; }
+  @keyframes leaf-forward { 0% { transform: rotateY(0); box-shadow: -4px 0 10px rgba(0,0,0,.18); } 50% { filter: brightness(.87); } 100% { transform: rotateY(-180deg); box-shadow: 17px 0 25px rgba(0,0,0,.25); } }
+  @keyframes leaf-back { 0% { transform: rotateY(0); box-shadow: 4px 0 10px rgba(0,0,0,.18); } 50% { filter: brightness(.87); } 100% { transform: rotateY(180deg); box-shadow: -17px 0 25px rgba(0,0,0,.25); } }
+  @media (max-width: 760px) { .passport-book.is-closed { display: block; padding: 7px; }.passport-book.is-closed .passport-cover { width: 100%; height: 100%; }.passport-page .section-heading h2 { font-size: clamp(34px, 10vw, 48px); }.passport-turn-leaf { top: 7px; right: 7px !important; bottom: 7px; left: 7px !important; width: auto; }.passport-turn-leaf.turn-forward, .passport-turn-leaf.turn-back { transform-origin: right center; } }
 </style>
