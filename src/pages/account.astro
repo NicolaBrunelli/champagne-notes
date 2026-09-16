@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { maisons } from '../data/maisons';
 ---
 
-<BaseLayout title="My Champagne — Lo Champagne, con calma">
+<BaseLayout title="My Champagne — Champagne Vademecum">
   <section class="passport-shell" data-account-page data-passport-shell>
     <header class="passport-intro">
       <p class="eyebrow">My Champagne</p>
@@ -16,8 +16,9 @@ import { maisons } from '../data/maisons';
       <button type="button" data-passport-go="3"><b>03–04</b> Degustazioni</button>
       <button type="button" data-passport-go="5"><b>05–06</b> Cantina</button>
       <button type="button" data-passport-go="7"><b>07–08</b> Wishlist</button>
-      <button type="button" data-passport-go="9"><b>09–10</b> Il mio gusto</button>
-      <button type="button" data-passport-go="11"><b>11–12</b> Profilo</button>
+      <button type="button" data-passport-go="9"><b>09–10</b> Le tracce</button>
+      <button type="button" data-passport-go="11"><b>11–12</b> Il mio gusto</button>
+      <button type="button" data-passport-go="13"><b>13–14</b> Profilo</button>
     </div>
 
     <div class="passport-stage" data-passport-stage>
@@ -109,23 +110,36 @@ import { maisons } from '../data/maisons';
           <div class="passport-page-foot"><span>Champagne Passport</span><b>08</b></div>
         </section>
 
-        <section id="gusto" class="passport-page account-section taste" data-passport-page="9" aria-labelledby="taste-title" hidden>
-          <div class="passport-page-head"><span>09 — Il mio gusto</span><span>Profil de goût</span></div>
-      <div class="section-heading"><h2 id="taste-title">Il mio gusto</h2></div>
-      <div data-taste-profile><p class="loading">Sto leggendo le tracce del tuo percorso…</p></div>
+        <section class="passport-page account-section stamps-page" data-passport-page="9" aria-labelledby="stamps-title" hidden>
+          <div class="passport-page-head"><span>09 — Le tracce</span><span>Visa de voyage</span></div>
+          <div class="stamps-intro"><h2 id="stamps-title">Le tracce<br />del tuo viaggio.</h2><p>Ogni bottiglia lascia una traccia. Alcune meritano un timbro.</p></div>
+          <div class="stamps-canvas" data-passport-stamps aria-live="polite"></div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>09</b></div>
         </section>
 
-        <section class="passport-page account-section continuation-page" data-passport-page="10" aria-label="Il mio gusto, seconda pagina" hidden>
-          <div class="passport-page-head"><span>10 — Il mio gusto</span><span>Continua a scoprire</span></div>
-          <div class="section-heading"><h2>Il mio gusto</h2></div>
-          <div data-suggestions><p class="empty">Registra una prima bottiglia: da lì potremo suggerire un prossimo confronto con un perché chiaro.</p></div>
-          <div data-taste-profile-secondary></div>
+        <section class="passport-page account-section continuation-page stamps-page" data-passport-page="10" aria-label="Le tracce del tuo viaggio, seconda pagina" hidden>
+          <div class="passport-page-head"><span>10 — Le tracce</span><span>Visa de voyage · suite</span></div>
+          <div class="stamps-canvas stamps-canvas--secondary" data-passport-stamps-secondary aria-live="polite"></div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>10</b></div>
         </section>
 
-        <aside class="passport-page account-panel" data-passport-page="11" id="profilo" aria-label="Profilo personale" hidden>
-          <div class="passport-page-head"><span>11 — Impostazioni</span><span>Votre sceau</span></div>
+        <section id="gusto" class="passport-page account-section taste" data-passport-page="11" aria-labelledby="taste-title" hidden>
+          <div class="passport-page-head"><span>11 — Il mio gusto</span><span>Profil de goût</span></div>
+          <div class="section-heading"><h2 id="taste-title">Il mio gusto</h2></div>
+          <div data-taste-profile><p class="loading">Sto leggendo le tracce del tuo percorso…</p></div>
+          <div class="passport-page-foot"><span>Champagne Passport</span><b>11</b></div>
+        </section>
+
+        <section class="passport-page account-section continuation-page" data-passport-page="12" aria-label="Il mio gusto, seconda pagina" hidden>
+          <div class="passport-page-head"><span>12 — Il mio gusto</span><span>Continua a scoprire</span></div>
+          <div class="section-heading"><h2>Il mio gusto</h2></div>
+          <div data-suggestions><p class="empty">Registra una prima bottiglia: da lì potremo suggerire un prossimo confronto con un perché chiaro.</p></div>
+          <div data-taste-profile-secondary></div>
+          <div class="passport-page-foot"><span>Champagne Passport</span><b>12</b></div>
+        </section>
+
+        <aside class="passport-page account-panel" data-passport-page="13" id="profilo" aria-label="Profilo personale" hidden>
+          <div class="passport-page-head"><span>13 — Impostazioni</span><span>Votre sceau</span></div>
       <p class="label">Personalizza il passaporto</p>
       <div class="avatar-editor"><span class="account-avatar"><img data-profile-avatar-image alt="Foto profilo" hidden /><b data-profile-avatar-fallback>?</b></span><label>Foto profilo <input data-avatar-file type="file" accept="image/jpeg,image/png,image/webp" /><span>JPG, PNG o WebP · max 2 MB</span></label><button type="button" class="outline-button" data-avatar-save>Salva foto</button></div>
       <p class="status" data-avatar-status aria-live="polite"></p>
@@ -136,12 +150,12 @@ import { maisons } from '../data/maisons';
         <span class="status" data-handle-status aria-live="polite"></span>
       </form>
       <a class="admin-link" href="/amici#inviti" data-admin-link hidden>Inviti e codici <span aria-hidden="true">→</span></a><button type="button" class="logout" data-logout>Esci dal tuo passaporto</button>
-          <div class="passport-page-foot"><span>Champagne Passport</span><b>11</b></div>
+          <div class="passport-page-foot"><span>Champagne Passport</span><b>13</b></div>
         </aside>
-        <section class="passport-page account-section continuation-page" data-passport-page="12" aria-label="Profilo, seconda pagina" hidden>
-          <div class="passport-page-head"><span>12 — Il tuo archivio</span><span>À conserver</span></div>
+        <section class="passport-page account-section continuation-page" data-passport-page="14" aria-label="Profilo, seconda pagina" hidden>
+          <div class="passport-page-head"><span>14 — Il tuo archivio</span><span>À conserver</span></div>
           <div class="passport-note">Ogni valutazione, bottiglia e appunto resta nel tuo archivio personale: un passaporto che prende forma pagina dopo pagina.</div>
-          <div class="passport-page-foot"><span>Champagne Passport</span><b>12</b></div>
+          <div class="passport-page-foot"><span>Champagne Passport</span><b>14</b></div>
         </section>
       </div>
       <dialog class="tasting-editor" data-tasting-editor aria-labelledby="tasting-editor-title">
@@ -162,6 +176,9 @@ import { maisons } from '../data/maisons';
           <div class="tasting-editor-actions"><button type="button" class="outline-button" data-tasting-editor-close>Annulla</button><button type="submit">Salva modifica <span aria-hidden="true">→</span></button></div>
         </form>
       </dialog>
+      <dialog class="stamp-detail" data-stamp-detail aria-labelledby="stamp-detail-title">
+        <div><button type="button" data-stamp-detail-close aria-label="Chiudi">×</button><p>Nouveau timbre</p><h2 id="stamp-detail-title" data-stamp-detail-title></h2><span class="stamp-detail-mark" data-stamp-detail-mark></span><blockquote data-stamp-detail-message></blockquote><small data-stamp-detail-date></small></div>
+      </dialog>
       <div class="passport-controls" aria-label="Sfoglia il passaporto"><button type="button" data-passport-prev aria-label="Pagina precedente">←</button><span data-passport-position>Copertina</span><button type="button" data-passport-next aria-label="Pagina successiva">→</button></div>
     </div>
   </section>
@@ -174,15 +191,18 @@ import { maisons } from '../data/maisons';
 
   type SensoryProfile = { body: number; tannin: number; sweetness: number; acidity: number };
   type ExperienceProfile = { maturity: number; structure: number; tension: number; complexity: number };
+  type PassportStamp = { id: string; name: string; message: string; stampVariant: number; stampShape: string; stampSize: string; rotation: number; visualMotif: string; position: { x: number; y: number; mobileX: number; mobileY: number }; unlockedAt: string; isNew: boolean };
   type Tasting = { id: string; wine: string; drunkAt: string; place: string; price?: number; rating: number; notes?: string; aromas?: string[]; sensory?: SensoryProfile; experience?: ExperienceProfile; wouldRepurchase?: boolean; producer: { slug: string; name: string } };
   type Bottle = { id: string; producer: string; wine: string; vintage?: string; quantity: number };
   type Wish = { id: string; producer: string; producerSlug?: string; wine: string };
-  type Atlas = { tastings: Tasting[]; cellar: Bottle[]; wishlist: Wish[]; overview: { tasted: number; cellarBottles: number; wishlist: number; producers: number; areas: number; crus: number }; profile: { enough: boolean; sampleSize: number; styles: { favorite?: string; covered: number }; grapes: { favorite?: string; covered: number }; dosage: { favorite?: string; covered: number }; producers: { producer: string; rating: number }[]; territory: { areas: string[]; crus: string[] }; repurchase?: { yes: number; total: number; percent: number }; experience?: { count: number; description: string[] } }; suggestions: { title: string; reason: string; producer?: string; wine?: string }[] };
+  type Atlas = { tastings: Tasting[]; cellar: Bottle[]; wishlist: Wish[]; stamps: PassportStamp[]; overview: { tasted: number; cellarBottles: number; wishlist: number; producers: number; areas: number; crus: number }; profile: { enough: boolean; sampleSize: number; styles: { favorite?: string; covered: number }; grapes: { favorite?: string; covered: number }; dosage: { favorite?: string; covered: number }; producers: { producer: string; rating: number }[]; territory: { areas: string[]; crus: string[] }; repurchase?: { yes: number; total: number; percent: number }; experience?: { count: number; description: string[] } }; suggestions: { title: string; reason: string; producer?: string; wine?: string }[] };
   const qs = <T extends Element>(selector: string) => document.querySelector<T>(selector);
   const tastingList = qs<HTMLElement>('[data-my-tastings]'); const tastingListSecondary = qs<HTMLElement>('[data-my-tastings-secondary]'); const cellarList = qs<HTMLElement>('[data-cellar-collection]'); const wishlistList = qs<HTMLElement>('[data-wishlist-collection]');
   const overview = qs<HTMLElement>('[data-overview-stats]'); const profileBox = qs<HTMLElement>('[data-taste-profile]'); const profileBoxSecondary = qs<HTMLElement>('[data-taste-profile-secondary]'); const suggestions = Array.from(document.querySelectorAll<HTMLElement>('[data-suggestions]'));
   const tastingStatus = qs<HTMLElement>('[data-tasting-status]'); const cellarStatus = qs<HTMLElement>('[data-cellar-status]'); const wishlistStatus = qs<HTMLElement>('[data-wishlist-status]');
+  const stampsCanvas = qs<HTMLElement>('[data-passport-stamps]'); const stampsCanvasSecondary = qs<HTMLElement>('[data-passport-stamps-secondary]');
   const tastingEditor = qs<HTMLDialogElement>('[data-tasting-editor]'); const tastingEditorForm = qs<HTMLFormElement>('[data-tasting-editor-form]'); const tastingEditorStatus = qs<HTMLElement>('[data-tasting-editor-status]'); const tastingEditorProducer = qs<HTMLElement>('[data-tasting-editor-producer]');
+  const stampDetail = qs<HTMLDialogElement>('[data-stamp-detail]'); const stampDetailTitle = qs<HTMLElement>('[data-stamp-detail-title]'); const stampDetailMark = qs<HTMLElement>('[data-stamp-detail-mark]'); const stampDetailMessage = qs<HTMLElement>('[data-stamp-detail-message]'); const stampDetailDate = qs<HTMLElement>('[data-stamp-detail-date]');
   const passportPages = Array.from(document.querySelectorAll<HTMLElement>('[data-passport-page]'));
   const passportTabs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-passport-go]'));
   const passportPosition = qs<HTMLElement>('[data-passport-position]');
@@ -193,7 +213,8 @@ import { maisons } from '../data/maisons';
   let lastPassportTurn = 0;
   let editingTasting: Tasting | undefined;
   const personalTastings = new Map<string, Tasting>();
-  const pageNames = ['Copertina', 'Overview', 'Overview', 'Degustazioni', 'Degustazioni', 'Cantina', 'Cantina', 'Wishlist', 'Wishlist', 'Il mio gusto', 'Il mio gusto', 'Profilo', 'Profilo'];
+  const passportStamps = new Map<string, PassportStamp>();
+  const pageNames = ['Copertina', 'Overview', 'Overview', 'Degustazioni', 'Degustazioni', 'Cantina', 'Cantina', 'Wishlist', 'Wishlist', 'Le tracce', 'Le tracce', 'Il mio gusto', 'Il mio gusto', 'Profilo', 'Profilo'];
   const mobilePassport = () => window.matchMedia('(max-width: 760px)').matches;
   const clampPage = (value: number) => Math.max(0, Math.min(passportPages.length - 1, value));
   const animateLeaf = (from: number, direction: number) => {
@@ -219,7 +240,7 @@ import { maisons } from '../data/maisons';
     });
     passportBook?.classList.toggle('is-closed', passportPage === 0);
     passportTabs.forEach((tab) => tab.setAttribute('aria-current', String(visible.has(Number(tab.dataset.passportGo)))));
-    if (passportPosition) passportPosition.textContent = passportPage === 0 ? 'Copertina' : mobilePassport() ? `${String(passportPage).padStart(2, '0')} · ${pageNames[passportPage]}` : `${String(passportPage).padStart(2, '0')}–${String(Math.min(passportPage + 1, 12)).padStart(2, '0')} · ${pageNames[passportPage]}`;
+    if (passportPosition) passportPosition.textContent = passportPage === 0 ? 'Copertina' : mobilePassport() ? `${String(passportPage).padStart(2, '0')} · ${pageNames[passportPage]}` : `${String(passportPage).padStart(2, '0')}–${String(Math.min(passportPage + 1, 14)).padStart(2, '0')} · ${pageNames[passportPage]}`;
   };
   const turnPassport = (direction: number) => {
     const step = mobilePassport() ? 1 : 2;
@@ -265,6 +286,10 @@ import { maisons } from '../data/maisons';
   const draw = (data: Atlas) => {
     personalTastings.clear();
     data.tastings.forEach((item) => personalTastings.set(item.id, item));
+    const renderStamp = (stamp: PassportStamp) => `<button type="button" class="passport-stamp stamp--${escapeHTML(stamp.stampShape)} stamp--${escapeHTML(stamp.stampSize)} stamp--v${stamp.stampVariant}${stamp.isNew ? ' is-new' : ''}" data-stamp-id="${escapeHTML(stamp.id)}" style="--stamp-x:${stamp.position.x}%;--stamp-y:${stamp.position.y}%;--stamp-mobile-x:${stamp.position.mobileX}%;--stamp-mobile-y:${stamp.position.mobileY}%;--stamp-rotation:${stamp.rotation}deg" aria-label="${escapeHTML(stamp.name)}"><i aria-hidden="true">${escapeHTML(stamp.visualMotif)}</i><b>${escapeHTML(stamp.name)}</b>${stamp.isNew ? '<small>Nouveau</small>' : ''}</button>`;
+    if (stampsCanvas) stampsCanvas.innerHTML = data.stamps.slice(0, 15).map(renderStamp).join('');
+    if (stampsCanvasSecondary) stampsCanvasSecondary.innerHTML = data.stamps.slice(15).map(renderStamp).join('');
+    passportStamps.clear(); data.stamps.forEach((stamp) => passportStamps.set(stamp.id, stamp));
     if (overview) overview.innerHTML = [['Champagne degustati', data.overview.tasted], ['Bottiglie in cantina', data.overview.cellarBottles], ['Nella wishlist', data.overview.wishlist], ['Produttori scoperti', data.overview.producers], ['Aree esplorate', data.overview.areas], ['Cru con dati certi', data.overview.crus]].map(([label, value]) => `<article><strong>${value}</strong><span>${label}</span></article>`).join('');
     const suggestionMarkup = data.suggestions.length ? data.suggestions.map((item) => `<article class="suggestion"><p>${escapeHTML(item.title)}</p>${item.producer && item.wine ? `<h3>${escapeHTML(item.producer)} · ${escapeHTML(item.wine)}</h3>` : ''}<span>${escapeHTML(item.reason)}</span></article>`).join('') : '<p class="empty">Registra una prima bottiglia: il tuo atlante inizierà a suggerire confronti coerenti e spiegati.</p>';
     suggestions.forEach((section) => section.innerHTML = suggestionMarkup);
@@ -273,8 +298,8 @@ import { maisons } from '../data/maisons';
       return `<article class="tasting"><p>${formatDate(item.drunkAt)} · ${escapeHTML(item.place)}</p><h3>${escapeHTML(item.wine)}</h3><a href="/cantine/${encodeURIComponent(item.producer.slug)}">${escapeHTML(item.producer.name)} →</a><strong>${item.rating.toFixed(1)} / 5</strong>${item.wouldRepurchase === true ? '<small>Lo ricompreresti: sì</small>' : item.wouldRepurchase === false ? '<small>Lo ricompreresti: no</small>' : ''}${flags ? `<div class="aromas">${flags}</div>` : ''}${item.notes ? `<div class="notes">${escapeHTML(item.notes)}</div>` : ''}<p class="actions"><button type="button" data-edit-tasting="${item.id}">Modifica</button><button type="button" data-delete-tasting="${item.id}" data-producer="${escapeHTML(item.producer.slug)}" data-wine="${escapeHTML(item.wine)}">Elimina</button></p></article>`;
     };
     const tastingEmpty = '<p class="empty">Il tuo taccuino è ancora vuoto. Apri una cantina e annota la tua prima bevuta.</p>';
-    if (tastingList) tastingList.innerHTML = data.tastings.length ? data.tastings.slice(0, 3).map(renderTasting).join('') : tastingEmpty;
-    if (tastingListSecondary) tastingListSecondary.innerHTML = data.tastings.slice(3, 6).length ? data.tastings.slice(3, 6).map(renderTasting).join('') : '<p class="empty">Le prossime degustazioni compariranno qui.</p>';
+    if (tastingList) tastingList.innerHTML = data.tastings.length ? data.tastings.slice(0, 4).map(renderTasting).join('') : tastingEmpty;
+    if (tastingListSecondary) tastingListSecondary.innerHTML = data.tastings.slice(4, 8).length ? data.tastings.slice(4, 8).map(renderTasting).join('') : '<p class="empty">Le prossime degustazioni compariranno qui.</p>';
     if (cellarList) cellarList.innerHTML = data.cellar.length ? data.cellar.map((item) => `<article class="bottle"><p>${escapeHTML(item.producer)}</p><h3>${escapeHTML(item.wine)}${item.vintage ? ` <span>${escapeHTML(item.vintage)}</span>` : ''}</h3><strong>${item.quantity} ${item.quantity === 1 ? 'bottiglia' : 'bottiglie'}</strong><button data-remove-cellar="${item.id}" type="button">Rimuovi</button></article>`).join('') : '<p class="empty">La tua cantina è ancora vuota.</p>';
     if (wishlistList) wishlistList.innerHTML = data.wishlist.length ? data.wishlist.map((item) => `<article class="bottle"><p>${escapeHTML(item.producer)}</p><h3>${escapeHTML(item.wine)}</h3><button data-remove-wish="${item.id}" type="button">Rimuovi dalla wishlist</button></article>`).join('') : '<p class="empty">Nessuna bottiglia in attesa per ora.</p>';
     if (profileBox) {
@@ -335,6 +360,18 @@ import { maisons } from '../data/maisons';
       await load(); tastingEditor?.close(); if (tastingStatus) tastingStatus.textContent = 'Degustazione aggiornata nel taccuino e nel passaporto.';
     } catch (error) { tastingEditorStatus.textContent = error instanceof Error ? error.message : 'Non è stato possibile salvare la modifica.'; }
   });
+  [stampsCanvas, stampsCanvasSecondary].forEach((canvas) => canvas?.addEventListener('click', async (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-stamp-id]'); const id = button?.dataset.stampId;
+    if (!id) return;
+    const stamp = passportStamps.get(id); if (!stamp) return;
+    if (stampDetailTitle) stampDetailTitle.textContent = stamp.name;
+    if (stampDetailMark) stampDetailMark.textContent = stamp.visualMotif;
+    if (stampDetailMessage) stampDetailMessage.textContent = stamp.message;
+    if (stampDetailDate) stampDetailDate.textContent = `Ottenuto il ${formatDate(stamp.unlockedAt.slice(0, 10))}.`;
+    stampDetail?.showModal();
+    if (stamp.isNew) { void fetch('/api/my-champagne', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ seenAchievementIds: [id] }) }); button.classList.remove('is-new'); button.querySelector('small')?.remove(); }
+  }));
+  qs<HTMLButtonElement>('[data-stamp-detail-close]')?.addEventListener('click', () => stampDetail?.close());
   qs<HTMLButtonElement>('[data-avatar-save]')?.addEventListener('click', async () => { const file = qs<HTMLInputElement>('[data-avatar-file]')?.files?.[0]; const status = qs<HTMLElement>('[data-avatar-status]'); if (!file || !status) return; if (file.size > 2 * 1024 * 1024) { status.textContent = 'La foto supera il limite di 2 MB.'; return; } status.textContent = 'Salvataggio foto…'; try { const response = await fetch('/api/profilo/avatar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photo: await readPhoto(file) }) }); if (!response.ok) throw new Error(); document.querySelectorAll<HTMLImageElement>('[data-avatar-image], [data-profile-avatar-image]').forEach((avatar) => { avatar.src = `/api/profilo/avatar?aggiornata=${Date.now()}`; avatar.hidden = false; }); document.querySelectorAll<HTMLElement>('[data-avatar-fallback], [data-profile-avatar-fallback]').forEach((fallback) => fallback.hidden = true); status.textContent = 'Foto profilo aggiornata.'; } catch { status.textContent = 'Non è stato possibile salvare la foto.'; } });
   qs<HTMLFormElement>('[data-handle-form]')?.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -347,7 +384,10 @@ import { maisons } from '../data/maisons';
       const response = await fetch('/api/profilo/username', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ handle }) });
       const data = await response.json() as { handle?: string; error?: string };
       if (!response.ok || !data.handle) throw new Error(data.error || 'Errore');
-      await updateUser({ data: { handle: data.handle, full_name: data.handle } });
+      // The shared profile index is already updated server-side.  Updating
+      // Identity metadata keeps subsequent sessions tidy, but an intermittent
+      // mobile token refresh must not turn a successful rename into an error.
+      try { await updateUser({ data: { handle: data.handle, full_name: data.handle } }); } catch { /* kept in the shared profile index */ }
       document.querySelectorAll<HTMLElement>('[data-passport-handle], [data-passport-signature]').forEach((element) => element.textContent = data.handle || '');
       document.querySelectorAll<HTMLElement>('[data-avatar-fallback], [data-profile-avatar-fallback]').forEach((element) => element.textContent = data.handle?.slice(0, 1).toUpperCase() || '?');
       status.textContent = 'Username aggiornato.';
@@ -371,6 +411,27 @@ import { maisons } from '../data/maisons';
   :global(.tasting) { padding: 26px 0; border-bottom: 1px solid var(--line); }:global(.tasting > p), :global(.bottle > p) { margin: 0 0 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }:global(.tasting h3), :global(.bottle h3) { margin: 0; font: 500 31px/1 var(--display); }:global(.tasting > a) { display: inline-block; margin-top: 9px; border-bottom: 1px solid var(--gold); color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }:global(.tasting > strong) { display: block; margin-top: 13px; color: var(--gold); font: 700 11px var(--sans); }:global(.tasting > small) { display: block; margin-top: 5px; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .07em; text-transform: uppercase; }:global(.aromas) { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }:global(.aromas span) { padding: 4px 7px; border: 1px solid var(--line); color: var(--terre); font: 600 9px var(--sans); }:global(.notes) { margin-top: 13px; line-height: 1.58; white-space: pre-line; }:global(.actions) { display: flex; gap: 14px; margin: 18px 0 0 !important; }:global(.actions a), :global(.actions button), :global(.bottle button) { padding: 0; border: 0; border-bottom: 1px solid currentColor; color: var(--terre); background: transparent; font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }:global(.actions button), :global(.bottle button) { color: #9d4031; }
   .record-form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 29px; padding: 24px; border: 1px solid var(--line); background: rgba(255,255,255,.22); }.record-form label { display: grid; gap: 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }.record-form input { width: 100%; padding: 10px 0; border: 0; border-bottom: 1px solid var(--line); outline: 0; color: var(--ink); background: transparent; font: 400 16px var(--serif); }.record-form input:focus { border-color: var(--gold); }button { justify-self: start; padding: 13px 18px; border: 1px solid var(--ink); color: var(--paper); background: var(--ink); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }.collection { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 23px; }:global(.bottle) { padding: 20px; border: 1px solid var(--line); background: rgba(255,255,255,.22); }:global(.bottle h3 span) { color: var(--terre); font-style: italic; font-weight: 400; }:global(.bottle strong) { display: block; margin-top: 12px; color: var(--sage); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }:global(.bottle button) { margin-top: 15px; }.taste { border-bottom: 0; }.profile-empty { max-width: 620px; padding: 28px; border-left: 2px solid var(--gold); background: rgba(217,212,200,.4); }.profile-empty p, :global(.profile-grid article p), :global(.territory p) { margin: 0; color: var(--gold); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }.profile-empty h3 { margin: 11px 0; font: 500 37px/1 var(--display); }.profile-empty span { color: var(--sage); }.profile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; border: 1px solid var(--line); background: var(--line); }:global(.profile-grid article) { padding: 23px; background: rgba(255,255,255,.28); }:global(.profile-grid h3) { margin: 10px 0 8px; font: 500 30px/1 var(--display); }:global(.profile-grid span), :global(.territory span) { color: var(--sage); font-size: 14px; line-height: 1.42; }.territory { margin-top: 20px; padding: 21px; background: rgba(217,212,200,.4); }.account-panel { display: grid; gap: 12px; margin-top: 64px; padding: 28px; border: 1px solid var(--line); background: rgba(255,255,255,.32); }.avatar-editor { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px 16px; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--line); }.account-avatar { display: grid; place-items: center; width: 58px; height: 58px; overflow: hidden; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font: 500 31px var(--display); }.account-avatar img { width: 100%; height: 100%; object-fit: cover; }.avatar-editor label { display: grid; gap: 5px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }.avatar-editor label span { color: var(--sage); font: 600 8px var(--sans); }.outline-button { padding: 10px 12px; border-color: var(--line); color: var(--terre); background: transparent; }.name { margin: 0; font: 500 42px/.95 var(--display); }.email { margin: 0; color: var(--sage); }.admin-link { justify-self: start; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }.logout { background: transparent; color: var(--terre); border-color: var(--line); }
   @media (max-width: 650px) { .account { width: min(100% - 32px, 850px); padding-top: 68px; }.stats { grid-template-columns: repeat(2, 1fr); }:global(.stats > article) { min-height: 120px; padding: 17px 15px; }:global(.stats > article:nth-child(odd)) { border-left: 0; }:global(.stats > article:nth-child(even)) { border-right: 0; }:global(.stats > article > strong) { font-size: 45px; }:global(.stats > article > span) { margin-top: 14px; font-size: 8px; }.overview, .account-section { padding: 56px 0; }.record-form, .collection, .profile-grid { grid-template-columns: 1fr; }.avatar-editor { grid-template-columns: 58px 1fr; }.avatar-editor .outline-button { grid-column: 2; }.account-panel { padding: 21px 17px; } }
+</style>
+
+<style>
+  /* La sequenza dopo Le tracce conserva le due pagine per capitolo. */
+  .passport-page[data-passport-page="11"] :global(.profile-grid) { display: block; border: 0; background: transparent; }.passport-page[data-passport-page="11"] :global(.profile-grid article) { display: grid; grid-template-columns: 118px minmax(0, 1fr); column-gap: 15px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid rgba(32,52,43,.2); }.passport-page[data-passport-page="11"] :global(.profile-grid article p) { grid-row: span 2; }.passport-page[data-passport-page="11"] :global(.profile-grid h3) { margin: 0; font-size: clamp(20px, 2.2vw, 29px); }.passport-page[data-passport-page="11"] :global(.profile-grid span) { grid-column: 2; margin-top: 4px; font-size: 11px; }.passport-page[data-passport-page="11"] :global(.territory) { margin-top: 14px; border: 1px solid rgba(146,106,67,.25); background: transparent; text-align: center; }
+  .passport-page[data-passport-page="12"] :global([data-suggestions]) { position: relative; z-index: 1; display: grid; place-items: center; min-height: 250px; padding: 16px; border: 1px solid rgba(146,106,67,.25); background: radial-gradient(circle at center, rgba(205,183,130,.16), transparent 63%); text-align: center; }.passport-page[data-passport-page="12"] :global(.suggestion) { max-width: 310px; padding: 0; border: 0; }.passport-page[data-passport-page="12"] :global(.suggestion::before) { display: block; width: 54px; height: 54px; margin: 0 auto 12px; content: '✦'; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font: 400 26px/54px var(--display); }.passport-page[data-passport-page="12"] :global(.suggestion h3) { font-size: 25px; }.passport-page[data-passport-page="12"] :global([data-taste-profile-secondary]) { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; margin-top: 11px; border-top: 1px solid rgba(32,52,43,.2); border-left: 1px solid rgba(32,52,43,.2); }.passport-page[data-passport-page="12"] :global(.taste-secondary-record), .passport-page[data-passport-page="12"] :global(.territory) { min-width: 0; padding: 9px 10px; border-right: 1px solid rgba(32,52,43,.2); border-bottom: 1px solid rgba(32,52,43,.2); background: transparent; }.passport-page[data-passport-page="12"] :global(.taste-secondary-record p), .passport-page[data-passport-page="12"] :global(.territory p) { margin: 0 0 4px; color: var(--gold); font: 700 7px var(--sans); letter-spacing: .08em; text-transform: uppercase; }.passport-page[data-passport-page="12"] :global(.taste-secondary-record strong) { display: block; color: var(--terre); font: 400 15px/1.15 var(--display); }.passport-page[data-passport-page="12"] :global(.taste-secondary-record span), .passport-page[data-passport-page="12"] :global(.territory span) { color: var(--sage); font-size: 9px; line-height: 1.25; }.passport-page[data-passport-page="12"] :global(.territory) { grid-column: 1 / -1; }
+  .passport-page[data-passport-page="13"] .avatar-editor { margin-top: 38px; }.passport-page[data-passport-page="13"] .label { text-align: center; }.passport-page[data-passport-page="13"] .admin-link, .passport-page[data-passport-page="13"] .logout { justify-self: center; }.passport-page[data-passport-page="13"] .handle-editor { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 9px 14px; width: min(100%, 390px); margin: 18px auto 6px; padding: 16px 0; border-block: 1px solid rgba(32,52,43,.18); }.passport-page[data-passport-page="13"] .handle-editor label { display: grid; gap: 6px; color: var(--terre); font: 700 8px var(--sans); letter-spacing: .09em; text-transform: uppercase; }.passport-page[data-passport-page="13"] .handle-editor input { min-width: 0; padding: 7px 0; border: 0; border-bottom: 1px solid rgba(32,52,43,.22); outline: 0; color: var(--ink); background: transparent; font: 400 18px var(--serif); }.passport-page[data-passport-page="13"] .handle-editor p { grid-column: 1 / -1; margin: 0; color: var(--sage); font-size: 11px; line-height: 1.35; text-align: center; }.passport-page[data-passport-page="13"] .handle-editor .outline-button { align-self: end; min-height: 34px; padding: 8px 10px; font-size: 8px; }
+  @media (max-width: 760px) { .passport-page[data-passport-page="11"] :global(.profile-grid article) { grid-template-columns: 80px minmax(0, 1fr); padding: 9px 0; }.passport-page[data-passport-page="11"] :global(.profile-grid h3) { font-size: 18px; }.passport-page[data-passport-page="11"] :global(.profile-grid span) { font-size: 9px; }.passport-page[data-passport-page="12"] :global([data-suggestions]) { min-height: 175px; padding: 12px; }.passport-page[data-passport-page="12"] :global(.suggestion h3) { font-size: 20px; }.passport-page[data-passport-page="12"] :global([data-taste-profile-secondary]) { grid-template-columns: 1fr; }.passport-page[data-passport-page="12"] :global(.territory) { grid-column: auto; }.passport-page[data-passport-page="13"] .handle-editor { grid-template-columns: 1fr; margin-top: 8px; padding: 9px 0; }.passport-page[data-passport-page="13"] .handle-editor .outline-button { justify-self: center; }.passport-page[data-passport-page="13"] .avatar-editor { margin-top: 15px; padding: 8px 0; }.passport-page[data-passport-page="13"] .account-avatar { width: 47px; height: 55px; } }
+</style>
+
+<style>
+  .stamps-page { overflow: hidden; }
+  .stamps-intro { position: relative; z-index: 2; max-width: 355px; margin: 6px auto 0; text-align: center; }.stamps-intro h2 { margin: 0; font: 500 clamp(31px, 3.6vw, 49px)/.88 var(--display); letter-spacing: -.04em; }.stamps-intro p { margin: 12px auto 0; color: var(--sage); font-size: 13px; line-height: 1.4; }
+  .stamps-canvas { position: absolute; inset: 93px 17px 32px; overflow: hidden; }.stamps-canvas--secondary { inset: 25px 17px 32px; }
+  .passport-stamp { position: absolute; left: var(--stamp-x); top: var(--stamp-y); display: grid; place-items: center; align-content: center; gap: 2px; width: 110px; height: 76px; padding: 7px; border: 1.4px solid rgba(36,52,43,.68); color: rgba(36,52,43,.78); background: transparent; font-family: var(--sans); text-align: center; text-transform: uppercase; transform: translate(-50%, -50%) rotate(var(--stamp-rotation)); opacity: .83; cursor: pointer; isolation: isolate; }.passport-stamp::before { position: absolute; inset: 4px; content: ''; border: 1px dashed rgba(36,52,43,.45); pointer-events: none; }.passport-stamp::after { position: absolute; inset: 0; z-index: -1; content: ''; opacity: .15; background-image: repeating-linear-gradient(90deg, transparent 0 4px, currentColor 4px 4.4px, transparent 4.4px 8px); mix-blend-mode: multiply; }
+  .passport-stamp i { display: block; color: var(--terre); font: 500 18px/1 var(--display); font-style: normal; letter-spacing: .07em; }.passport-stamp b { max-width: 96px; font: 700 7px/1.08 var(--sans); letter-spacing: .08em; }.passport-stamp small { position: absolute; top: -9px; right: -10px; padding: 2px 4px; color: var(--paper); background: var(--terre); font: 700 6px var(--sans); letter-spacing: .08em; }
+  .stamp--small { width: 84px; height: 58px; }.stamp--small b { max-width: 72px; font-size: 6px; }.stamp--large { width: 136px; height: 91px; }.stamp--large b { font-size: 8px; }.stamp--round { width: 88px; height: 88px; border-radius: 50%; }.stamp--round::before { border-radius: 50%; }.stamp--oval { border-radius: 50%; }.stamp--visa { border-radius: 0; }.stamp--seal { border: 2px double rgba(110,67,57,.74); color: rgba(110,67,57,.8); border-radius: 3px; }.stamp--date { height: 65px; border-color: rgba(118,94,63,.74); }.stamp--date i { font: 700 9px var(--sans); }.stamp--shield { clip-path: polygon(8% 0,92% 0,100% 17%,88% 100%,12% 100%,0 17%); padding-bottom: 14px; }.stamp--shield::before { clip-path: polygon(10% 5%,90% 5%,95% 20%,85% 95%,15% 95%,5% 20%); }.stamp--hex { clip-path: polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%); }.stamp--hex::before { clip-path: polygon(26% 5%,74% 5%,94% 50%,74% 95%,26% 95%,6% 50%); }.stamp--open { border-style: dashed; border-radius: 42% 58% 47% 53%; }
+  .passport-stamp.is-new { animation: stamp-impression .65s cubic-bezier(.2,.8,.25,1) both; }.passport-stamp.is-new::after { opacity: .28; } @keyframes stamp-impression { 0% { opacity: 0; transform: translate(-50%, -75%) rotate(calc(var(--stamp-rotation) - 4deg)) scale(1.18); } 58% { opacity: .95; transform: translate(-50%, -46%) rotate(var(--stamp-rotation)) scale(.96); } 100% { opacity: .83; transform: translate(-50%, -50%) rotate(var(--stamp-rotation)) scale(1); } }
+  .stamp-detail { width: min(420px, calc(100% - 32px)); padding: 0; border: 1px solid var(--line); color: var(--ink); background: var(--paper); box-shadow: 0 24px 70px rgba(23,35,28,.28); }.stamp-detail::backdrop { background: rgba(22,36,29,.54); backdrop-filter: blur(3px); }.stamp-detail > div { position: relative; padding: 30px; text-align: center; background-image: radial-gradient(rgba(55,60,47,.055) .55px, transparent .7px); background-size: 7px 7px; }.stamp-detail button { position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; padding: 0; border: 1px solid var(--line); color: var(--terre); background: transparent; font: 400 22px/1 var(--display); cursor: pointer; }.stamp-detail p { margin: 0; color: var(--gold); font: 700 8px var(--sans); letter-spacing: .13em; text-transform: uppercase; }.stamp-detail h2 { margin: 17px 0 13px; font: 500 42px/.9 var(--display); letter-spacing: -.04em; }.stamp-detail-mark { display: grid; place-items: center; width: 74px; height: 74px; margin: 0 auto 16px; border: 1px solid var(--terre); border-radius: 50%; color: var(--terre); font: 500 27px var(--display); }.stamp-detail blockquote { margin: 0; color: var(--sage); font: 400 19px/1.4 var(--display); }.stamp-detail small { display: block; margin-top: 20px; color: var(--terre); font: 700 8px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  @media (max-width: 760px) { .stamps-intro { max-width: 270px; }.stamps-intro h2 { font-size: 33px; }.stamps-intro p { font-size: 11px; }.stamps-canvas { inset: 100px 13px 30px; overflow: visible; }.stamps-canvas--secondary { inset: 20px 13px 30px; }.passport-stamp { left: var(--stamp-mobile-x); top: var(--stamp-mobile-y); width: 92px; height: 64px; }.stamp--small { width: 70px; height: 50px; }.stamp--large { width: 112px; height: 76px; }.stamp--round { width: 73px; height: 73px; }.passport-stamp b { max-width: 78px; font-size: 6px; }.stamp--large b { font-size: 7px; }.passport-stamp i { font-size: 15px; } }
+  @media (prefers-reduced-motion: reduce) { .passport-stamp.is-new { animation: none; } }
 </style>
 
 <style>

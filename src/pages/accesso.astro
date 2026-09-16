@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="Accesso riservato — Lo Champagne, con calma">
+<BaseLayout title="Accesso riservato — Champagne Vademecum">
   <section class="access">
     <p class="eyebrow">Archivio personale</p>
     <h1>Accesso<br /><em>riservato.</em></h1>
@@ -104,7 +104,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   const codeStatus = document.querySelector<HTMLElement>('[data-code-status]');
   let inviteToken = '';
 
-  const goToArchive = () => { window.location.href = '/cantine-e-vini'; };
+  const goToArchive = () => {
+    const continueTo = new URLSearchParams(window.location.search).get('continua');
+    window.location.href = continueTo && continueTo.startsWith('/') ? continueTo : '/account';
+  };
   const showPanel = (panel: HTMLElement | null) => {
     [authPanel, codePanel, invitePanel, recoveryPanel, resetPanel].forEach((item) => { if (item) item.hidden = item !== panel; });
   };

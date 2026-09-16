@@ -12,8 +12,16 @@ const sessionScope = globalThis as IdentitySessionScope;
  */
 export const getCurrentUser = () => {
   sessionScope.__champagneIdentitySession ??= (async () => {
-    const hydratedUser = await hydrateSession();
-    return hydratedUser ?? getUser();
+    // Some mobile browsers can refuse a session-storage read while restoring a
+    // PWA.  A failed hydration must not make the entire authenticated area
+    // disappear: `getUser` still reads the valid Identity session when present.
+    try {
+      const hydratedUser = await hydrateSession();
+      if (hydratedUser) return hydratedUser;
+    } catch {
+      // Fall through to the canonical Identity lookup below.
+    }
+    return getUser();
   })();
   return sessionScope.__champagneIdentitySession;
 };

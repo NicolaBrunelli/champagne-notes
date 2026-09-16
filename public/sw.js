@@ -1,6 +1,6 @@
-const CACHE = 'champagne-notes-v1';
+const CACHE = 'champagne-notes-v2';
 const PUBLIC_SHELL = ['/', '/cantine-e-vini', '/storia-e-metodo', '/territorio', '/articoli', '/offline.html', '/manifest.webmanifest', '/app-icon-192.png', '/app-icon-512.png'];
-const neverCache = (path) => path.startsWith('/api/') || path.startsWith('/accesso') || path.startsWith('/account') || path.startsWith('/admin');
+const neverCache = (path) => path.startsWith('/api/') || path.startsWith('/accesso') || path.startsWith('/account') || path.startsWith('/admin') || path.startsWith('/amici');
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(PUBLIC_SHELL)).then(() => self.skipWaiting()));

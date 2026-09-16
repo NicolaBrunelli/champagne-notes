@@ -5,7 +5,7 @@ interface Props {
 }
 
 const {
-  title = 'Lo Champagne, con calma — Brunelli Nicola',
+  title = 'Champagne Vademecum — Brunelli Nicola',
   description = 'Un archivio personale dedicato allo Champagne, alla vigna e al terroir.',
 } = Astro.props;
 const path = Astro.url.pathname;
@@ -38,14 +38,14 @@ const isCurrent = (href: string) => href === '/' ? path === '/' : path.startsWit
   <body>
     <header class="site-header">
       <div class="header-inner">
-        <a class="brand" href="/" aria-label="Lo Champagne, con calma — pagina iniziale">
+        <a class="brand" href="/" aria-label="Champagne Vademecum — pagina iniziale">
           <span class="brand-mark" aria-hidden="true"><span class="brand-letter">C</span><span class="bubble bubble-one"></span><span class="bubble bubble-two"></span><span class="bubble bubble-three"></span></span>
-          <span class="brand-name">Lo Champagne,<i> con calma</i></span>
+          <span class="brand-name">Champagne <i>Vademecum</i></span>
         </a>
         <nav aria-label="Navigazione principale">
           <ul>
             {navigation.map((item) => (
-              <li data-friends-nav={item.private ? true : undefined} hidden={item.private ? true : undefined}><a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a></li>
+              <li data-friends-nav={item.private ? true : undefined}><a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>{item.label}</a></li>
             ))}
           </ul>
         </nav>
@@ -54,7 +54,7 @@ const isCurrent = (href: string) => href === '/' ? path === '/' : path.startsWit
     </header>
     <main><slot /></main>
     <footer class="site-footer">
-      <p>Lo Champagne, con calma <span>·</span> Brunelli Nicola</p>
+      <p>Champagne Vademecum <span>·</span> Brunelli Nicola</p>
       <p>Appunti di vigna, craie e vino</p>
     </footer>
     <script>
@@ -67,14 +67,12 @@ const isCurrent = (href: string) => href === '/' ? path === '/' : path.startsWit
       }
 
       const accountLink = document.querySelector<HTMLAnchorElement>('[data-account-link]');
-      const friendsNavigation = document.querySelector<HTMLElement>('[data-friends-nav]');
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => undefined));
       }
       void (async () => {
         const user = await getCurrentUser();
         if (!accountLink || !user) return;
-        if (friendsNavigation) friendsNavigation.hidden = false;
         accountLink.href = '/account';
         accountLink.innerHTML = 'Il tuo passaporto <span aria-hidden="true">↗</span>';
       })().catch(() => undefined);
