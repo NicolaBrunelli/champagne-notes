@@ -212,6 +212,7 @@ import { maisons } from '../data/maisons';
   let passportPage = 0;
   let lastPassportTurn = 0;
   let editingTasting: Tasting | undefined;
+  let latestAtlas: Atlas | undefined;
   const personalTastings = new Map<string, Tasting>();
   const passportStamps = new Map<string, PassportStamp>();
   const pageNames = ['Copertina', 'Overview', 'Overview', 'Degustazioni', 'Degustazioni', 'Cantina', 'Cantina', 'Wishlist', 'Wishlist', 'Le tracce', 'Le tracce', 'Il mio gusto', 'Il mio gusto', 'Profilo', 'Profilo'];
@@ -257,7 +258,7 @@ import { maisons } from '../data/maisons';
     qs<HTMLButtonElement>('[data-passport-prev]')?.addEventListener('click', () => turnPassport(-1));
     qs<HTMLButtonElement>('[data-passport-next]')?.addEventListener('click', () => turnPassport(1));
     passportTabs.forEach((tab) => tab.addEventListener('click', () => renderPassport(Number(tab.dataset.passportGo))));
-    window.addEventListener('resize', () => renderPassport(passportPage, 1, false));
+    window.addEventListener('resize', () => { renderPassport(passportPage, 1, false); if (latestAtlas) draw(latestAtlas); });
     document.addEventListener('keydown', (event) => {
       if ((event.target as HTMLElement | null)?.matches('input, textarea, select')) return;
       if (event.key === 'ArrowRight') turnPassport(1);
@@ -282,26 +283,56 @@ import { maisons } from '../data/maisons';
   const escapeHTML = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] || character));
   const formatDate = (value: string) => new Intl.DateTimeFormat('it-IT', { dateStyle: 'long' }).format(new Date(`${value}T12:00:00`));
   const aromaById = new Map<string, { label: string; emoji: string }>(aromas.map(([id, label, emoji]) => [id, { label, emoji }]));
-  // Per ora la pagina è una prova di stampa: soltanto i tre timbri già
-  // ottenibili sono disegnati qui. Registro, condizioni e persistenza restano
-  // indipendenti da questo rendering.
-  const visibleStampIds = new Set(['premier-bouchon', 'bienvenue', 'a-la-cave']);
-  const stampArt: Record<string, string> = {
-    'premier-bouchon': '<svg viewBox="0 0 160 160" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"><circle cx="80" cy="80" r="67"/><circle cx="80" cy="80" r="59" stroke-dasharray="2.2 3"/><circle cx="80" cy="80" r="18"/><path d="M68 72h24v16H68zM72 68h16M72 92h16M75 76v8m10-8v8"/><path d="M47 80h10m46 0h10"/></g><text x="80" y="39" text-anchor="middle" fill="currentColor" font-size="8" font-family="sans-serif" font-weight="700" letter-spacing="1.7">CHAMPAGNE</text><text x="80" y="123" text-anchor="middle" fill="currentColor" font-size="10" font-family="sans-serif" font-weight="700" letter-spacing="1.25">PREMIER</text><text x="80" y="136" text-anchor="middle" fill="currentColor" font-size="10" font-family="sans-serif" font-weight="700" letter-spacing="1.25">BOUCHON</text></svg>',
-    bienvenue: '<svg viewBox="0 0 230 130" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="10" width="214" height="110" rx="2"/><rect x="15" y="17" width="200" height="96" rx="1"/><path d="M27 43h176M27 91h176"/><path d="M30 79c20-14 30-12 46-4s27 9 45-4 31-13 46-5 25 8 35-2" stroke-dasharray="2.4 3.2"/><path d="M34 28v12m7-12v12m148-12v12m7-12v12"/><rect x="174" y="54" width="22" height="22"/><path d="M178 58h14v14h-14zM181 61h8v8h-8z"/></g><text x="115" y="35" text-anchor="middle" fill="currentColor" font-size="8" font-family="sans-serif" font-weight="700" letter-spacing="2">ENTRÉE</text><text x="115" y="61" text-anchor="middle" fill="currentColor" font-size="14" font-family="sans-serif" font-weight="700" letter-spacing="1.2">BIENVENUE</text><text x="115" y="76" text-anchor="middle" fill="currentColor" font-size="9" font-family="sans-serif" font-weight="700" letter-spacing="1.9">EN CHAMPAGNE</text><text x="42" y="104" fill="currentColor" font-size="6.5" font-family="sans-serif" letter-spacing="1.1">VISA DE VOYAGE</text></svg>',
-    'a-la-cave': '<svg viewBox="0 0 180 120" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="12" width="160" height="96"/><rect x="17" y="19" width="146" height="82"/><path d="M42 87V62c0-14 9-24 23-24s23 10 23 24v25M49 87V64c0-10 6-18 16-18s16 8 16 18v23"/><path d="M100 70h47M100 82h47M107 70v12m13-12v12m13-12v12"/><path d="M57 58h16v30H57zM60 53h10v5m-8 7h6"/></g><text x="90" y="32" text-anchor="middle" fill="currentColor" font-size="8" font-family="sans-serif" font-weight="700" letter-spacing="1.7">EN CAVE</text><text x="132" y="97" text-anchor="middle" fill="currentColor" font-size="10" font-family="sans-serif" font-weight="700" letter-spacing="1.4">À LA CAVE</text></svg>',
+  const stampLabels: Record<string, string[]> = {
+    'premier-bouchon': ['PREMIER', 'BOUCHON'], bienvenue: ['BIENVENUE', 'EN CHAMPAGNE'], 'carnet-degustation': ['CARNET DE', 'DÉGUSTATION'], connaisseur: ['LE', 'CONNAISSEUR'], 'grande-collection': ['LA GRANDE', 'COLLECTION'], centenaire: ['CENTENAIRE', '100'], 'trois-cepages': ['LES TROIS', 'CÉPAGES'], 'blanc-sur-blanc': ['BLANC SUR', 'BLANC'], 'noir-sur-noir': ['NOIR SUR', 'NOIR'], 'vie-en-rose': ['LA VIE', 'EN ROSE'], 'sans-sucre': ['SANS SUCRE', 'S’IL VOUS PLAÎT'], 'extra-extra-brut': ['EXTRA', 'EXTRA BRUT'], 'voyage-temps': ['VOYAGE', 'DANS LE TEMPS'], 'maison-vigneron': ['MAISON &', 'VIGNERON'], 'grower-hunter': ['GROWER', 'HUNTER'], 'grandes-maisons': ['LES GRANDES', 'MAISONS'], 'fidele-maison': ['FIDÈLE À', 'LA MAISON'], 'tour-champagne': ['TOUR DE', 'CHAMPAGNE'], 'montagne-reims': ['MONTAGNE', 'DE REIMS'], 'cote-blancs': ['CÔTE DES', 'BLANCS'], 'vallee-marne': ['VALLÉE DE', 'LA MARNE'], 'cote-bar': ['CÔTE DES', 'BAR'], 'grand-cru': ['GRAND CRU', 'EXPLORER'], 'a-la-cave': ['À LA', 'CAVE'], collectionneur: ['LE', 'COLLECTIONNEUR'], patience: ['PATIENCE', ''], 'coup-coeur': ['COUP DE', 'CŒUR'], 'esprit-ouvert': ['ESPRIT', 'OUVERT'], 'hors-sentiers': ['HORS DES', 'SENTIERS'], 'mon-champagne': ['MON', 'CHAMPAGNE'],
+  };
+  const stampFrame = (shape: string) => ({
+    round: '<circle cx="100" cy="70" r="57"/><circle cx="100" cy="70" r="50" stroke-dasharray="2 3"/>',
+    oval: '<ellipse cx="100" cy="70" rx="82" ry="50"/><ellipse cx="100" cy="70" rx="74" ry="42" stroke-dasharray="2 3"/>',
+    visa: '<rect x="9" y="14" width="182" height="112" rx="2"/><rect x="16" y="21" width="168" height="98" rx="1"/><path d="M27 45h146M27 96h146"/>',
+    seal: '<rect x="26" y="20" width="148" height="100"/><rect x="33" y="27" width="134" height="86" stroke-dasharray="3 3"/>',
+    date: '<rect x="22" y="20" width="156" height="100"/><path d="M22 46h156M47 13v16m35-16v16m36-16v16m35-16v16"/>',
+    shield: '<path d="M100 12 165 34v41c0 23-25 38-65 52-40-14-65-29-65-52V34z"/><path d="M100 23 154 41v31c0 16-20 29-54 40-34-11-54-24-54-40V41z" stroke-dasharray="2.5 3"/>',
+    hex: '<path d="m62 14 76 0 38 56-38 56H62L24 70z"/><path d="m66 22 68 0 33 48-33 48H66L33 70z" stroke-dasharray="2.5 3"/>',
+    open: '<path d="M25 38c20-28 130-28 150 0M21 102c22 25 136 25 158 0M20 54v30M180 54v30"/><path d="M34 44h132M34 96h132" stroke-dasharray="4 4"/>',
+  }[shape] || '<rect x="20" y="20" width="160" height="100"/>');
+  const stampMotif = (id: string) => ({
+    'premier-bouchon': '<circle cx="100" cy="69" r="18"/><path d="M88 61h24v17H88zM92 57h16M92 82h16M95 65v8m10-8v8M66 70h10m48 0h10"/>',
+    bienvenue: '<path d="M34 83c20-15 31-13 47-5s27 8 43-4 29-12 43-5" stroke-dasharray="2 3"/><rect x="145" y="55" width="20" height="20"/><path d="M150 60h10v10h-10z"/>',
+    'carnet-degustation': '<path d="M69 56h62M69 67h62M69 78h43M57 52v32"/><circle cx="58" cy="57" r="2"/><circle cx="58" cy="68" r="2"/><circle cx="58" cy="79" r="2"/>',
+    connaisseur: '<path d="M72 83c8-30 27-38 30-38s22 8 30 38M76 79c8-10 40-10 48 0M88 51c-8-11-18-7-16 1 2 8 13 7 16 0m16 0c3-8 14-12 16-1 2 8-8 12-16 1"/>',
+    'grande-collection': '<path d="M65 82h70M72 72h56M80 62h40M89 52h22"/>', centenaire: '<text x="100" y="78" text-anchor="middle" class="passport-stamp__number" font-size="31">100</text>',
+    'trois-cepages': '<circle cx="77" cy="69" r="6"/><circle cx="100" cy="69" r="6"/><circle cx="123" cy="69" r="6"/><path d="M72 83c15-10 40-10 56 0"/>',
+    'blanc-sur-blanc': '<path d="M65 83c10-30 60-30 70 0M70 88h60M77 57v23m12-30v30m12-34v34m12-30v30"/>',
+    'noir-sur-noir': '<circle cx="100" cy="70" r="23"/><path d="M77 70h46M100 47v46M84 54l32 32m0-32L84 86"/>',
+    'vie-en-rose': '<path d="M100 83V58M100 63c-17-19-31 3-12 10-19 8-4 27 12 10 16 17 31-2 12-10 19-7 5-29-12-10"/>',
+    'sans-sucre': '<circle cx="100" cy="70" r="20"/><path d="M100 55v30"/>', 'extra-extra-brut': '<path d="M63 60h74M63 78h74"/><text x="100" y="72" text-anchor="middle" class="passport-stamp__micro" font-size="7">EXTRA</text>',
+    'voyage-temps': '<path d="M67 54h66M73 60v26m13-26v26m14-26v26m13-26v26"/>', 'maison-vigneron': '<path d="M60 57h32v28H60zM108 57h32v28h-32zM100 51v40"/>',
+    'grower-hunter': '<path d="M82 83c0-16 6-27 18-34 12 7 18 18 18 34M80 83h40M87 56l-9 12m35-12 9 12"/>', 'grandes-maisons': '<path d="M65 85V58l35-22 35 22v27M76 85V65h48v20M87 85V72h26v13"/>',
+    'fidele-maison': '<path d="M76 59a29 29 0 1 1-2 24M73 57v13h13"/>', 'tour-champagne': '<path d="M57 76c11-25 30-31 44-20 13-11 30-5 42 20M62 84c15-14 61-14 76 0"/>',
+    'montagne-reims': '<path d="M58 84c15-31 34-36 49-18 15-20 29-15 37 18M63 89h74"/>', 'cote-blancs': '<path d="M82 46v41m12-47v47m12-41v41M65 87h70"/>',
+    'vallee-marne': '<path d="M59 62c22-18 32 16 48 0s27 18 38-1M59 78c22-18 32 16 48 0s27 18 38-1"/>', 'cote-bar': '<path d="m80 51 20-12 20 12v30l-20 12-20-12z"/>',
+    'grand-cru': '<text x="100" y="74" text-anchor="middle" class="passport-stamp__micro" font-size="7">GRAND CRU</text>', 'a-la-cave': '<path d="M50 85V62c0-15 10-25 24-25s24 10 24 25v23M57 85V64c0-10 7-18 17-18s17 8 17 18v21M112 72h38M112 84h38M120 72v12m12-12v12"/>',
+    collectionneur: '<path d="M67 55h66v30H67zM75 62h50M75 71h50"/>', patience: '<circle cx="100" cy="70" r="22"/><path d="M100 54v16l11 9"/>',
+    'coup-coeur': '<path d="M100 88C70 67 71 49 84 48c9-1 14 6 16 12 2-6 7-13 16-12 13 1 14 19-16 40z"/>', 'esprit-ouvert': '<path d="M100 70V43M100 70l24-15M100 70l25 16M100 70v27M100 70 75 86M100 70 76 55"/>',
+    'hors-sentiers': '<path d="M61 85c13-37 29-44 43-24 11 14 20 10 32-8M128 53h8v8"/>', 'mon-champagne': '<path d="M75 85V60c0-15 10-25 25-25s25 10 25 25v25M83 85V64c0-10 7-17 17-17s17 7 17 17v21"/><text x="100" y="74" text-anchor="middle" class="passport-stamp__micro" font-size="7">CH</text>',
+  }[id] || '<circle cx="100" cy="70" r="16"/>');
+  const stampPosition = (stamp: PassportStamp) => {
+    const curated = { 'premier-bouchon': { x: 20, y: 24, mobileX: 23, mobileY: 40 }, bienvenue: { x: 66, y: 53, mobileX: 63, mobileY: 58 }, 'a-la-cave': { x: 33, y: 78, mobileX: 33, mobileY: 75 } }[stamp.id] || stamp.position;
+    return `--stamp-x:${curated.x}%;--stamp-y:${curated.y}%;--stamp-mobile-x:${curated.mobileX}%;--stamp-mobile-y:${curated.mobileY}%;--stamp-rotation:${stamp.rotation}deg`;
   };
   const renderStamp = (stamp: PassportStamp) => {
-    const art = stampArt[stamp.id];
-    if (!art) return '';
-    return `<button type="button" class="passport-stamp passport-stamp--${escapeHTML(stamp.id)}${stamp.isNew ? ' is-new' : ''}" data-stamp-id="${escapeHTML(stamp.id)}" aria-label="${escapeHTML(stamp.name)}">${art}${stamp.isNew ? '<span class="stamp-new">nouveau</span>' : ''}</button>`;
+    const lines = stampLabels[stamp.id] || [stamp.name.toUpperCase(), ''];
+    const ink = stamp.id === 'bienvenue' || stamp.id === 'vie-en-rose' ? 'passport-stamp--sepia' : stamp.id === 'noir-sur-noir' || stamp.id === 'centenaire' ? 'passport-stamp--burgundy' : '';
+    return `<button type="button" class="passport-stamp passport-stamp--${escapeHTML(stamp.stampSize)} ${ink}${stamp.isNew ? ' is-new' : ''}" data-stamp-id="${escapeHTML(stamp.id)}" style="${stampPosition(stamp)}" aria-label="${escapeHTML(stamp.name)}"><svg class="passport-stamp__svg" viewBox="0 0 200 140" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g class="passport-stamp__line" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">${stampFrame(stamp.stampShape)}${stampMotif(stamp.id)}</g><text x="100" y="38" text-anchor="middle" class="passport-stamp__kicker" font-size="6">CHAMPAGNE PASSPORT</text><text x="100" y="105" text-anchor="middle" class="passport-stamp__title" font-size="8">${escapeHTML(lines[0])}</text>${lines[1] ? `<text x="100" y="117" text-anchor="middle" class="passport-stamp__title" font-size="8">${escapeHTML(lines[1])}</text>` : ''}</svg>${stamp.isNew ? '<span class="stamp-new">nouveau</span>' : ''}</button>`;
   };
 
   const draw = (data: Atlas) => {
+    latestAtlas = data;
     personalTastings.clear();
     data.tastings.forEach((item) => personalTastings.set(item.id, item));
-    if (stampsCanvas) stampsCanvas.innerHTML = data.stamps.filter((stamp) => visibleStampIds.has(stamp.id)).map(renderStamp).join('');
-    if (stampsCanvasSecondary) stampsCanvasSecondary.innerHTML = '';
+    if (stampsCanvas) stampsCanvas.innerHTML = data.stamps.filter((stamp) => stamp.stampVariant <= 15).map(renderStamp).join('');
+    if (stampsCanvasSecondary) stampsCanvasSecondary.innerHTML = data.stamps.filter((stamp) => stamp.stampVariant > 15).map(renderStamp).join('');
     passportStamps.clear(); data.stamps.forEach((stamp) => passportStamps.set(stamp.id, stamp));
     if (overview) overview.innerHTML = [['Champagne degustati', data.overview.tasted], ['Bottiglie in cantina', data.overview.cellarBottles], ['Nella wishlist', data.overview.wishlist], ['Produttori scoperti', data.overview.producers], ['Aree esplorate', data.overview.areas], ['Cru con dati certi', data.overview.crus]].map(([label, value]) => `<article><strong>${value}</strong><span>${label}</span></article>`).join('');
     const suggestionMarkup = data.suggestions.length ? data.suggestions.map((item) => `<article class="suggestion"><p>${escapeHTML(item.title)}</p>${item.producer && item.wine ? `<h3>${escapeHTML(item.producer)} · ${escapeHTML(item.wine)}</h3>` : ''}<span>${escapeHTML(item.reason)}</span></article>`).join('') : '<p class="empty">Registra una prima bottiglia: il tuo atlante inizierà a suggerire confronti coerenti e spiegati.</p>';
@@ -311,8 +342,10 @@ import { maisons } from '../data/maisons';
       return `<article class="tasting"><p>${formatDate(item.drunkAt)} · ${escapeHTML(item.place)}</p><h3>${escapeHTML(item.wine)}</h3><a href="/cantine/${encodeURIComponent(item.producer.slug)}">${escapeHTML(item.producer.name)} →</a><strong>${item.rating.toFixed(1)} / 5</strong>${item.wouldRepurchase === true ? '<small>Lo ricompreresti: sì</small>' : item.wouldRepurchase === false ? '<small>Lo ricompreresti: no</small>' : ''}${flags ? `<div class="aromas">${flags}</div>` : ''}${item.notes ? `<div class="notes">${escapeHTML(item.notes)}</div>` : ''}<p class="actions"><button type="button" data-edit-tasting="${item.id}">Modifica</button><button type="button" data-delete-tasting="${item.id}" data-producer="${escapeHTML(item.producer.slug)}" data-wine="${escapeHTML(item.wine)}">Elimina</button></p></article>`;
     };
     const tastingEmpty = '<p class="empty">Il tuo taccuino è ancora vuoto. Apri una cantina e annota la tua prima bevuta.</p>';
-    if (tastingList) tastingList.innerHTML = data.tastings.length ? data.tastings.slice(0, 2).map(renderTasting).join('') : tastingEmpty;
-    if (tastingListSecondary) tastingListSecondary.innerHTML = data.tastings.slice(2, 4).length ? data.tastings.slice(2, 4).map(renderTasting).join('') : '<p class="empty">Le prossime degustazioni compariranno qui.</p>';
+    const firstPageTastings = mobilePassport() ? data.tastings.slice(0, 4) : data.tastings.slice(0, 2);
+    const secondPageTastings = mobilePassport() ? [] : data.tastings.slice(2, 4);
+    if (tastingList) tastingList.innerHTML = firstPageTastings.length ? firstPageTastings.map(renderTasting).join('') : tastingEmpty;
+    if (tastingListSecondary) tastingListSecondary.innerHTML = secondPageTastings.length ? secondPageTastings.map(renderTasting).join('') : '<p class="empty">Le prossime degustazioni compariranno qui.</p>';
     if (cellarList) cellarList.innerHTML = data.cellar.length ? data.cellar.map((item) => `<article class="bottle"><p>${escapeHTML(item.producer)}</p><h3>${escapeHTML(item.wine)}${item.vintage ? ` <span>${escapeHTML(item.vintage)}</span>` : ''}</h3><strong>${item.quantity} ${item.quantity === 1 ? 'bottiglia' : 'bottiglie'}</strong><button data-remove-cellar="${item.id}" type="button">Rimuovi</button></article>`).join('') : '<p class="empty">La tua cantina è ancora vuota.</p>';
     if (wishlistList) wishlistList.innerHTML = data.wishlist.length ? data.wishlist.map((item) => `<article class="bottle"><p>${escapeHTML(item.producer)}</p><h3>${escapeHTML(item.wine)}</h3><button data-remove-wish="${item.id}" type="button">Rimuovi dalla wishlist</button></article>`).join('') : '<p class="empty">Nessuna bottiglia in attesa per ora.</p>';
     if (profileBox) {
@@ -549,35 +582,58 @@ import { maisons } from '../data/maisons';
 <style is:global>
   /* Gli SVG sono inseriti a runtime: queste regole restano volutamente globali
      e isolate al solo foglio dei timbri. */
-  [data-passport-stamps] .passport-stamp {
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp {
     all: unset;
     position: absolute;
     display: block;
     box-sizing: border-box;
-    width: 126px;
+    left: var(--stamp-x);
+    top: var(--stamp-y);
+    width: 112px;
     color: rgba(32, 52, 43, .76);
     cursor: pointer;
     opacity: .84;
+    transform: translate(-50%, -50%) rotate(var(--stamp-rotation));
     transition: opacity .18s ease, transform .18s ease;
   }
-  [data-passport-stamps] .passport-stamp:hover { opacity: 1; transform: translateY(-2px); }
-  [data-passport-stamps] .passport-stamp:focus-visible { outline: 1px dashed currentColor; outline-offset: 5px; }
-  [data-passport-stamps] .passport-stamp svg { display: block; width: 100%; height: auto; overflow: visible; }
-  [data-passport-stamps] .passport-stamp svg :is(path, circle, rect, ellipse, line, polyline, polygon) { fill: none; stroke: currentColor; }
-  [data-passport-stamps] .passport-stamp svg text { fill: currentColor; stroke: none; }
-  [data-passport-stamps] .passport-stamp--premier-bouchon { top: 24%; left: 20%; width: 132px; transform: translate(-50%, -50%) rotate(-5deg); }
-  [data-passport-stamps] .passport-stamp--bienvenue { top: 53%; left: 66%; width: 178px; color: rgba(114, 73, 47, .76); transform: translate(-50%, -50%) rotate(2deg); }
-  [data-passport-stamps] .passport-stamp--a-la-cave { top: 78%; left: 33%; width: 126px; color: rgba(83, 73, 55, .75); transform: translate(-50%, -50%) rotate(-2deg); }
-  [data-passport-stamps] .passport-stamp.is-new { animation: passport-stamp-impression .52s cubic-bezier(.2,.8,.25,1) both; }
-  [data-passport-stamps] .stamp-new { position: absolute; top: -10px; right: 0; font: 700 7px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp:hover { opacity: 1; transform: translate(-50%, calc(-50% - 2px)) rotate(var(--stamp-rotation)); }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp:focus-visible { outline: 1px dashed currentColor; outline-offset: 5px; }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp svg { display: block; width: 100%; height: auto; overflow: visible; }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp svg :is(path, circle, rect, ellipse, line, polyline, polygon) { fill: none; stroke: currentColor; }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp svg text { fill: currentColor; stroke: none; }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp__kicker { font: 700 6px/1 var(--sans); letter-spacing: 1.05px; }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp__title { font: 700 8px/1 var(--sans); letter-spacing: .7px; }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp__micro { font: 700 7px/1 var(--sans); letter-spacing: .55px; }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp__number { fill: currentColor; stroke: none; font: 500 31px/1 var(--display); }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp--small { width: 86px; }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp--large { width: 138px; }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp--hero { width: 162px; }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp--sepia { color: rgba(114, 73, 47, .76); }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp--burgundy { color: rgba(104, 59, 52, .72); }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp.is-new { animation: passport-stamp-impression .52s cubic-bezier(.2,.8,.25,1) both; }
+  :is([data-passport-stamps], [data-passport-stamps-secondary]) .stamp-new { position: absolute; top: -10px; right: 0; font: 700 7px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
   @keyframes passport-stamp-impression { 0% { opacity: 0; } 45% { opacity: 1; } 100% { opacity: .84; } }
   @media (max-width: 760px) {
-    [data-passport-stamps] .passport-stamp--premier-bouchon { top: 40%; left: 23%; width: 105px; }
-    [data-passport-stamps] .passport-stamp--bienvenue { top: 58%; left: 63%; width: 146px; }
-    [data-passport-stamps] .passport-stamp--a-la-cave { top: 75%; left: 33%; width: 108px; }
+    :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp { left: var(--stamp-mobile-x); top: var(--stamp-mobile-y); width: 82px; }
+    :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp--small { width: 68px; }
+    :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp--large { width: 103px; }
+    :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp--hero { width: 122px; }
+    [data-my-tastings] {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 10px;
+      border-top: 1px solid rgba(32, 52, 43, .18);
+    }
+    [data-my-tastings] .tasting { display: block !important; min-width: 0; padding: 7px 4px 8px 9px; }
+    [data-my-tastings] .tasting h3 { font-size: 16px; line-height: .95; }
+    [data-my-tastings] .tasting > p { font-size: 6px; line-height: 1.25; }
+    [data-my-tastings] .tasting > a, [data-my-tastings] .tasting > strong, [data-my-tastings] .tasting > small { margin-top: 4px; font-size: 6px; }
+    [data-my-tastings] .aromas, [data-my-tastings] .notes { display: none; }
+    [data-my-tastings] .actions { gap: 7px; margin-top: 6px !important; }
+    [data-my-tastings] .actions button { font-size: 6px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    [data-passport-stamps] .passport-stamp { transition: none; animation: none; }
+    :is([data-passport-stamps], [data-passport-stamps-secondary]) .passport-stamp { transition: none; animation: none; }
   }
 </style>
 
