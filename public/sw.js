@@ -19,8 +19,8 @@ self.addEventListener('fetch', (event) => {
     }).catch(async () => (await caches.match(request)) || (await caches.match('/offline.html'))));
     return;
   }
-  event.respondWith(caches.match(request).then((cached) => cached || fetch(request).then((response) => {
-    if (response.ok) caches.open(CACHE).then((cache) => cache.put(request, response.clone()));
-    return response;
-  })));
+  // The shell and navigations are already cached above. Caching every asset
+  // here could race with Chromium's response stream and produced noisy
+  // "Response body is already used" errors on mobile.
+  event.respondWith(caches.match(request).then((cached) => cached || fetch(request)));
 });

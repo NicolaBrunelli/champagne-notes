@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Passaporto amico — Champagne Vademecum">
+  <section class="friend-passport" data-friend-passport>
+    <a class="back" href="/amici"><span aria-hidden="true">←</span> Tutti gli amici</a>
+    <div data-passport-content><p>Sto aprendo il passaporto…</p></div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { getCurrentUser } from '../../scripts/identity-session';
+
+  type Tasting = { wine: string; rating: number; drunkAt: string; producer: { name: string } };
+  type Bottle = { producer: string; wine: string; vintage?: string; quantity: number };
+  type ProfileData = { profile: { handle: string; avatar: boolean; avatarId: string; isSelf: boolean }; tastings: Tasting[]; cellar: Bottle[] };
+  const content = document.querySelector<HTMLElement>('[data-passport-content]');
+  const handle = new URLSearchParams(window.location.search).get('utente')?.trim().toLowerCase() || '';
+  const escapeHTML = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] || character));
+  const formatDate = (value: string) => new Intl.DateTimeFormat('it-IT', { dateStyle: 'medium' }).format(new Date(`${value}T12:00:00`));
+  const draw = ({ profile, tastings, cellar }: ProfileData) => {
+    if (!content) return;
+    if (profile.isSelf) { window.location.replace('/account'); return; }
+    document.title = `${profile.handle} — Champagne Passport`;
+    const avatar = profile.avatar ? `<img src="/api/profilo/avatar?id=${encodeURIComponent(profile.avatarId)}" alt="Foto profilo di ${escapeHTML(profile.handle)}">` : `<b>${escapeHTML(profile.handle.slice(0, 1).toUpperCase())}</b>`;
+    const latest = tastings.slice(0, 4);
+    const bottles = cellar.slice(0, 4);
+    content.innerHTML = `<div class="passport-book" aria-label="Champagne Passport di ${escapeHTML(profile.handle)}">
+      <section class="passport-cover"><span>${escapeHTML(profile.handle)}</span><div class="cover-avatar">${avatar}</div><h1>Champagne<br><em>Passport</em></h1><small>Le voyage en Champagne</small></section>
+      <div class="passport-spreads">
+        <section class="passport-page"><p class="page-head">01 — OVERVIEW <span>CHAMPAGNE PASSPORT</span></p><div class="identity"><span class="profile-avatar">${avatar}</span><p>IL PASSAPORTO DI</p><h2>${escapeHTML(profile.handle)}</h2><small>Archivio personale · consultazione</small></div><p class="page-foot">01</p></section>
+        <section class="passport-page"><p class="page-head">02 — VIAGGIO <span>ATLAS</span></p><h2>Il suo atlante.</h2><div class="stat-grid"><article><b>${tastings.length}</b><span>Champagne degustati</span></article><article><b>${cellar.reduce((sum, bottle) => sum + bottle.quantity, 0)}</b><span>Bottiglie in cantina</span></article><article><b>${new Set(tastings.map((item) => item.producer.name)).size}</b><span>Produttori scoperti</span></article><article><b>${new Set(tastings.map((item) => item.wine)).size}</b><span>Etichette annotate</span></article></div><p class="page-foot">02</p></section>
+        <section class="passport-page"><p class="page-head">03 — DEGUSTAZIONI <span>ENTRÉES</span></p><h2>Il taccuino.</h2><div class="record-list">${latest.length ? latest.map((item) => `<article><p>${formatDate(item.drunkAt)}</p><h3>${escapeHTML(item.wine)}</h3><span>${escapeHTML(item.producer.name)} · ${item.rating.toFixed(1)} / 5</span></article>`).join('') : '<p class="empty">Nessuna degustazione annotata.</p>'}</div><a class="detail-link" href="/amici/profilo?utente=${encodeURIComponent(profile.handle)}">Vedi tutte le degustazioni →</a><p class="page-foot">03</p></section>
+        <section class="passport-page"><p class="page-head">04 — CANTINA <span>REGISTRE DE CAVE</span></p><h2>In attesa.</h2><div class="record-list">${bottles.length ? bottles.map((item) => `<article><p>${escapeHTML(item.producer)}</p><h3>${escapeHTML(item.wine)}${item.vintage ? ` <em>${escapeHTML(item.vintage)}</em>` : ''}</h3><span>${item.quantity} ${item.quantity === 1 ? 'bottiglia' : 'bottiglie'}</span></article>`).join('') : '<p class="empty">Nessuna bottiglia in cantina.</p>'}</div><p class="page-foot">04</p></section>
+      </div>
+    </div>`;
+  };
+  void (async () => {
+    if (!(await getCurrentUser())) { window.location.href = '/accesso'; return; }
+    if (!handle) { window.location.href = '/amici'; return; }
+    const response = await fetch(`/api/amici?utente=${encodeURIComponent(handle)}`, { headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error();
+    draw(await response.json() as ProfileData);
+  })().catch(() => { if (content) content.innerHTML = '<p class="empty">Passaporto non disponibile.</p>'; });
+</script>
+
+<style>
+  .friend-passport { width: min(1000px, calc(100% - 40px)); margin: auto; padding: 48px 0 80px; }
+  .back, :global(.detail-link) { color: var(--terre); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  :global(.passport-book) { margin-top: 26px; box-shadow: 0 18px 34px rgba(32,43,35,.14); }
+  :global(.passport-cover) { display: grid; place-items: center; min-height: 580px; padding: 48px; border: 8px solid #19372d; outline: 1px solid var(--gold); outline-offset: -18px; color: #e4bf78; background: repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, transparent 1px 5px), #15352b; text-align: center; }
+  :global(.passport-cover > span), :global(.passport-cover small), :global(.page-head) { font: 700 10px var(--sans); letter-spacing: .14em; text-transform: uppercase; }
+  :global(.cover-avatar) { display: grid; place-items: center; width: 88px; height: 88px; overflow: hidden; border: 1px solid currentColor; border-radius: 50%; } :global(.cover-avatar img), :global(.profile-avatar img) { width: 100%; height: 100%; object-fit: cover; } :global(.cover-avatar b) { font: 500 48px var(--display); }
+  :global(.passport-cover h1) { margin: 12px 0; font: 500 clamp(54px, 8vw, 90px)/.78 var(--display); letter-spacing: -.055em; text-transform: uppercase; } :global(.passport-cover h1 em) { font-weight: 400; }
+  :global(.passport-spreads) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: #e6dfd0; }
+  :global(.passport-page) { position: relative; min-height: 480px; padding: 28px; border: 1px solid rgba(169,141,84,.42); background: radial-gradient(rgba(97,85,61,.08) .65px, transparent .65px) 0 0/6px 6px, var(--paper); } :global(.passport-page:nth-child(odd)) { box-shadow: inset -10px 0 18px rgba(37,54,43,.07); } :global(.passport-page:nth-child(even)) { box-shadow: inset 10px 0 18px rgba(37,54,43,.07); }
+  :global(.page-head) { display: flex; justify-content: space-between; margin: 0 0 26px; padding-bottom: 12px; border-bottom: 1px solid var(--line); color: var(--terre); font-size: 8px; } :global(.page-foot) { position: absolute; right: 28px; bottom: 22px; margin: 0; color: var(--gold); font: 500 18px var(--display); }
+  :global(.passport-page h2) { margin: 0 0 22px; font: 500 clamp(35px, 4vw, 52px)/.9 var(--display); letter-spacing: -.04em; } :global(.identity) { display: grid; justify-items: center; text-align: center; } :global(.profile-avatar) { display: grid; place-items: center; width: 84px; height: 84px; overflow: hidden; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font: 500 44px var(--display); } :global(.identity > p) { margin: 22px 0 9px; color: var(--terre); font: 700 8px var(--sans); letter-spacing: .12em; } :global(.identity h2) { margin-bottom: 9px; } :global(.identity small) { color: var(--sage); font: 600 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+  :global(.stat-grid) { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; border: 1px solid var(--line); background: var(--line); } :global(.stat-grid article) { min-height: 112px; padding: 17px; background: rgba(255,255,255,.48); } :global(.stat-grid b) { display: block; color: var(--terre); font: 500 35px/1 var(--display); } :global(.stat-grid span), :global(.record-list p), :global(.record-list span) { color: var(--sage); font: 700 8px/1.4 var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+  :global(.record-list article) { padding: 11px 0; border-top: 1px dashed var(--line); } :global(.record-list p) { margin: 0 0 4px; } :global(.record-list h3) { margin: 0 0 4px; font: 500 22px/1 var(--display); } :global(.record-list h3 em) { color: var(--terre); font-weight: 400; } :global(.detail-link) { position: absolute; left: 28px; bottom: 24px; } :global(.empty) { color: var(--sage); }
+  @media (max-width: 700px) { .friend-passport { width: min(100% - 28px, 580px); padding-top: 30px; } :global(.passport-cover) { min-height: 470px; } :global(.passport-spreads) { grid-template-columns: 1fr; } :global(.passport-page) { min-height: 395px; padding: 22px; } :global(.page-foot) { right: 22px; bottom: 17px; } :global(.detail-link) { left: 22px; bottom: 19px; } }
+</style>

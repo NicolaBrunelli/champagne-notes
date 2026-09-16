@@ -25,7 +25,10 @@ export default async (request: Request) => {
       store.get(avatarKey(id), { type: 'arrayBuffer' }),
       store.getMetadata(avatarKey(id)),
     ]);
-    if (!image) return new Response('Foto profilo non trovata.', { status: 404, headers: { 'Cache-Control': 'private, no-store' } });
+    // A missing image is a normal state for a new passport, not an error. A
+    // tiny neutral placeholder avoids a noisy 404 in the console while the UI
+    // still shows the member's textual initial where appropriate.
+    if (!image) return new Response('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-label="Foto profilo non impostata"><rect width="80" height="80" fill="#f6f2e9"/><circle cx="40" cy="40" r="39" fill="none" stroke="#b58b46"/><circle cx="40" cy="31" r="10" fill="#d8cfbb"/><path d="M20 65c3-13 13-19 20-19s17 6 20 19" fill="#d8cfbb"/></svg>', { headers: { 'Content-Type': 'image/svg+xml; charset=utf-8', 'Cache-Control': 'private, no-store' } });
     const mime = typeof details?.metadata?.mime === 'string' ? details.metadata.mime : 'image/jpeg';
     return new Response(image, { headers: { 'Content-Type': mime, 'Cache-Control': 'private, no-store' } });
   }
