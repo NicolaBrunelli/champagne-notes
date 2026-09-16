@@ -55,6 +55,7 @@ import { maisons } from '../data/maisons';
           <div class="passport-page-head"><span>03 — Degustazioni</span><span>Entrées</span></div>
       <div class="section-heading"><h2 id="tastings-title">Degustazioni</h2></div>
       <p class="intro">Le bottiglie bevute restano una storia separata dal semplice possesso. Ogni pagina di cantina permette di aggiungerne una nuova.</p>
+      <button type="button" class="passport-add-control passport-add-tasting" data-open-new-tasting>Nuova degustazione <span aria-hidden="true">+</span></button>
       <p class="status" data-tasting-status aria-live="polite"></p>
       <div data-my-tastings aria-live="polite"><p class="loading">Caricamento delle degustazioni…</p></div>
       <div class="passport-record-nav" data-tasting-navigation><button type="button" data-tasting-page-prev>←</button><span data-tasting-pagination></span><button type="button" data-tasting-page-next>→</button></div>
@@ -175,6 +176,25 @@ import { maisons } from '../data/maisons';
           <div class="tasting-editor-actions"><button type="button" class="outline-button" data-tasting-editor-close>Annulla</button><button type="submit">Salva modifica <span aria-hidden="true">→</span></button></div>
         </form>
       </dialog>
+      <dialog class="tasting-editor" data-new-tasting-editor aria-labelledby="new-tasting-editor-title">
+        <form data-new-tasting-form>
+          <div class="tasting-editor-head"><p>Nuova degustazione</p><button type="button" data-new-tasting-editor-close aria-label="Chiudi">×</button></div>
+          <h2 id="new-tasting-editor-title">Nel taccuino.</h2>
+          <p class="tasting-editor-producer">Annota la bottiglia che hai appena scoperto.</p>
+          <div class="tasting-editor-fields">
+            <label>Produttore<input name="producer" list="maison-options" required maxlength="160" placeholder="Es. Krug" /></label>
+            <label>Champagne<input name="wine" required maxlength="160" placeholder="Es. Grande Cuvée" /></label>
+            <label>Data<input name="drunkAt" type="date" required /></label>
+            <label>Luogo<input name="place" required maxlength="160" placeholder="Es. A casa" /></label>
+            <label>Prezzo <input name="price" type="number" min="0" step="0.01" inputmode="decimal" /></label>
+            <label>Voto<select name="rating" required><option value="0.5">0,5 / 5</option><option value="1">1 / 5</option><option value="1.5">1,5 / 5</option><option value="2">2 / 5</option><option value="2.5">2,5 / 5</option><option value="3">3 / 5</option><option value="3.5">3,5 / 5</option><option value="4">4 / 5</option><option value="4.5">4,5 / 5</option><option value="5">5 / 5</option></select></label>
+            <label>Lo ricompreresti?<select name="wouldRepurchase"><option value="">Non indicato</option><option value="yes">Sì</option><option value="no">No</option></select></label>
+          </div>
+          <label class="tasting-editor-notes">Note personali<textarea name="notes" rows="4" maxlength="3000" placeholder="Un'impressione, un abbinamento, un ricordo."></textarea></label>
+          <p class="status" data-new-tasting-status aria-live="polite"></p>
+          <div class="tasting-editor-actions"><button type="button" class="outline-button" data-new-tasting-editor-close>Annulla</button><button type="submit">Registra degustazione <span aria-hidden="true">→</span></button></div>
+        </form>
+      </dialog>
       <dialog class="tasting-editor cellar-editor" data-cellar-editor aria-labelledby="cellar-editor-title">
         <form class="record-form" data-cellar-form>
           <div class="tasting-editor-head"><p>Registro di cantina</p><button type="button" data-cellar-editor-close aria-label="Chiudi">×</button></div>
@@ -213,7 +233,7 @@ import { maisons } from '../data/maisons';
   const overview = qs<HTMLElement>('[data-overview-stats]'); const profileBox = qs<HTMLElement>('[data-taste-profile]'); const profileBoxSecondary = qs<HTMLElement>('[data-taste-profile-secondary]'); const suggestions = Array.from(document.querySelectorAll<HTMLElement>('[data-suggestions]'));
   const tastingStatus = qs<HTMLElement>('[data-tasting-status]'); const cellarStatus = qs<HTMLElement>('[data-cellar-status]'); const wishlistStatus = qs<HTMLElement>('[data-wishlist-status]');
   const stampsCanvas = qs<HTMLElement>('[data-passport-stamps]'); const stampsCanvasSecondary = qs<HTMLElement>('[data-passport-stamps-secondary]');
-  const tastingEditor = qs<HTMLDialogElement>('[data-tasting-editor]'); const tastingEditorForm = qs<HTMLFormElement>('[data-tasting-editor-form]'); const tastingEditorStatus = qs<HTMLElement>('[data-tasting-editor-status]'); const tastingEditorProducer = qs<HTMLElement>('[data-tasting-editor-producer]'); const cellarEditor = qs<HTMLDialogElement>('[data-cellar-editor]');
+  const tastingEditor = qs<HTMLDialogElement>('[data-tasting-editor]'); const tastingEditorForm = qs<HTMLFormElement>('[data-tasting-editor-form]'); const tastingEditorStatus = qs<HTMLElement>('[data-tasting-editor-status]'); const tastingEditorProducer = qs<HTMLElement>('[data-tasting-editor-producer]'); const newTastingEditor = qs<HTMLDialogElement>('[data-new-tasting-editor]'); const newTastingForm = qs<HTMLFormElement>('[data-new-tasting-form]'); const newTastingStatus = qs<HTMLElement>('[data-new-tasting-status]'); const cellarEditor = qs<HTMLDialogElement>('[data-cellar-editor]');
   const stampDetail = qs<HTMLDialogElement>('[data-stamp-detail]'); const stampDetailTitle = qs<HTMLElement>('[data-stamp-detail-title]'); const stampDetailMark = qs<HTMLElement>('[data-stamp-detail-mark]'); const stampDetailMessage = qs<HTMLElement>('[data-stamp-detail-message]'); const stampDetailDate = qs<HTMLElement>('[data-stamp-detail-date]');
   const passportPages = Array.from(document.querySelectorAll<HTMLElement>('[data-passport-page]'));
   const passportTabs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-passport-go]'));
@@ -397,6 +417,14 @@ import { maisons } from '../data/maisons';
   document.querySelectorAll<HTMLButtonElement>('[data-tasting-page-next]').forEach((button) => button.addEventListener('click', () => { if (!latestAtlas) return; tastingOffset = Math.min(Math.max(0, latestAtlas.tastings.length - 1), tastingOffset + 10); draw(latestAtlas); }));
   document.querySelectorAll<HTMLButtonElement>('[data-cellar-page-prev]').forEach((button) => button.addEventListener('click', () => { cellarOffset = Math.max(0, cellarOffset - 10); if (latestAtlas) draw(latestAtlas); }));
   document.querySelectorAll<HTMLButtonElement>('[data-cellar-page-next]').forEach((button) => button.addEventListener('click', () => { if (!latestAtlas) return; cellarOffset = Math.min(Math.max(0, latestAtlas.cellar.length - 1), cellarOffset + 10); draw(latestAtlas); }));
+  qs<HTMLButtonElement>('[data-open-new-tasting]')?.addEventListener('click', () => {
+    newTastingForm?.reset();
+    const drunkAt = newTastingForm?.elements.namedItem('drunkAt') as HTMLInputElement | null;
+    if (drunkAt) drunkAt.value = new Date().toISOString().slice(0, 10);
+    if (newTastingStatus) newTastingStatus.textContent = '';
+    newTastingEditor?.showModal();
+  });
+  document.querySelectorAll<HTMLButtonElement>('[data-new-tasting-editor-close]').forEach((button) => button.addEventListener('click', () => newTastingEditor?.close()));
   qs<HTMLButtonElement>('[data-open-cellar-editor]')?.addEventListener('click', () => cellarEditor?.showModal());
   document.querySelectorAll<HTMLButtonElement>('[data-cellar-editor-close]').forEach((button) => button.addEventListener('click', () => cellarEditor?.close()));
   qs<HTMLButtonElement>('[data-logout]')?.addEventListener('click', async () => { await logout(); window.location.href = '/'; });
@@ -428,6 +456,25 @@ import { maisons } from '../data/maisons';
     try { const response = await fetch(`/api/cantine/${encodeURIComponent(producer)}/bevute?id=${encodeURIComponent(id)}`, { method: 'DELETE' }); if (!response.ok) throw new Error(); await load(); if (tastingStatus) tastingStatus.textContent = 'Bevuta eliminata dal taccuino.'; } catch { if (tastingStatus) tastingStatus.textContent = 'Non è stato possibile eliminare la bevuta.'; }
   }));
   document.querySelectorAll<HTMLButtonElement>('[data-tasting-editor-close]').forEach((button) => button.addEventListener('click', () => tastingEditor?.close()));
+  newTastingForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!newTastingStatus) return;
+    const values = new FormData(newTastingForm);
+    const producer = String(values.get('producer') || '').trim();
+    const producerSlug = producer.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    if (!producerSlug) { newTastingStatus.textContent = 'Indica il produttore.'; return; }
+    newTastingStatus.textContent = 'Registrazione nel taccuino…';
+    try {
+      const response = await fetch(`/api/cantine/${encodeURIComponent(producerSlug)}/bevute`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
+        wine: values.get('wine'), drunkAt: values.get('drunkAt'), place: values.get('place'), price: values.get('price'), rating: Number(values.get('rating')),
+        notes: values.get('notes'), wouldRepurchase: values.get('wouldRepurchase') === 'yes' ? true : values.get('wouldRepurchase') === 'no' ? false : undefined,
+        aromas: [], sensory: { body: 50, tannin: 50, sweetness: 50, acidity: 50 },
+      }) });
+      const data = await response.json() as { error?: string };
+      if (!response.ok) throw new Error(data.error || 'Non è stato possibile registrare la degustazione.');
+      await load(); newTastingEditor?.close(); if (tastingStatus) tastingStatus.textContent = 'Degustazione aggiunta al taccuino e al passaporto.';
+    } catch (error) { newTastingStatus.textContent = error instanceof Error ? error.message : 'Non è stato possibile registrare la degustazione.'; }
+  });
   tastingEditorForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!editingTasting || !tastingEditorStatus) return;
@@ -810,4 +857,30 @@ import { maisons } from '../data/maisons';
     .passport-page[data-passport-page="10"] :global([data-suggestions]) { min-height: 185px !important; padding: 12px !important; }.passport-page[data-passport-page="10"] :global(.suggestion h3) { font-size: 21px !important; }.passport-page[data-passport-page="10"] :global(.suggestion span) { font-size: 10px !important; }
     .passport-page[data-passport-page="11"] .avatar-editor { margin-top: 15px; padding: 8px 0; }.passport-page[data-passport-page="11"] .handle-editor { margin-top: 8px; padding: 9px 0; }.passport-page[data-passport-page="11"] .label { font-size: 8px; }.passport-page[data-passport-page="11"] .account-avatar { width: 47px; height: 55px; }
   }
+</style>
+
+<style>
+  /* Copertina: ogni elemento usa la stessa colonna centrale, per ogni account. */
+  .passport-book.is-closed .passport-cover {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto auto;
+    align-content: center;
+    justify-items: center;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  .passport-book.is-closed .passport-cover > p,
+  .passport-book.is-closed .passport-cover .cover-mark,
+  .passport-book.is-closed .passport-cover h2,
+  .passport-book.is-closed .passport-cover small,
+  .passport-book.is-closed .passport-cover button {
+    justify-self: center;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+  }
+  .passport-book.is-closed .passport-cover h2 { width: 100%; }
+  .passport-page .passport-add-tasting { position: relative; z-index: 2; display: block; margin: 12px auto 0; }
+  @media (max-width: 760px) { .passport-page .passport-add-tasting { margin-top: 8px; padding: 9px 11px; font-size: 8px; } }
 </style>
