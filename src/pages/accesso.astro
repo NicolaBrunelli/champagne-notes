@@ -31,7 +31,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <input name="code" type="text" inputmode="text" autocomplete="one-time-code" maxlength="23" placeholder="CRAIE-XXXXX-XXXXX-XXXXX" required />
         </label>
         <label>Username
-          <input name="handle" type="text" autocomplete="username" minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]+" required />
+          <input name="handle" type="text" autocomplete="username" minlength="3" maxlength="32" pattern="(?:[A-Za-z0-9._]|-)+" required />
         </label>
         <label>Email di recupero
           <input name="email" type="email" autocomplete="email" required />

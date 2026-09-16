@@ -143,7 +143,7 @@ import { maisons } from '../data/maisons';
       <div class="avatar-editor"><span class="account-avatar"><img data-profile-avatar-image alt="Foto profilo" hidden /><b data-profile-avatar-fallback>?</b></span><label>Foto profilo <input data-avatar-file type="file" accept="image/jpeg,image/png,image/webp" /><span>JPG, PNG o WebP · max 2 MB</span></label><button type="button" class="outline-button" data-avatar-save>Salva foto</button></div>
       <p class="status" data-avatar-status aria-live="polite"></p>
       <form class="handle-editor" data-handle-form>
-        <label>Username<input name="handle" data-handle-input required minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]+" autocomplete="username" /></label>
+        <label>Username<input name="handle" data-handle-input required minlength="3" maxlength="32" pattern="(?:[A-Za-z0-9._]|-)+" autocomplete="username" /></label>
         <p>È il nome che appare nel tuo passaporto e nella raccolta Amici.</p>
         <button type="submit" class="outline-button">Aggiorna username</button>
         <span class="status" data-handle-status aria-live="polite"></span>

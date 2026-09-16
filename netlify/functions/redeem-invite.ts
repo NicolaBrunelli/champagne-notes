@@ -71,9 +71,14 @@ export default async (request: Request) => {
     return json({ email, handle }, 201);
   } catch (error) {
     console.error('Unable to redeem Champagne Passport invite', error);
-    const message = error instanceof Error && /already exists|already registered/i.test(error.message)
-      ? 'Esiste già un account associato a questa email.'
-      : 'Non è stato possibile creare l’account.';
+    const details = error instanceof Error ? error.message : '';
+    const message = /already exists|already registered/i.test(details)
+      ? 'Esiste già un account associato a questa email. Prova ad accedere con la password scelta.'
+      : /password/i.test(details)
+        ? 'La password non soddisfa i requisiti di sicurezza. Scegline una di almeno 8 caratteri.'
+        : /origin|cross-origin/i.test(details)
+          ? 'Il browser ha bloccato la richiesta di sicurezza. Riapri il link direttamente nel browser e riprova.'
+          : 'La creazione dell’account non è riuscita. Riprova tra poco: il codice non verrà perso.';
     return json({ error: message }, 400);
   }
 };
