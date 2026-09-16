@@ -282,13 +282,66 @@ import { maisons } from '../data/maisons';
   const escapeHTML = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] || character));
   const formatDate = (value: string) => new Intl.DateTimeFormat('it-IT', { dateStyle: 'long' }).format(new Date(`${value}T12:00:00`));
   const aromaById = new Map<string, { label: string; emoji: string }>(aromas.map(([id, label, emoji]) => [id, { label, emoji }]));
+  const stampLines: Record<string, string[]> = {
+    'premier-bouchon': ['PREMIER', 'BOUCHON'], bienvenue: ['BIENVENUE', 'EN CHAMPAGNE'], 'carnet-degustation': ['CARNET DE', 'DÉGUSTATION'], connaisseur: ['LE', 'CONNAISSEUR'], 'grande-collection': ['LA GRANDE', 'COLLECTION'], centenaire: ['CENTENAIRE', '100'], 'trois-cepages': ['TROIS', 'CÉPAGES'], 'blanc-sur-blanc': ['BLANC SUR', 'BLANC'], 'noir-sur-noir': ['NOIR SUR', 'NOIR'], 'vie-en-rose': ['LA VIE', 'EN ROSE'], 'sans-sucre': ['SANS', 'SUCRE'], 'extra-extra-brut': ['EXTRA', 'EXTRA BRUT'], 'voyage-temps': ['VOYAGE', 'DANS LE TEMPS'], 'maison-vigneron': ['MAISON', '& VIGNERON'], 'grower-hunter': ['GROWER', 'HUNTER'], 'grandes-maisons': ['GRANDES', 'MAISONS'], 'fidele-maison': ['FIDÈLE À', 'LA MAISON'], 'tour-champagne': ['TOUR DE', 'CHAMPAGNE'], 'montagne-reims': ['MONTAGNE', 'DE REIMS'], 'cote-blancs': ['CÔTE DES', 'BLANCS'], 'vallee-marne': ['VALLÉE', 'DE LA MARNE'], 'cote-bar': ['CÔTE DES', 'BAR'], 'grand-cru': ['GRAND', 'CRU'], 'a-la-cave': ['À LA', 'CAVE'], collectionneur: ['LE', 'COLLECTIONNEUR'], patience: ['PATIENCE', 'EN CAVE'], 'coup-coeur': ['COUP DE', 'CŒUR'], 'esprit-ouvert': ['ESPRIT', 'OUVERT'], 'hors-sentiers': ['HORS DES', 'SENTIERS'], 'mon-champagne': ['MON', 'CHAMPAGNE'],
+  };
+  const stampFrame = (shape: string) => ({
+    round: '<circle cx="90" cy="60" r="48"/><circle cx="90" cy="60" r="42" stroke-dasharray="2 2.4"/>',
+    oval: '<ellipse cx="90" cy="60" rx="76" ry="42"/><ellipse cx="90" cy="60" rx="69" ry="35" stroke-dasharray="2 2.6"/>',
+    visa: '<path d="M13 20h154v80H13zM20 28h140v64H20z"/><path d="M28 38h124M28 82h124" stroke-dasharray="2 2"/>',
+    seal: '<path d="M25 23h130v74H25z"/><path d="M31 29h118v62H31z" stroke-dasharray="3 2"/>',
+    date: '<path d="M20 23h140v73H20zM20 42h140"/><path d="M40 16v16M68 16v16M112 16v16M140 16v16"/>',
+    shield: '<path d="M90 11 153 30v42c0 21-25 35-63 42-38-7-63-21-63-42V30z"/><path d="M90 21 143 36v33c0 15-20 27-53 34-33-7-53-19-53-34V36z" stroke-dasharray="2 2"/>',
+    hex: '<path d="m53 13 74 0 37 47-37 47H53L16 60z"/><path d="m57 21h66l31 39-31 39H57L26 60z" stroke-dasharray="2 2"/>',
+    open: '<path d="M26 30c18-22 110-22 128 0M22 86c21 22 115 22 136 0M20 45v28M160 45v28"/><path d="M33 36h114M33 84h114" stroke-dasharray="4 3"/>',
+  }[shape] || '<rect x="18" y="20" width="144" height="80"/>');
+  const stampMotif = (variant: number) => {
+    const motifs = [
+      '<circle cx="90" cy="60" r="13"/><circle cx="90" cy="60" r="6"/><path d="M77 60h26M90 47v26"/>',
+      '<path d="M62 65c10-18 20-25 31-26 10 2 18 10 26 24M67 70h56M77 77h37"/>',
+      '<path d="M69 49h42M69 58h42M69 67h42"/>',
+      '<path d="M70 68c9-23 31-23 40 0M78 64c5-13 19-13 25 0"/><circle cx="90" cy="48" r="3"/>',
+      '<path d="M61 69h58M68 61h44M76 53h28"/>',
+      '<text x="90" y="70" text-anchor="middle" class="stamp-number">100</text>',
+      '<circle cx="72" cy="60" r="4"/><circle cx="90" cy="60" r="4"/><circle cx="108" cy="60" r="4"/><path d="M68 70c12-8 32-8 44 0"/>',
+      '<path d="M62 68c11-25 44-25 56 0M67 73h46"/>',
+      '<circle cx="90" cy="60" r="17"/><path d="M73 60h34M90 43v34"/>',
+      '<path d="M65 65c11-18 39-18 50 0M71 70h38"/><circle cx="90" cy="51" r="3"/>',
+      '<circle cx="90" cy="60" r="16"/><path d="M90 47v26"/>',
+      '<path d="M59 54h62M59 66h62"/><text x="90" y="63" text-anchor="middle" class="stamp-micro">EXTRA</text>',
+      '<path d="M66 47h48M72 53v20M84 53v20M96 53v20M108 53v20"/>',
+      '<path d="M55 48h31v24H55zM94 48h31v24H94zM90 43v34"/>',
+      '<path d="M74 70c0-15 5-22 16-28 11 6 16 13 16 28M73 70h34"/>',
+      '<path d="M63 72V48l27-17 27 17v24M74 72V55h32v17"/>',
+      '<path d="M68 52a26 26 0 1 1-2 22M66 50v12h12"/>',
+      '<path d="M55 66c19-26 51-26 70 0M61 72c17-18 41-18 58 0"/>',
+      '<path d="M57 72c13-24 53-24 66 0M63 76h54"/>',
+      '<path d="M90 41v38M72 72h36M77 52h26"/>',
+      '<path d="M58 61c16-16 48-16 64 0M58 68c16 16 48 16 64 0"/>',
+      '<path d="m72 47 18-11 18 11v26L90 84 72 73z"/>',
+      '<text x="90" y="64" text-anchor="middle" class="stamp-micro">GRAND CRU</text>',
+      '<path d="M72 73V47h36v26M78 73V56h24v17M66 78h48"/>',
+      '<path d="M65 48h50v28H65zM74 55h32M74 64h32"/>',
+      '<path d="M90 43c-11 12-13 24 0 35 13-11 11-23 0-35zM90 52v18"/>',
+      '<path d="M90 76c-22-16-24-28-14-33 7-3 12 3 14 8 2-5 7-11 14-8 10 5 8 17-14 33z"/>',
+      '<path d="M62 70c13-25 43-25 56 0M70 74h40M90 44v20"/>',
+      '<path d="M61 71c12-29 43-29 58-2M64 75h55M110 47l10 0v10"/>',
+      '<path d="M68 73c0-22 11-31 22-31s22 9 22 31M76 73h28M90 50v15"/>',
+    ];
+    return motifs[variant - 1] || motifs[0];
+  };
+  const renderStamp = (stamp: PassportStamp) => {
+    const ink = ['forest', 'sepia', 'burgundy', 'slate'][stamp.stampVariant % 4];
+    const lines = stampLines[stamp.id] || [stamp.name.toUpperCase(), 'CHAMPAGNE'];
+    const filterId = `ink-${stamp.id.replace(/[^a-z0-9-]/gi, '')}`;
+    return `<span class="passport-stamp stamp--${escapeHTML(stamp.stampSize)} stamp-ink--${ink}${stamp.isNew ? ' is-new' : ''}" role="button" tabindex="0" data-stamp-id="${escapeHTML(stamp.id)}" style="--stamp-x:${stamp.position.x}%;--stamp-y:${stamp.position.y}%;--stamp-mobile-x:${stamp.position.mobileX}%;--stamp-mobile-y:${stamp.position.mobileY}%;--stamp-rotation:${stamp.rotation}deg" aria-label="${escapeHTML(stamp.name)}"><svg viewBox="0 0 180 120" aria-hidden="true"><defs><filter id="${filterId}" x="-8%" y="-8%" width="116%" height="116%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="1" seed="${stamp.stampVariant}" result="grain"/><feDisplacementMap in="SourceGraphic" in2="grain" scale=".22" xChannelSelector="R" yChannelSelector="G"/></filter></defs><g class="stamp-frame" filter="url(#${filterId})">${stampFrame(stamp.stampShape)}${stampMotif(stamp.stampVariant)}</g><text x="90" y="32" text-anchor="middle" class="stamp-kicker">CHAMPAGNE PASSPORT</text><text x="90" y="88" text-anchor="middle" class="stamp-title">${escapeHTML(lines[0])}</text><text x="90" y="98" text-anchor="middle" class="stamp-title">${escapeHTML(lines[1] || '')}</text></svg>${stamp.isNew ? '<span class="stamp-new">nouveau</span>' : ''}</span>`;
+  };
 
   const draw = (data: Atlas) => {
     personalTastings.clear();
     data.tastings.forEach((item) => personalTastings.set(item.id, item));
-    const renderStamp = (stamp: PassportStamp) => `<button type="button" class="passport-stamp stamp--${escapeHTML(stamp.stampShape)} stamp--${escapeHTML(stamp.stampSize)} stamp--v${stamp.stampVariant}${stamp.isNew ? ' is-new' : ''}" data-stamp-id="${escapeHTML(stamp.id)}" style="--stamp-x:${stamp.position.x}%;--stamp-y:${stamp.position.y}%;--stamp-mobile-x:${stamp.position.mobileX}%;--stamp-mobile-y:${stamp.position.mobileY}%;--stamp-rotation:${stamp.rotation}deg" aria-label="${escapeHTML(stamp.name)}"><i aria-hidden="true">${escapeHTML(stamp.visualMotif)}</i><b>${escapeHTML(stamp.name)}</b>${stamp.isNew ? '<small>Nouveau</small>' : ''}</button>`;
-    if (stampsCanvas) stampsCanvas.innerHTML = data.stamps.slice(0, 15).map(renderStamp).join('');
-    if (stampsCanvasSecondary) stampsCanvasSecondary.innerHTML = data.stamps.slice(15).map(renderStamp).join('');
+    if (stampsCanvas) stampsCanvas.innerHTML = data.stamps.filter((stamp) => stamp.stampVariant <= 15).map(renderStamp).join('');
+    if (stampsCanvasSecondary) stampsCanvasSecondary.innerHTML = data.stamps.filter((stamp) => stamp.stampVariant > 15).map(renderStamp).join('');
     passportStamps.clear(); data.stamps.forEach((stamp) => passportStamps.set(stamp.id, stamp));
     if (overview) overview.innerHTML = [['Champagne degustati', data.overview.tasted], ['Bottiglie in cantina', data.overview.cellarBottles], ['Nella wishlist', data.overview.wishlist], ['Produttori scoperti', data.overview.producers], ['Aree esplorate', data.overview.areas], ['Cru con dati certi', data.overview.crus]].map(([label, value]) => `<article><strong>${value}</strong><span>${label}</span></article>`).join('');
     const suggestionMarkup = data.suggestions.length ? data.suggestions.map((item) => `<article class="suggestion"><p>${escapeHTML(item.title)}</p>${item.producer && item.wine ? `<h3>${escapeHTML(item.producer)} · ${escapeHTML(item.wine)}</h3>` : ''}<span>${escapeHTML(item.reason)}</span></article>`).join('') : '<p class="empty">Registra una prima bottiglia: il tuo atlante inizierà a suggerire confronti coerenti e spiegati.</p>';
@@ -360,17 +413,21 @@ import { maisons } from '../data/maisons';
       await load(); tastingEditor?.close(); if (tastingStatus) tastingStatus.textContent = 'Degustazione aggiornata nel taccuino e nel passaporto.';
     } catch (error) { tastingEditorStatus.textContent = error instanceof Error ? error.message : 'Non è stato possibile salvare la modifica.'; }
   });
-  [stampsCanvas, stampsCanvasSecondary].forEach((canvas) => canvas?.addEventListener('click', async (event) => {
-    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-stamp-id]'); const id = button?.dataset.stampId;
+  const openStamp = async (target: HTMLElement) => {
+    const button = target.closest<HTMLElement>('[data-stamp-id]'); const id = button?.dataset.stampId;
     if (!id) return;
     const stamp = passportStamps.get(id); if (!stamp) return;
     if (stampDetailTitle) stampDetailTitle.textContent = stamp.name;
-    if (stampDetailMark) stampDetailMark.textContent = stamp.visualMotif;
+    if (stampDetailMark) stampDetailMark.textContent = 'CH';
     if (stampDetailMessage) stampDetailMessage.textContent = stamp.message;
     if (stampDetailDate) stampDetailDate.textContent = `Ottenuto il ${formatDate(stamp.unlockedAt.slice(0, 10))}.`;
     stampDetail?.showModal();
-    if (stamp.isNew) { void fetch('/api/my-champagne', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ seenAchievementIds: [id] }) }); button.classList.remove('is-new'); button.querySelector('small')?.remove(); }
-  }));
+    if (stamp.isNew) { void fetch('/api/my-champagne', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ seenAchievementIds: [id] }) }); button.classList.remove('is-new'); button.querySelector('.stamp-new')?.remove(); }
+  };
+  [stampsCanvas, stampsCanvasSecondary].forEach((canvas) => {
+    canvas?.addEventListener('click', (event) => { void openStamp(event.target as HTMLElement); });
+    canvas?.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); void openStamp(event.target as HTMLElement); } });
+  });
   qs<HTMLButtonElement>('[data-stamp-detail-close]')?.addEventListener('click', () => stampDetail?.close());
   qs<HTMLButtonElement>('[data-avatar-save]')?.addEventListener('click', async () => { const file = qs<HTMLInputElement>('[data-avatar-file]')?.files?.[0]; const status = qs<HTMLElement>('[data-avatar-status]'); if (!file || !status) return; if (file.size > 2 * 1024 * 1024) { status.textContent = 'La foto supera il limite di 2 MB.'; return; } status.textContent = 'Salvataggio foto…'; try { const response = await fetch('/api/profilo/avatar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photo: await readPhoto(file) }) }); if (!response.ok) throw new Error(); document.querySelectorAll<HTMLImageElement>('[data-avatar-image], [data-profile-avatar-image]').forEach((avatar) => { avatar.src = `/api/profilo/avatar?aggiornata=${Date.now()}`; avatar.hidden = false; }); document.querySelectorAll<HTMLElement>('[data-avatar-fallback], [data-profile-avatar-fallback]').forEach((fallback) => fallback.hidden = true); status.textContent = 'Foto profilo aggiornata.'; } catch { status.textContent = 'Non è stato possibile salvare la foto.'; } });
   qs<HTMLFormElement>('[data-handle-form]')?.addEventListener('submit', async (event) => {
@@ -422,15 +479,15 @@ import { maisons } from '../data/maisons';
 </style>
 
 <style>
+  /* I timbri non sono componenti UI: sono segni d'inchiostro direttamente sulla carta. */
   .stamps-page { overflow: hidden; }
-  .stamps-intro { position: relative; z-index: 2; max-width: 355px; margin: 6px auto 0; text-align: center; }.stamps-intro h2 { margin: 0; font: 500 clamp(31px, 3.6vw, 49px)/.88 var(--display); letter-spacing: -.04em; }.stamps-intro p { margin: 12px auto 0; color: var(--sage); font-size: 13px; line-height: 1.4; }
-  .stamps-canvas { position: absolute; inset: 93px 17px 32px; overflow: hidden; }.stamps-canvas--secondary { inset: 25px 17px 32px; }
-  .passport-stamp { position: absolute; left: var(--stamp-x); top: var(--stamp-y); display: grid; place-items: center; align-content: center; gap: 2px; width: 110px; height: 76px; padding: 7px; border: 1.4px solid rgba(36,52,43,.68); color: rgba(36,52,43,.78); background: transparent; font-family: var(--sans); text-align: center; text-transform: uppercase; transform: translate(-50%, -50%) rotate(var(--stamp-rotation)); opacity: .83; cursor: pointer; isolation: isolate; }.passport-stamp::before { position: absolute; inset: 4px; content: ''; border: 1px dashed rgba(36,52,43,.45); pointer-events: none; }.passport-stamp::after { position: absolute; inset: 0; z-index: -1; content: ''; opacity: .15; background-image: repeating-linear-gradient(90deg, transparent 0 4px, currentColor 4px 4.4px, transparent 4.4px 8px); mix-blend-mode: multiply; }
-  .passport-stamp i { display: block; color: var(--terre); font: 500 18px/1 var(--display); font-style: normal; letter-spacing: .07em; }.passport-stamp b { max-width: 96px; font: 700 7px/1.08 var(--sans); letter-spacing: .08em; }.passport-stamp small { position: absolute; top: -9px; right: -10px; padding: 2px 4px; color: var(--paper); background: var(--terre); font: 700 6px var(--sans); letter-spacing: .08em; }
-  .stamp--small { width: 84px; height: 58px; }.stamp--small b { max-width: 72px; font-size: 6px; }.stamp--large { width: 136px; height: 91px; }.stamp--large b { font-size: 8px; }.stamp--round { width: 88px; height: 88px; border-radius: 50%; }.stamp--round::before { border-radius: 50%; }.stamp--oval { border-radius: 50%; }.stamp--visa { border-radius: 0; }.stamp--seal { border: 2px double rgba(110,67,57,.74); color: rgba(110,67,57,.8); border-radius: 3px; }.stamp--date { height: 65px; border-color: rgba(118,94,63,.74); }.stamp--date i { font: 700 9px var(--sans); }.stamp--shield { clip-path: polygon(8% 0,92% 0,100% 17%,88% 100%,12% 100%,0 17%); padding-bottom: 14px; }.stamp--shield::before { clip-path: polygon(10% 5%,90% 5%,95% 20%,85% 95%,15% 95%,5% 20%); }.stamp--hex { clip-path: polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%); }.stamp--hex::before { clip-path: polygon(26% 5%,74% 5%,94% 50%,74% 95%,26% 95%,6% 50%); }.stamp--open { border-style: dashed; border-radius: 42% 58% 47% 53%; }
-  .passport-stamp.is-new { animation: stamp-impression .65s cubic-bezier(.2,.8,.25,1) both; }.passport-stamp.is-new::after { opacity: .28; } @keyframes stamp-impression { 0% { opacity: 0; transform: translate(-50%, -75%) rotate(calc(var(--stamp-rotation) - 4deg)) scale(1.18); } 58% { opacity: .95; transform: translate(-50%, -46%) rotate(var(--stamp-rotation)) scale(.96); } 100% { opacity: .83; transform: translate(-50%, -50%) rotate(var(--stamp-rotation)) scale(1); } }
+  .stamps-intro { position: relative; z-index: 3; max-width: 355px; margin: 8px auto 0; text-align: center; pointer-events: none; }.stamps-intro h2 { margin: 0; font: 500 clamp(34px, 3.7vw, 51px)/.86 var(--display); letter-spacing: -.045em; }.stamps-intro p { margin: 13px auto 0; color: var(--sage); font-size: 13px; line-height: 1.4; }
+  .stamps-canvas { position: absolute; inset: 205px 16px 52px; overflow: visible; }.stamps-canvas--secondary { inset: 46px 16px 52px; }
+  .passport-stamp { position: absolute; left: var(--stamp-x); top: var(--stamp-y); display: block; width: 118px; color: rgba(32,52,43,.72); background: transparent; cursor: pointer; opacity: .78; transform: translate(-50%, -50%) rotate(var(--stamp-rotation)); transition: opacity .2s ease; }.passport-stamp:focus-visible { outline: 1px dashed currentColor; outline-offset: 5px; }.passport-stamp:hover { opacity: .94; }.passport-stamp svg { display: block; width: 100%; height: auto; overflow: visible; }.passport-stamp .stamp-frame { fill: none; stroke: currentColor; stroke-width: 1.25; stroke-linecap: round; stroke-linejoin: round; }.passport-stamp .stamp-kicker { fill: currentColor; font: 600 6px/1 var(--sans); letter-spacing: 1.3px; }.passport-stamp .stamp-title { fill: currentColor; font: 600 8px/1 var(--sans); letter-spacing: .8px; }.passport-stamp .stamp-number { fill: currentColor; font: 500 29px/1 var(--display); }.passport-stamp .stamp-micro { fill: currentColor; font: 700 6px/1 var(--sans); letter-spacing: .6px; }.stamp-ink--forest { color: rgba(32,52,43,.78); }.stamp-ink--sepia { color: rgba(123,86,49,.73); }.stamp-ink--burgundy { color: rgba(104,59,52,.72); }.stamp-ink--slate { color: rgba(68,79,76,.7); }
+  .stamp--small { width: 88px; }.stamp--large { width: 148px; }.stamp--hero { width: 174px; }.stamp-new { position: absolute; top: -8px; right: 4px; color: currentColor; font: 600 7px var(--sans); letter-spacing: .1em; text-transform: uppercase; opacity: .75; }
+  .passport-stamp.is-new { animation: stamp-impression .56s cubic-bezier(.2,.8,.25,1) both; } @keyframes stamp-impression { 0% { opacity: 0; transform: translate(-50%, -66%) rotate(calc(var(--stamp-rotation) - 3deg)) scale(1.12); } 58% { opacity: .94; transform: translate(-50%, -47%) rotate(var(--stamp-rotation)) scale(.96); } 100% { opacity: .78; transform: translate(-50%, -50%) rotate(var(--stamp-rotation)) scale(1); } }
   .stamp-detail { width: min(420px, calc(100% - 32px)); padding: 0; border: 1px solid var(--line); color: var(--ink); background: var(--paper); box-shadow: 0 24px 70px rgba(23,35,28,.28); }.stamp-detail::backdrop { background: rgba(22,36,29,.54); backdrop-filter: blur(3px); }.stamp-detail > div { position: relative; padding: 30px; text-align: center; background-image: radial-gradient(rgba(55,60,47,.055) .55px, transparent .7px); background-size: 7px 7px; }.stamp-detail button { position: absolute; top: 12px; right: 12px; width: 30px; height: 30px; padding: 0; border: 1px solid var(--line); color: var(--terre); background: transparent; font: 400 22px/1 var(--display); cursor: pointer; }.stamp-detail p { margin: 0; color: var(--gold); font: 700 8px var(--sans); letter-spacing: .13em; text-transform: uppercase; }.stamp-detail h2 { margin: 17px 0 13px; font: 500 42px/.9 var(--display); letter-spacing: -.04em; }.stamp-detail-mark { display: grid; place-items: center; width: 74px; height: 74px; margin: 0 auto 16px; border: 1px solid var(--terre); border-radius: 50%; color: var(--terre); font: 500 27px var(--display); }.stamp-detail blockquote { margin: 0; color: var(--sage); font: 400 19px/1.4 var(--display); }.stamp-detail small { display: block; margin-top: 20px; color: var(--terre); font: 700 8px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
-  @media (max-width: 760px) { .stamps-intro { max-width: 270px; }.stamps-intro h2 { font-size: 33px; }.stamps-intro p { font-size: 11px; }.stamps-canvas { inset: 100px 13px 30px; overflow: visible; }.stamps-canvas--secondary { inset: 20px 13px 30px; }.passport-stamp { left: var(--stamp-mobile-x); top: var(--stamp-mobile-y); width: 92px; height: 64px; }.stamp--small { width: 70px; height: 50px; }.stamp--large { width: 112px; height: 76px; }.stamp--round { width: 73px; height: 73px; }.passport-stamp b { max-width: 78px; font-size: 6px; }.stamp--large b { font-size: 7px; }.passport-stamp i { font-size: 15px; } }
+  @media (max-width: 760px) { .stamps-intro { max-width: 280px; margin-top: 6px; }.stamps-intro h2 { font-size: 35px; }.stamps-intro p { font-size: 11px; }.stamps-canvas { inset: 186px 13px 46px; }.stamps-canvas--secondary { inset: 42px 13px 46px; }.passport-stamp { left: var(--stamp-mobile-x); top: var(--stamp-mobile-y); width: 93px; }.stamp--small { width: 72px; }.stamp--large { width: 117px; }.stamp--hero { width: 136px; }.passport-stamp .stamp-kicker { font-size: 5.4px; }.passport-stamp .stamp-title { font-size: 6.5px; }.passport-stamp .stamp-number { font-size: 24px; } }
   @media (prefers-reduced-motion: reduce) { .passport-stamp.is-new { animation: none; } }
 </style>
 
