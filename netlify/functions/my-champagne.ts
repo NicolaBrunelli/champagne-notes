@@ -157,7 +157,14 @@ export default async (request: Request) => {
   const bottles = (cellar || []) as CellarBottle[];
   const wishes = (wishlist || []) as WishlistItem[];
   const profile = profileFor(tastings);
-  const stamps = await resolveStamps(store, user.id, tastings, bottles);
+  // Un errore del registro dei timbri non deve mai impedire l'apertura del
+  // Passport: degustazioni, cantina e wishlist restano sempre consultabili.
+  let stamps: UnlockedStamp[] = [];
+  try {
+    stamps = await resolveStamps(store, user.id, tastings, bottles);
+  } catch (error) {
+    console.error('Unable to resolve passport stamps', error);
+  }
   return json({
     tastings,
     cellar: bottles,
