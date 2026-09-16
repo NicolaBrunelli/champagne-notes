@@ -28,20 +28,18 @@ export default async (request: Request) => {
       return json({ error: 'Il codice non è valido, è scaduto o è già stato utilizzato.' }, 422);
     }
 
-    const users = await admin.listUsers({ perPage: 1000 });
-    const accountWithEmail = users.find((user) => String(user.email || '').toLowerCase() === email);
     // If a previous request created the Identity user but lost the response
     // while indexing the community, accepting the same details completes the
     // interrupted flow instead of locking the invited person out.
     if (current.redeemedAt) {
-      if (accountWithEmail && accountWithEmail.id === current.redeemedBy) {
-        return json({ email, handle: String(accountWithEmail.userMetadata?.handle || handle) });
+      if (current.redeemedBy) {
+        const existingAccount = await admin.getUser(current.redeemedBy);
+        if (String(existingAccount.email || '').toLowerCase() === email) {
+          return json({ email, handle: String(existingAccount.userMetadata?.handle || handle) });
+        }
       }
       return json({ error: 'Il codice non è valido, è scaduto o è già stato utilizzato.' }, 422);
     }
-    if (accountWithEmail) return json({ error: 'Esiste già un account associato a questa email.' }, 409);
-    const handleTaken = users.some((user) => String(user.userMetadata?.handle || '').toLowerCase() === handle);
-    if (handleTaken) return json({ error: 'Questo username è già in uso.' }, 409);
 
     const user = await admin.createUser({
       email,
