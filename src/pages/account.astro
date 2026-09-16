@@ -26,7 +26,7 @@ import { maisons } from '../data/maisons';
         <section class="passport-cover" data-passport-page="0" data-passport-cover role="button" tabindex="0" aria-label="Apri il Champagne Passport">
           <div class="cover-grain" aria-hidden="true"></div>
           <div class="cover-border" aria-hidden="true"></div>
-          <p>Brunelli Nicola</p>
+          <p data-passport-cover-owner>Il tuo nome</p>
           <div class="cover-mark" aria-hidden="true"><span>C</span><i></i><i></i><i></i></div>
           <h2>Champagne<br /><em>Passport</em></h2>
           <small>Le voyage en Champagne</small>
@@ -57,6 +57,7 @@ import { maisons } from '../data/maisons';
       <p class="intro">Le bottiglie bevute restano una storia separata dal semplice possesso. Ogni pagina di cantina permette di aggiungerne una nuova.</p>
       <p class="status" data-tasting-status aria-live="polite"></p>
       <div data-my-tastings aria-live="polite"><p class="loading">Caricamento delle degustazioni…</p></div>
+      <div class="passport-record-nav" data-tasting-navigation><button type="button" data-tasting-page-prev>←</button><span data-tasting-pagination></span><button type="button" data-tasting-page-next>→</button></div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>03</b></div>
         </section>
 
@@ -64,6 +65,7 @@ import { maisons } from '../data/maisons';
           <div class="passport-page-head"><span>04 — Degustazioni</span><span>Entrées · suite</span></div>
           <div class="section-heading"><h2>Degustazioni</h2></div>
           <div data-my-tastings-secondary aria-live="polite"><p class="loading">Caricamento delle degustazioni…</p></div>
+          <div class="passport-record-nav" data-tasting-navigation><button type="button" data-tasting-page-prev>←</button><span data-tasting-pagination></span><button type="button" data-tasting-page-next>→</button></div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>04</b></div>
         </section>
 
@@ -71,21 +73,18 @@ import { maisons } from '../data/maisons';
           <div class="passport-page-head"><span>05 — Cantina</span><span>Registre de cave</span></div>
       <div class="section-heading"><h2 id="cellar-title">Cantina</h2></div>
       <p class="intro">Le bottiglie che possiedi, senza confonderle con ciò che hai già degustato.</p>
-      <div class="passport-note">Qui custodisci le bottiglie che possiedi. La loro storia resta distinta dalle degustazioni: quando ne aprirai una, potrai annotarla nel taccuino senza perderne traccia.</div>
-      <div class="collection" data-cellar-collection aria-live="polite"><p class="loading">Caricamento della cantina…</p></div>
+      <p class="passport-register-intro">Le bottiglie custodite oggi, ordinate come un inventario di cantina.</p>
+      <div class="passport-register collection" data-cellar-collection aria-live="polite"><p class="loading">Caricamento della cantina…</p></div>
+      <div class="passport-record-nav" data-cellar-navigation><button type="button" data-cellar-page-prev>←</button><span data-cellar-pagination></span><button type="button" data-cellar-page-next>→</button></div>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>05</b></div>
         </section>
 
         <section class="passport-page account-section continuation-page" data-passport-page="6" aria-label="Cantina, seconda pagina" hidden>
           <div class="passport-page-head"><span>06 — Cantina</span><span>Inventaire</span></div>
           <div class="section-heading"><h2>Cantina</h2></div>
-          <form class="record-form" data-cellar-form>
-            <label>Produttore<input name="producer" list="maison-options" required placeholder="Es. Jacques Selosse" /></label>
-            <label>Champagne<input name="wine" required placeholder="Es. Substance" /></label>
-            <label>Annata <input name="vintage" inputmode="numeric" maxlength="12" placeholder="Es. 2014" /></label>
-            <label>Quantità <input name="quantity" type="number" min="1" max="99" value="1" required /></label>
-            <button type="submit">Aggiungi in cantina <span aria-hidden="true">→</span></button><p class="status" data-cellar-status aria-live="polite"></p>
-          </form>
+          <div class="passport-register collection" data-cellar-collection-secondary aria-live="polite"><p class="loading">Caricamento della cantina…</p></div>
+          <div class="passport-record-nav" data-cellar-navigation><button type="button" data-cellar-page-prev>←</button><span data-cellar-pagination></span><button type="button" data-cellar-page-next>→</button></div>
+          <button type="button" class="passport-add-control" data-open-cellar-editor>Aggiungi una bottiglia <span aria-hidden="true">+</span></button>
           <div class="passport-page-foot"><span>Champagne Passport</span><b>06</b></div>
         </section>
 
@@ -176,6 +175,20 @@ import { maisons } from '../data/maisons';
           <div class="tasting-editor-actions"><button type="button" class="outline-button" data-tasting-editor-close>Annulla</button><button type="submit">Salva modifica <span aria-hidden="true">→</span></button></div>
         </form>
       </dialog>
+      <dialog class="tasting-editor cellar-editor" data-cellar-editor aria-labelledby="cellar-editor-title">
+        <form class="record-form" data-cellar-form>
+          <div class="tasting-editor-head"><p>Registro di cantina</p><button type="button" data-cellar-editor-close aria-label="Chiudi">×</button></div>
+          <h2 id="cellar-editor-title">Aggiungi una bottiglia.</h2>
+          <div class="tasting-editor-fields">
+            <label>Produttore<input name="producer" list="maison-options" required placeholder="Es. Jacques Selosse" /></label>
+            <label>Champagne<input name="wine" required placeholder="Es. Substance" /></label>
+            <label>Annata <input name="vintage" inputmode="numeric" maxlength="12" placeholder="Es. 2014" /></label>
+            <label>Quantità <input name="quantity" type="number" min="1" max="99" value="1" required /></label>
+          </div>
+          <p class="status" data-cellar-status aria-live="polite"></p>
+          <div class="tasting-editor-actions"><button type="button" class="outline-button" data-cellar-editor-close>Annulla</button><button type="submit">Aggiungi in cantina <span aria-hidden="true">→</span></button></div>
+        </form>
+      </dialog>
       <dialog class="stamp-detail" data-stamp-detail aria-labelledby="stamp-detail-title">
         <div><button type="button" data-stamp-detail-close aria-label="Chiudi">×</button><p>Nouveau timbre</p><h2 id="stamp-detail-title" data-stamp-detail-title></h2><span class="stamp-detail-mark" data-stamp-detail-mark></span><blockquote data-stamp-detail-message></blockquote><small data-stamp-detail-date></small></div>
       </dialog>
@@ -186,7 +199,6 @@ import { maisons } from '../data/maisons';
 
 <script>
   import { logout, updateUser } from '@netlify/identity';
-  import { aromas } from '../data/aromas';
   import { getCurrentUser } from '../scripts/identity-session';
 
   type SensoryProfile = { body: number; tannin: number; sweetness: number; acidity: number };
@@ -197,11 +209,11 @@ import { maisons } from '../data/maisons';
   type Wish = { id: string; producer: string; producerSlug?: string; wine: string };
   type Atlas = { tastings: Tasting[]; cellar: Bottle[]; wishlist: Wish[]; stamps: PassportStamp[]; overview: { tasted: number; cellarBottles: number; wishlist: number; producers: number; areas: number; crus: number }; profile: { enough: boolean; sampleSize: number; styles: { favorite?: string; covered: number }; grapes: { favorite?: string; covered: number }; dosage: { favorite?: string; covered: number }; producers: { producer: string; rating: number }[]; territory: { areas: string[]; crus: string[] }; repurchase?: { yes: number; total: number; percent: number }; experience?: { count: number; description: string[] } }; suggestions: { title: string; reason: string; producer?: string; wine?: string }[] };
   const qs = <T extends Element>(selector: string) => document.querySelector<T>(selector);
-  const tastingList = qs<HTMLElement>('[data-my-tastings]'); const tastingListSecondary = qs<HTMLElement>('[data-my-tastings-secondary]'); const cellarList = qs<HTMLElement>('[data-cellar-collection]'); const wishlistList = qs<HTMLElement>('[data-wishlist-collection]');
+  const tastingList = qs<HTMLElement>('[data-my-tastings]'); const tastingListSecondary = qs<HTMLElement>('[data-my-tastings-secondary]'); const cellarList = qs<HTMLElement>('[data-cellar-collection]'); const cellarListSecondary = qs<HTMLElement>('[data-cellar-collection-secondary]'); const wishlistList = qs<HTMLElement>('[data-wishlist-collection]');
   const overview = qs<HTMLElement>('[data-overview-stats]'); const profileBox = qs<HTMLElement>('[data-taste-profile]'); const profileBoxSecondary = qs<HTMLElement>('[data-taste-profile-secondary]'); const suggestions = Array.from(document.querySelectorAll<HTMLElement>('[data-suggestions]'));
   const tastingStatus = qs<HTMLElement>('[data-tasting-status]'); const cellarStatus = qs<HTMLElement>('[data-cellar-status]'); const wishlistStatus = qs<HTMLElement>('[data-wishlist-status]');
   const stampsCanvas = qs<HTMLElement>('[data-passport-stamps]'); const stampsCanvasSecondary = qs<HTMLElement>('[data-passport-stamps-secondary]');
-  const tastingEditor = qs<HTMLDialogElement>('[data-tasting-editor]'); const tastingEditorForm = qs<HTMLFormElement>('[data-tasting-editor-form]'); const tastingEditorStatus = qs<HTMLElement>('[data-tasting-editor-status]'); const tastingEditorProducer = qs<HTMLElement>('[data-tasting-editor-producer]');
+  const tastingEditor = qs<HTMLDialogElement>('[data-tasting-editor]'); const tastingEditorForm = qs<HTMLFormElement>('[data-tasting-editor-form]'); const tastingEditorStatus = qs<HTMLElement>('[data-tasting-editor-status]'); const tastingEditorProducer = qs<HTMLElement>('[data-tasting-editor-producer]'); const cellarEditor = qs<HTMLDialogElement>('[data-cellar-editor]');
   const stampDetail = qs<HTMLDialogElement>('[data-stamp-detail]'); const stampDetailTitle = qs<HTMLElement>('[data-stamp-detail-title]'); const stampDetailMark = qs<HTMLElement>('[data-stamp-detail-mark]'); const stampDetailMessage = qs<HTMLElement>('[data-stamp-detail-message]'); const stampDetailDate = qs<HTMLElement>('[data-stamp-detail-date]');
   const passportPages = Array.from(document.querySelectorAll<HTMLElement>('[data-passport-page]'));
   const passportTabs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-passport-go]'));
@@ -211,6 +223,8 @@ import { maisons } from '../data/maisons';
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let passportPage = 0;
   let lastPassportTurn = 0;
+  let tastingOffset = 0;
+  let cellarOffset = 0;
   let editingTasting: Tasting | undefined;
   let latestAtlas: Atlas | undefined;
   const personalTastings = new Map<string, Tasting>();
@@ -282,7 +296,6 @@ import { maisons } from '../data/maisons';
   activatePassport();
   const escapeHTML = (value: string) => value.replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character] || character));
   const formatDate = (value: string) => new Intl.DateTimeFormat('it-IT', { dateStyle: 'long' }).format(new Date(`${value}T12:00:00`));
-  const aromaById = new Map<string, { label: string; emoji: string }>(aromas.map(([id, label, emoji]) => [id, { label, emoji }]));
   const stampLabels: Record<string, string[]> = {
     'premier-bouchon': ['PREMIER', 'BOUCHON'], bienvenue: ['BIENVENUE', 'EN CHAMPAGNE'], 'carnet-degustation': ['CARNET DE', 'DÉGUSTATION'], connaisseur: ['LE', 'CONNAISSEUR'], 'grande-collection': ['LA GRANDE', 'COLLECTION'], centenaire: ['CENTENAIRE', '100'], 'trois-cepages': ['LES TROIS', 'CÉPAGES'], 'blanc-sur-blanc': ['BLANC SUR', 'BLANC'], 'noir-sur-noir': ['NOIR SUR', 'NOIR'], 'vie-en-rose': ['LA VIE', 'EN ROSE'], 'sans-sucre': ['SANS SUCRE', 'S’IL VOUS PLAÎT'], 'extra-extra-brut': ['EXTRA', 'EXTRA BRUT'], 'voyage-temps': ['VOYAGE', 'DANS LE TEMPS'], 'maison-vigneron': ['MAISON &', 'VIGNERON'], 'grower-hunter': ['GROWER', 'HUNTER'], 'grandes-maisons': ['LES GRANDES', 'MAISONS'], 'fidele-maison': ['FIDÈLE À', 'LA MAISON'], 'tour-champagne': ['TOUR DE', 'CHAMPAGNE'], 'montagne-reims': ['MONTAGNE', 'DE REIMS'], 'cote-blancs': ['CÔTE DES', 'BLANCS'], 'vallee-marne': ['VALLÉE DE', 'LA MARNE'], 'cote-bar': ['CÔTE DES', 'BAR'], 'grand-cru': ['GRAND CRU', 'EXPLORER'], 'a-la-cave': ['À LA', 'CAVE'], collectionneur: ['LE', 'COLLECTIONNEUR'], patience: ['PATIENCE', ''], 'coup-coeur': ['COUP DE', 'CŒUR'], 'esprit-ouvert': ['ESPRIT', 'OUVERT'], 'hors-sentiers': ['HORS DES', 'SENTIERS'], 'mon-champagne': ['MON', 'CHAMPAGNE'],
   };
@@ -329,6 +342,9 @@ import { maisons } from '../data/maisons';
 
   const draw = (data: Atlas) => {
     latestAtlas = data;
+    const coverOwner = qs<HTMLElement>('[data-passport-cover-owner]');
+    const passportOwner = qs<HTMLElement>('[data-passport-handle]')?.textContent?.trim();
+    if (coverOwner && passportOwner) coverOwner.textContent = passportOwner;
     personalTastings.clear();
     data.tastings.forEach((item) => personalTastings.set(item.id, item));
     if (stampsCanvas) stampsCanvas.innerHTML = data.stamps.filter((stamp) => stamp.stampVariant <= 15).map(renderStamp).join('');
@@ -337,16 +353,27 @@ import { maisons } from '../data/maisons';
     if (overview) overview.innerHTML = [['Champagne degustati', data.overview.tasted], ['Bottiglie in cantina', data.overview.cellarBottles], ['Nella wishlist', data.overview.wishlist], ['Produttori scoperti', data.overview.producers], ['Aree esplorate', data.overview.areas], ['Cru con dati certi', data.overview.crus]].map(([label, value]) => `<article><strong>${value}</strong><span>${label}</span></article>`).join('');
     const suggestionMarkup = data.suggestions.length ? data.suggestions.map((item) => `<article class="suggestion"><p>${escapeHTML(item.title)}</p>${item.producer && item.wine ? `<h3>${escapeHTML(item.producer)} · ${escapeHTML(item.wine)}</h3>` : ''}<span>${escapeHTML(item.reason)}</span></article>`).join('') : '<p class="empty">Registra una prima bottiglia: il tuo atlante inizierà a suggerire confronti coerenti e spiegati.</p>';
     suggestions.forEach((section) => section.innerHTML = suggestionMarkup);
-    const renderTasting = (item: Tasting) => {
-      const flags = (item.aromas || []).map((id) => { const aroma = aromaById.get(id); return aroma ? `<span>${aroma.emoji} ${escapeHTML(aroma.label)}</span>` : ''; }).join('');
-      return `<article class="tasting"><p>${formatDate(item.drunkAt)} · ${escapeHTML(item.place)}</p><h3>${escapeHTML(item.wine)}</h3><a href="/cantine/${encodeURIComponent(item.producer.slug)}">${escapeHTML(item.producer.name)} →</a><strong>${item.rating.toFixed(1)} / 5</strong>${item.wouldRepurchase === true ? '<small>Lo ricompreresti: sì</small>' : item.wouldRepurchase === false ? '<small>Lo ricompreresti: no</small>' : ''}${flags ? `<div class="aromas">${flags}</div>` : ''}${item.notes ? `<div class="notes">${escapeHTML(item.notes)}</div>` : ''}<p class="actions"><button type="button" data-edit-tasting="${item.id}">Modifica</button><button type="button" data-delete-tasting="${item.id}" data-producer="${escapeHTML(item.producer.slug)}" data-wine="${escapeHTML(item.wine)}">Elimina</button></p></article>`;
-    };
+    const renderTasting = (item: Tasting) => `<article class="passport-record tasting"><p>${formatDate(item.drunkAt)} · ${escapeHTML(item.place)}</p><h3>${escapeHTML(item.wine)}</h3><a href="/cantine/${encodeURIComponent(item.producer.slug)}">${escapeHTML(item.producer.name)} →</a><strong>${item.rating.toFixed(1)} / 5</strong>${item.wouldRepurchase === true ? '<small>Lo ricompreresti: sì</small>' : item.wouldRepurchase === false ? '<small>Lo ricompreresti: no</small>' : ''}<p class="actions"><button type="button" data-edit-tasting="${item.id}">Modifica</button><button type="button" data-delete-tasting="${item.id}" data-producer="${escapeHTML(item.producer.slug)}" data-wine="${escapeHTML(item.wine)}">Elimina</button></p></article>`;
+    const renderBottle = (item: Bottle) => `<article class="passport-record bottle"><p>${escapeHTML(item.producer)}</p><h3>${escapeHTML(item.wine)}${item.vintage ? ` <span>${escapeHTML(item.vintage)}</span>` : ''}</h3><strong>${item.quantity} ${item.quantity === 1 ? 'bottiglia' : 'bottiglie'}</strong><button data-remove-cellar="${item.id}" type="button">Rimuovi</button></article>`;
     const tastingEmpty = '<p class="empty">Il tuo taccuino è ancora vuoto. Apri una cantina e annota la tua prima bevuta.</p>';
-    const firstPageTastings = mobilePassport() ? data.tastings.slice(0, 4) : data.tastings.slice(0, 2);
-    const secondPageTastings = mobilePassport() ? [] : data.tastings.slice(2, 4);
+    const tastingPage = data.tastings.slice(tastingOffset, tastingOffset + 10);
+    const firstPageTastings = tastingPage.slice(0, 5);
+    const secondPageTastings = tastingPage.slice(5, 10);
     if (tastingList) tastingList.innerHTML = firstPageTastings.length ? firstPageTastings.map(renderTasting).join('') : tastingEmpty;
     if (tastingListSecondary) tastingListSecondary.innerHTML = secondPageTastings.length ? secondPageTastings.map(renderTasting).join('') : '<p class="empty">Le prossime degustazioni compariranno qui.</p>';
-    if (cellarList) cellarList.innerHTML = data.cellar.length ? data.cellar.map((item) => `<article class="bottle"><p>${escapeHTML(item.producer)}</p><h3>${escapeHTML(item.wine)}${item.vintage ? ` <span>${escapeHTML(item.vintage)}</span>` : ''}</h3><strong>${item.quantity} ${item.quantity === 1 ? 'bottiglia' : 'bottiglie'}</strong><button data-remove-cellar="${item.id}" type="button">Rimuovi</button></article>`).join('') : '<p class="empty">La tua cantina è ancora vuota.</p>';
+    const cellarPage = data.cellar.slice(cellarOffset, cellarOffset + 10);
+    if (cellarList) cellarList.innerHTML = cellarPage.length ? cellarPage.slice(0, 5).map(renderBottle).join('') : '<p class="empty">La tua cantina è ancora vuota.</p>';
+    if (cellarListSecondary) cellarListSecondary.innerHTML = cellarPage.slice(5, 10).length ? cellarPage.slice(5, 10).map(renderBottle).join('') : '<p class="empty">Le prossime bottiglie compariranno qui.</p>';
+    const updatePagination = (selector: string, offset: number, total: number) => {
+      const start = total ? offset + 1 : 0; const end = Math.min(offset + 10, total);
+      document.querySelectorAll<HTMLElement>(selector).forEach((element) => element.textContent = total ? `${start}–${end} di ${total}` : '0 bottiglie');
+    };
+    updatePagination('[data-tasting-pagination]', tastingOffset, data.tastings.length);
+    updatePagination('[data-cellar-pagination]', cellarOffset, data.cellar.length);
+    document.querySelectorAll<HTMLButtonElement>('[data-tasting-page-prev]').forEach((button) => button.disabled = tastingOffset === 0);
+    document.querySelectorAll<HTMLButtonElement>('[data-tasting-page-next]').forEach((button) => button.disabled = tastingOffset + 10 >= data.tastings.length);
+    document.querySelectorAll<HTMLButtonElement>('[data-cellar-page-prev]').forEach((button) => button.disabled = cellarOffset === 0);
+    document.querySelectorAll<HTMLButtonElement>('[data-cellar-page-next]').forEach((button) => button.disabled = cellarOffset + 10 >= data.cellar.length);
     if (wishlistList) wishlistList.innerHTML = data.wishlist.length ? data.wishlist.map((item) => `<article class="bottle"><p>${escapeHTML(item.producer)}</p><h3>${escapeHTML(item.wine)}</h3><button data-remove-wish="${item.id}" type="button">Rimuovi dalla wishlist</button></article>`).join('') : '<p class="empty">Nessuna bottiglia in attesa per ora.</p>';
     if (profileBox) {
       if (!data.profile.enough) { profileBox.innerHTML = `<div class="profile-empty"><p>Il tuo Champagne</p><h3>Stiamo iniziando a conoscerti.</h3><span>Hai registrato ${data.profile.sampleSize} ${data.profile.sampleSize === 1 ? 'degustazione' : 'degustazioni'}. Dopo almeno tre, il profilo inizierà a mostrare preferenze con basi sufficienti.</span></div>`; if (profileBoxSecondary) profileBoxSecondary.innerHTML = ''; }
@@ -361,6 +388,12 @@ import { maisons } from '../data/maisons';
   const load = async () => { const response = await fetch('/api/my-champagne', { headers: { Accept: 'application/json' } }); if (!response.ok) throw new Error(); draw(await response.json() as Atlas); };
   const readPhoto = (file: File) => new Promise<string>((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(String(reader.result)); reader.onerror = () => reject(new Error()); reader.readAsDataURL(file); });
   void (async () => { const user = await getCurrentUser(); if (!user) { window.location.href = '/accesso'; return; } const handle = typeof user.userMetadata?.handle === 'string' ? user.userMetadata.handle : user.name || 'Membro'; const name = qs<HTMLElement>('[data-user-name]'); const email = qs<HTMLElement>('[data-user-email]'); const handleInput = qs<HTMLInputElement>('[data-handle-input]'); const fallback = Array.from(document.querySelectorAll<HTMLElement>('[data-avatar-fallback], [data-profile-avatar-fallback]')); const avatar = Array.from(document.querySelectorAll<HTMLImageElement>('[data-avatar-image], [data-profile-avatar-image]')); const signature = qs<HTMLElement>('[data-passport-signature]'); const passportHandle = qs<HTMLElement>('[data-passport-handle]'); const since = qs<HTMLElement>('[data-passport-since]'); const emailSeed = user.email || handle; const passportCode = `CH-${String(Math.abs(Array.from(emailSeed).reduce((total, character) => ((total << 5) - total) + character.charCodeAt(0), 0)) % 1000000).padStart(6, '0')}`; const createdAt = (user as { createdAt?: string }).createdAt; const memberSince = createdAt && !Number.isNaN(new Date(createdAt).getTime()) ? String(new Date(createdAt).getFullYear()) : new Date().getFullYear().toString(); if (name) name.textContent = handle; if (email) email.textContent = user.email || ''; if (handleInput) handleInput.value = handle; if (passportHandle) passportHandle.textContent = handle; if (signature) signature.textContent = handle; if (since) since.textContent = memberSince; document.querySelectorAll<HTMLElement>('[data-passport-number]').forEach((element) => element.textContent = passportCode); fallback.forEach((element) => element.textContent = handle.slice(0, 1).toUpperCase()); avatar.forEach((image) => { image.src = '/api/profilo/avatar'; image.onload = () => { image.hidden = false; fallback.forEach((element) => element.hidden = true); }; }); const admin = qs<HTMLElement>('[data-admin-link]'); if (admin && user.roles?.includes('admin')) admin.hidden = false; await load(); })().catch(() => { if (overview) overview.innerHTML = '<p class="empty">Non è stato possibile aprire il tuo atlante. Riprova tra poco.</p>'; });
+  document.querySelectorAll<HTMLButtonElement>('[data-tasting-page-prev]').forEach((button) => button.addEventListener('click', () => { tastingOffset = Math.max(0, tastingOffset - 10); if (latestAtlas) draw(latestAtlas); }));
+  document.querySelectorAll<HTMLButtonElement>('[data-tasting-page-next]').forEach((button) => button.addEventListener('click', () => { if (!latestAtlas) return; tastingOffset = Math.min(Math.max(0, latestAtlas.tastings.length - 1), tastingOffset + 10); draw(latestAtlas); }));
+  document.querySelectorAll<HTMLButtonElement>('[data-cellar-page-prev]').forEach((button) => button.addEventListener('click', () => { cellarOffset = Math.max(0, cellarOffset - 10); if (latestAtlas) draw(latestAtlas); }));
+  document.querySelectorAll<HTMLButtonElement>('[data-cellar-page-next]').forEach((button) => button.addEventListener('click', () => { if (!latestAtlas) return; cellarOffset = Math.min(Math.max(0, latestAtlas.cellar.length - 1), cellarOffset + 10); draw(latestAtlas); }));
+  qs<HTMLButtonElement>('[data-open-cellar-editor]')?.addEventListener('click', () => cellarEditor?.showModal());
+  document.querySelectorAll<HTMLButtonElement>('[data-cellar-editor-close]').forEach((button) => button.addEventListener('click', () => cellarEditor?.close()));
   qs<HTMLButtonElement>('[data-logout]')?.addEventListener('click', async () => { await logout(); window.location.href = '/'; });
   qs<HTMLFormElement>('[data-cellar-form]')?.addEventListener('submit', async (event) => { event.preventDefault(); const form = event.currentTarget as HTMLFormElement; if (cellarStatus) cellarStatus.textContent = 'Aggiornamento in corso…'; try { const values = new FormData(form); const response = await fetch('/api/cantina-personale', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ producer: values.get('producer'), wine: values.get('wine'), vintage: values.get('vintage'), quantity: Number(values.get('quantity')) }) }); if (!response.ok) throw new Error(); form.reset(); if (cellarStatus) cellarStatus.textContent = 'Bottiglia aggiunta alla cantina.'; await load(); } catch { if (cellarStatus) cellarStatus.textContent = 'Non è stato possibile aggiornare la cantina.'; } });
   qs<HTMLFormElement>('[data-wishlist-form]')?.addEventListener('submit', async (event) => { event.preventDefault(); const form = event.currentTarget as HTMLFormElement; if (wishlistStatus) wishlistStatus.textContent = 'Aggiornamento in corso…'; try { const values = new FormData(form); const response = await fetch('/api/wishlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ producer: values.get('producer'), wine: values.get('wine') }) }); if (!response.ok) throw new Error(); form.reset(); if (wishlistStatus) wishlistStatus.textContent = 'Champagne aggiunto alla wishlist.'; await load(); } catch { if (wishlistStatus) wishlistStatus.textContent = 'Non è stato possibile aggiornare la wishlist.'; } });
@@ -439,6 +472,7 @@ import { maisons } from '../data/maisons';
       // mobile token refresh must not turn a successful rename into an error.
       try { await updateUser({ data: { handle: data.handle, full_name: data.handle } }); } catch { /* kept in the shared profile index */ }
       document.querySelectorAll<HTMLElement>('[data-passport-handle], [data-passport-signature]').forEach((element) => element.textContent = data.handle || '');
+      qs<HTMLElement>('[data-passport-cover-owner]')?.replaceChildren(data.handle || '');
       document.querySelectorAll<HTMLElement>('[data-avatar-fallback], [data-profile-avatar-fallback]').forEach((element) => element.textContent = data.handle?.slice(0, 1).toUpperCase() || '?');
       status.textContent = 'Username aggiornato.';
     } catch (error) { status.textContent = error instanceof Error ? error.message : 'Non è stato possibile aggiornare lo username.'; }
@@ -461,6 +495,70 @@ import { maisons } from '../data/maisons';
   :global(.tasting) { padding: 26px 0; border-bottom: 1px solid var(--line); }:global(.tasting > p), :global(.bottle > p) { margin: 0 0 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }:global(.tasting h3), :global(.bottle h3) { margin: 0; font: 500 31px/1 var(--display); }:global(.tasting > a) { display: inline-block; margin-top: 9px; border-bottom: 1px solid var(--gold); color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }:global(.tasting > strong) { display: block; margin-top: 13px; color: var(--gold); font: 700 11px var(--sans); }:global(.tasting > small) { display: block; margin-top: 5px; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .07em; text-transform: uppercase; }:global(.aromas) { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }:global(.aromas span) { padding: 4px 7px; border: 1px solid var(--line); color: var(--terre); font: 600 9px var(--sans); }:global(.notes) { margin-top: 13px; line-height: 1.58; white-space: pre-line; }:global(.actions) { display: flex; gap: 14px; margin: 18px 0 0 !important; }:global(.actions a), :global(.actions button), :global(.bottle button) { padding: 0; border: 0; border-bottom: 1px solid currentColor; color: var(--terre); background: transparent; font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }:global(.actions button), :global(.bottle button) { color: #9d4031; }
   .record-form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 29px; padding: 24px; border: 1px solid var(--line); background: rgba(255,255,255,.22); }.record-form label { display: grid; gap: 7px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }.record-form input { width: 100%; padding: 10px 0; border: 0; border-bottom: 1px solid var(--line); outline: 0; color: var(--ink); background: transparent; font: 400 16px var(--serif); }.record-form input:focus { border-color: var(--gold); }button { justify-self: start; padding: 13px 18px; border: 1px solid var(--ink); color: var(--paper); background: var(--ink); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }.collection { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 23px; }:global(.bottle) { padding: 20px; border: 1px solid var(--line); background: rgba(255,255,255,.22); }:global(.bottle h3 span) { color: var(--terre); font-style: italic; font-weight: 400; }:global(.bottle strong) { display: block; margin-top: 12px; color: var(--sage); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }:global(.bottle button) { margin-top: 15px; }.taste { border-bottom: 0; }.profile-empty { max-width: 620px; padding: 28px; border-left: 2px solid var(--gold); background: rgba(217,212,200,.4); }.profile-empty p, :global(.profile-grid article p), :global(.territory p) { margin: 0; color: var(--gold); font: 700 9px var(--sans); letter-spacing: .1em; text-transform: uppercase; }.profile-empty h3 { margin: 11px 0; font: 500 37px/1 var(--display); }.profile-empty span { color: var(--sage); }.profile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; border: 1px solid var(--line); background: var(--line); }:global(.profile-grid article) { padding: 23px; background: rgba(255,255,255,.28); }:global(.profile-grid h3) { margin: 10px 0 8px; font: 500 30px/1 var(--display); }:global(.profile-grid span), :global(.territory span) { color: var(--sage); font-size: 14px; line-height: 1.42; }.territory { margin-top: 20px; padding: 21px; background: rgba(217,212,200,.4); }.account-panel { display: grid; gap: 12px; margin-top: 64px; padding: 28px; border: 1px solid var(--line); background: rgba(255,255,255,.32); }.avatar-editor { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px 16px; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--line); }.account-avatar { display: grid; place-items: center; width: 58px; height: 58px; overflow: hidden; border: 1px solid var(--gold); border-radius: 50%; color: var(--gold); font: 500 31px var(--display); }.account-avatar img { width: 100%; height: 100%; object-fit: cover; }.avatar-editor label { display: grid; gap: 5px; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }.avatar-editor label span { color: var(--sage); font: 600 8px var(--sans); }.outline-button { padding: 10px 12px; border-color: var(--line); color: var(--terre); background: transparent; }.name { margin: 0; font: 500 42px/.95 var(--display); }.email { margin: 0; color: var(--sage); }.admin-link { justify-self: start; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .1em; text-transform: uppercase; }.logout { background: transparent; color: var(--terre); border-color: var(--line); }
   @media (max-width: 650px) { .account { width: min(100% - 32px, 850px); padding-top: 68px; }.stats { grid-template-columns: repeat(2, 1fr); }:global(.stats > article) { min-height: 120px; padding: 17px 15px; }:global(.stats > article:nth-child(odd)) { border-left: 0; }:global(.stats > article:nth-child(even)) { border-right: 0; }:global(.stats > article > strong) { font-size: 45px; }:global(.stats > article > span) { margin-top: 14px; font-size: 8px; }.overview, .account-section { padding: 56px 0; }.record-form, .collection, .profile-grid { grid-template-columns: 1fr; }.avatar-editor { grid-template-columns: 58px 1fr; }.avatar-editor .outline-button { grid-column: 2; }.account-panel { padding: 21px 17px; } }
+</style>
+
+<style is:global>
+  /* Registri compatti: una bottiglia resta sempre consultabile, anche quando
+     l'archivio cresce. I vecchi limiti visuali delle schede non si applicano qui. */
+  [data-passport-page="3"] [data-my-tastings],
+  [data-passport-page="4"] [data-my-tastings-secondary],
+  [data-passport-page="5"] [data-cellar-collection],
+  [data-passport-page="6"] [data-cellar-collection-secondary] {
+    position: relative;
+    z-index: 1;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0;
+    max-height: none !important;
+    margin-top: 14px;
+    overflow: visible !important;
+    border-top: 1px solid rgba(32, 52, 43, .2);
+  }
+  [data-passport-page="3"] .passport-record,
+  [data-passport-page="4"] .passport-record,
+  [data-passport-page="5"] .passport-record,
+  [data-passport-page="6"] .passport-record {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: 'meta score' 'name score' 'producer actions';
+    gap: 3px 12px;
+    min-width: 0;
+    padding: 9px 2px 10px 11px !important;
+    border: 0 !important;
+    border-bottom: 1px dashed rgba(32, 52, 43, .3) !important;
+    background: transparent !important;
+  }
+  [data-passport-page="3"] .passport-record::before,
+  [data-passport-page="4"] .passport-record::before { top: 14px !important; }
+  [data-passport-page] .passport-record > p { grid-area: meta; min-width: 0; margin: 0 !important; color: var(--terre); font: 700 7px/1.2 var(--sans) !important; letter-spacing: .08em; text-transform: uppercase; }
+  [data-passport-page] .passport-record h3 { grid-area: name; min-width: 0; margin: 0 !important; font: 500 20px/.95 var(--display) !important; overflow-wrap: anywhere; }
+  [data-passport-page] .passport-record > a { grid-area: producer; margin: 0 !important; width: fit-content; font: 700 7px/1.1 var(--sans) !important; letter-spacing: .06em; }
+  [data-passport-page] .passport-record > strong { grid-area: score; align-self: center; margin: 0 !important; color: var(--gold); font: 700 9px/1 var(--sans) !important; white-space: nowrap; }
+  [data-passport-page] .passport-record > small { grid-area: producer; align-self: end; justify-self: end; margin: 0 !important; color: var(--sage); font: 600 6px/1.2 var(--sans) !important; letter-spacing: .05em; text-transform: uppercase; }
+  [data-passport-page] .passport-record .actions { grid-area: actions; align-self: end; justify-self: end; gap: 8px; margin: 0 !important; }
+  [data-passport-page] .passport-record .actions button,
+  [data-passport-page] .passport-record > button { margin: 0 !important; padding: 0 !important; color: var(--terre); background: transparent; font: 700 7px var(--sans) !important; letter-spacing: .06em; }
+  [data-passport-page="5"] .passport-record,
+  [data-passport-page="6"] .passport-record { grid-template-areas: 'meta quantity' 'name quantity' 'empty actions'; }
+  [data-passport-page="5"] .passport-record > strong,
+  [data-passport-page="6"] .passport-record > strong { grid-area: quantity; }
+  [data-passport-page="5"] .passport-record > button,
+  [data-passport-page="6"] .passport-record > button { grid-area: actions; align-self: end; justify-self: end; }
+  .passport-register-intro { position: relative; z-index: 1; max-width: 330px; margin: 14px 0 0; color: var(--sage); font: 400 16px/1.35 var(--display); }
+  .passport-record-nav { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 11px; margin-top: 11px; color: var(--terre); font: 700 7px var(--sans); letter-spacing: .1em; text-transform: uppercase; }
+  .passport-record-nav button, .passport-add-control { padding: 6px 9px !important; border: 1px solid rgba(32, 52, 43, .25) !important; color: var(--terre) !important; background: transparent !important; font: 700 7px var(--sans) !important; letter-spacing: .08em; }
+  .passport-record-nav button:disabled { opacity: .3; cursor: default; }
+  .passport-add-control { position: relative; z-index: 2; display: block; margin: 18px auto 0; }
+  .cellar-editor .record-form { display: grid; margin: 0; padding: 0; border: 0; background: transparent; }
+  @media (max-width: 760px) {
+    [data-passport-page="3"] .passport-record,
+    [data-passport-page="4"] .passport-record,
+    [data-passport-page="5"] .passport-record,
+    [data-passport-page="6"] .passport-record { display: grid !important; padding: 7px 1px 8px 9px !important; }
+    [data-passport-page] .passport-record h3 { font-size: 17px !important; }
+    [data-passport-page] .passport-record > p { font-size: 6px !important; }
+    [data-passport-page] .passport-record > a, [data-passport-page] .passport-record > strong, [data-passport-page] .passport-record > small, [data-passport-page] .passport-record .actions button, [data-passport-page] .passport-record > button { font-size: 6px !important; }
+  }
 </style>
 
 <style>
