@@ -24,11 +24,22 @@ export default async (request: Request) => {
     const targetHash = await hashCode(code);
     const matches = (await listInvites()).filter((record) => record.codeHash === targetHash);
     const current = matches[0];
-    if (!current || current.redeemedAt || new Date(current.expiresAt).getTime() <= Date.now()) {
+    if (!current || new Date(current.expiresAt).getTime() <= Date.now()) {
       return json({ error: 'Il codice non è valido, è scaduto o è già stato utilizzato.' }, 422);
     }
 
     const users = await admin.listUsers({ perPage: 1000 });
+    const accountWithEmail = users.find((user) => String(user.email || '').toLowerCase() === email);
+    // If a previous request created the Identity user but lost the response
+    // while indexing the community, accepting the same details completes the
+    // interrupted flow instead of locking the invited person out.
+    if (current.redeemedAt) {
+      if (accountWithEmail && accountWithEmail.id === current.redeemedBy) {
+        return json({ email, handle: String(accountWithEmail.userMetadata?.handle || handle) });
+      }
+      return json({ error: 'Il codice non è valido, è scaduto o è già stato utilizzato.' }, 422);
+    }
+    if (accountWithEmail) return json({ error: 'Esiste già un account associato a questa email.' }, 409);
     const handleTaken = users.some((user) => String(user.userMetadata?.handle || '').toLowerCase() === handle);
     if (handleTaken) return json({ error: 'Questo username è già in uso.' }, 409);
 
@@ -39,12 +50,27 @@ export default async (request: Request) => {
     });
     current.redeemedAt = new Date().toISOString();
     current.redeemedBy = user.id;
-    const community = getStore({ name: 'champagne-tasting-notes', consistency: 'strong' });
-    const existing = (await community.get('community/participants.json', { type: 'json' }) || []) as CommunityMember[];
-    const withoutDuplicate = existing.filter((member) => member?.id && member.id !== user.id && member.handle !== handle);
-    await Promise.all([saveInvite(current), community.setJSON('community/participants.json', [...withoutDuplicate, { id: user.id, handle }])]);
+
+    // The Identity account is the source of truth for the new passport.  A
+    // best-effort community index must never turn a successfully created
+    // account into an apparent failure for the guest.
+    try {
+      await saveInvite(current);
+    } catch (error) {
+      console.error('Unable to mark redeemed invite after creating user', error);
+    }
+
+    try {
+      const community = getStore({ name: 'champagne-tasting-notes', consistency: 'strong' });
+      const existing = (await community.get('community/participants.json', { type: 'json' }) || []) as CommunityMember[];
+      const withoutDuplicate = existing.filter((member) => member?.id && member.id !== user.id && member.handle !== handle);
+      await community.setJSON('community/participants.json', [...withoutDuplicate, { id: user.id, handle }]);
+    } catch (error) {
+      console.error('Unable to add new user to community index', error);
+    }
     return json({ email, handle }, 201);
   } catch (error) {
+    console.error('Unable to redeem Champagne Passport invite', error);
     const message = error instanceof Error && /already exists|already registered/i.test(error.message)
       ? 'Esiste già un account associato a questa email.'
       : 'Non è stato possibile creare l’account.';
