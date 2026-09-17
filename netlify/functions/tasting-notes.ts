@@ -1,6 +1,7 @@
 import { getStore } from '@netlify/blobs';
 import { getUser, verifyRequestOrigin } from '@netlify/identity';
 import { aromaIds } from '../../src/data/aromas';
+import { maisonSlug, maisons } from '../../src/data/maisons';
 
 type SensoryProfile = { body: number; tannin: number; sweetness: number; acidity: number };
 type ExperienceProfile = { maturity: number; structure: number; tension: number; complexity: number };
@@ -8,10 +9,17 @@ type Tasting = {
   id: string; wine: string; drunkAt: string; place: string; price?: number; rating: number; notes?: string;
   aromas: string[]; sensory: SensoryProfile; photo?: { id: string; mime: string };
   experience?: ExperienceProfile; wouldRepurchase?: boolean;
+  shared?: { id: string; companions: string[] };
   author: { id: string; name: string }; createdAt: string; updatedAt?: string;
 };
 type TastingIndex = { id: string; producerSlug: string; createdAt: string };
 type PublicTasting = Tasting & { averageRating: number; ratingCount: number; averageSensory: SensoryProfile };
+type CommunityMember = { id: string; handle: string };
+type SharedParticipant = { id: string; handle: string; state: 'pending' | 'accepted' | 'declined' };
+type SharedTasting = {
+  id: string; producerSlug: string; producerName: string; wine: string; drunkAt: string; place: string; price?: number;
+  photo?: { id: string; mime: string }; owner: { id: string; handle: string }; participants: SharedParticipant[]; createdAt: string;
+};
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'private, no-store' } });
 const slugFromRequest = (request: Request) => {
@@ -96,16 +104,35 @@ export default async (request: Request) => {
       await store.setJSON(key, current.filter((item) => item.id !== id));
       const index = (await store.get(indexKey, { type: 'json' }) || []) as TastingIndex[];
       await store.setJSON(indexKey, index.filter((item) => !(item.id === id && item.producerSlug === slug)));
-      if (target.photo) await store.delete(`photos/${target.photo.id}`);
+      if (target.shared?.id) {
+        const shared = await store.get(`shared-tastings/${target.shared.id}.json`, { type: 'json' }) as SharedTasting | null;
+        if (shared?.owner.id === user.id) await store.delete(`shared-tastings/${target.shared.id}.json`);
+      }
+      // Una foto condivisa può essere già presente nei taccuini degli amici: non va eliminata
+      // insieme alla sola annotazione del proprietario.
+      if (target.photo && !target.shared) await store.delete(`photos/${target.photo.id}`);
       return json({ ok: true });
     }
 
     const payload = await request.json() as Record<string, unknown>;
-    const parsed = parsePayload(payload);
+    let parsed = parsePayload(payload);
     if (!parsed.wine || !parsed.place || !parsed.drunkAt || parsed.rating === undefined) return json({ error: 'Completa nome, data, luogo e voto.' }, 422);
     const rating = parsed.rating;
+    const sharedId = typeof payload.sharedTastingId === 'string' && /^[a-f0-9-]{36}$/i.test(payload.sharedTastingId) ? payload.sharedTastingId : undefined;
+    let sharedEvent: SharedTasting | undefined;
+    if (request.method === 'POST' && sharedId) {
+      const candidate = await store.get(`shared-tastings/${sharedId}.json`, { type: 'json' }) as SharedTasting | null;
+      const participant = candidate?.participants.find((item) => item.id === user.id);
+      if (!candidate || candidate.producerSlug !== slug || !participant) return json({ error: 'Questa degustazione condivisa non è disponibile.' }, 404);
+      if (participant.state !== 'pending') return json({ error: 'Hai già gestito questa degustazione condivisa.' }, 409);
+      participant.state = 'accepted';
+      sharedEvent = candidate;
+      parsed = { ...parsed, wine: candidate.wine, drunkAt: candidate.drunkAt, place: candidate.place, price: candidate.price };
+    }
     let photo: Tasting['photo'];
-    if (typeof payload.photo === 'string' && payload.photo) {
+    if (sharedEvent?.photo) {
+      photo = sharedEvent.photo;
+    } else if (typeof payload.photo === 'string' && payload.photo) {
       const image = dataUrlToImage(payload.photo);
       if (!image) return json({ error: 'La foto deve essere JPG, PNG o WebP e non superare 5 MB.' }, 422);
       const extension = image.mime === 'image/jpeg' ? 'jpg' : image.mime.split('/')[1];
@@ -124,12 +151,40 @@ export default async (request: Request) => {
       if (photo && target.photo) await store.delete(`photos/${target.photo.id}`);
       return json({ tasting: withHistoricalAverages(replacement).find((item) => item.id === id) });
     }
+    const authorName = user.name || (typeof user.userMetadata?.full_name === 'string' ? user.userMetadata.full_name : 'Membro');
+    let outboundShared: SharedTasting | undefined;
+    let shared: Tasting['shared'];
+    if (!sharedEvent && request.method === 'POST' && Array.isArray(payload.sharedWith)) {
+      const requestedHandles = [...new Set(payload.sharedWith.filter((value): value is string => typeof value === 'string')
+        .map((value) => value.trim().toLowerCase().replace(/[^a-z0-9._-]/g, '').slice(0, 32)).filter(Boolean))].slice(0, 12);
+      if (requestedHandles.length) {
+        const community = (await store.get('community/participants.json', { type: 'json' }) || []) as CommunityMember[];
+        const participants = community.filter((member) => member.id !== user.id && requestedHandles.includes(member.handle))
+          .map((member) => ({ id: member.id, handle: member.handle, state: 'pending' as const }));
+        if (participants.length) {
+          const id = crypto.randomUUID();
+          const ownerHandle = typeof user.userMetadata?.handle === 'string' ? user.userMetadata.handle : authorName;
+          const producerName = maisons.find((maison) => maisonSlug(maison.name) === slug)?.name || slug.replace(/-/g, ' ');
+          outboundShared = { id, producerSlug: slug, producerName, wine: parsed.wine, drunkAt: parsed.drunkAt, place: parsed.place, price: parsed.price, photo, owner: { id: user.id, handle: ownerHandle }, participants, createdAt: new Date().toISOString() };
+          shared = { id, companions: participants.map((participant) => participant.handle) };
+        }
+      }
+    }
+    if (sharedEvent) {
+      shared = { id: sharedEvent.id, companions: [sharedEvent.owner.handle, ...sharedEvent.participants.filter((participant) => participant.id !== user.id && participant.state !== 'declined').map((participant) => participant.handle)] };
+    }
     const tasting: Tasting = {
       id: crypto.randomUUID(), ...parsed, rating, photo,
-      author: { id: user.id, name: user.name || (typeof user.userMetadata?.full_name === 'string' ? user.userMetadata.full_name : 'Membro') }, createdAt: new Date().toISOString(),
+      shared,
+      author: { id: user.id, name: authorName }, createdAt: new Date().toISOString(),
     };
     const index = (await store.get(indexKey, { type: 'json' }) || []) as TastingIndex[];
-    await Promise.all([store.setJSON(key, [tasting, ...current]), store.setJSON(indexKey, [{ id: tasting.id, producerSlug: slug, createdAt: tasting.createdAt }, ...index])]);
+    await Promise.all([
+      store.setJSON(key, [tasting, ...current]),
+      store.setJSON(indexKey, [{ id: tasting.id, producerSlug: slug, createdAt: tasting.createdAt }, ...index]),
+      outboundShared ? store.setJSON(`shared-tastings/${outboundShared.id}.json`, outboundShared) : Promise.resolve(),
+      sharedEvent ? store.setJSON(`shared-tastings/${sharedEvent.id}.json`, sharedEvent) : Promise.resolve(),
+    ]);
     return json({ tasting: withHistoricalAverages([tasting])[0] }, 201);
   } catch {
     return json({ error: 'Non è stato possibile salvare la bevuta.' }, 400);

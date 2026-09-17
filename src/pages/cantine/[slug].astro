@@ -130,6 +130,11 @@ const producerStory = maisonStories[maison.name];
             <label class="wide">Foto della bottiglia <span>facoltativa, max 5 MB</span>
               <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" />
             </label>
+            <fieldset class="share-picker wide" data-share-picker hidden>
+              <legend>Bevuta insieme?</legend>
+              <p>Invita gli amici presenti: condivideranno bottiglia, data, luogo e foto, poi aggiungeranno nel proprio taccuino voto e impressioni personali.</p>
+              <div class="share-friends" data-share-friends></div>
+            </fieldset>
           </div>
 
           <fieldset class="sensory-ratings">
@@ -188,6 +193,7 @@ const producerStory = maisonStories[maison.name];
     experience?: { maturity: number; structure: number; tension: number; complexity: number };
     wouldRepurchase?: boolean;
     photo?: { id: string; mime: string };
+    shared?: { id: string; companions: string[] };
     author: { id: string; name: string };
     averageRating: number;
     ratingCount: number;
@@ -205,11 +211,14 @@ const producerStory = maisonStories[maison.name];
   const slug = producer?.dataset.producerSlug;
   const producerName = producer?.dataset.producerName || '';
   const personalProducer = document.querySelector<HTMLElement>('[data-personal-producer]');
+  const sharePicker = document.querySelector<HTMLElement>('[data-share-picker]');
+  const shareFriends = document.querySelector<HTMLElement>('[data-share-friends]');
   const aromaLabels = new Map(Array.from(document.querySelectorAll<HTMLElement>('[data-aroma]')).map((element) => [element.dataset.aroma || '', {
     label: element.dataset.aromaLabel || '', emoji: element.dataset.aromaEmoji || '✦',
   }]));
   let currentUserId = '';
   let editingId: string | undefined;
+  let sharedTastingId: string | undefined;
   let records = new Map<string, Tasting>();
 
   document.querySelectorAll<HTMLImageElement>('[data-logo-image]').forEach((image) => {
@@ -254,6 +263,7 @@ const producerStory = maisonStories[maison.name];
           <h3>${escapeHTML(tasting.wine)}</h3>
           <p class="entry-rating">${tasting.averageRating.toFixed(1)} <span>/ 5 · media storica (${tasting.ratingCount} ${tasting.ratingCount === 1 ? 'voto' : 'voti'})</span></p>
           <p class="entry-author">Annotato da ${escapeHTML(tasting.author.name)}${typeof tasting.price === 'number' ? ` · € ${tasting.price.toFixed(2)}` : ''}</p>
+          ${tasting.shared?.companions.length ? `<p class="entry-shared">Bevuta con ${escapeHTML(tasting.shared.companions.join(', '))}</p>` : ''}
           ${aromaFlags(tasting.aromas)}
           ${tasting.notes ? `<p class="entry-notes">${escapeHTML(tasting.notes)}</p>` : ''}
           ${showProfile ? profile(tasting.averageSensory) : ''}
@@ -294,6 +304,37 @@ const producerStory = maisonStories[maison.name];
       const signals = [tasting ? `Il tuo voto ${tasting.rating.toFixed(1)} / 5` : '', tasting?.wouldRepurchase === true ? 'lo ricompreresti' : '', bottleCount ? `${bottleCount} in cantina` : '', wished ? 'nella wishlist' : ''].filter(Boolean);
       if (signals.length) card.insertAdjacentHTML('beforeend', `<p class="personal-wine">${signals.join(' · ')}</p>`);
     });
+  };
+
+  const loadShareFriends = async (selfHandle: string) => {
+    if (!sharePicker || !shareFriends) return;
+    const response = await fetch('/api/amici', { headers: { Accept: 'application/json' } });
+    if (!response.ok) return;
+    const data = await response.json() as { friends: { handle: string }[] };
+    const friends = data.friends.filter((friend) => friend.handle && friend.handle !== selfHandle);
+    if (!friends.length) return;
+    shareFriends.innerHTML = friends.map((friend) => `<label><input type="checkbox" name="sharedWith" value="${escapeHTML(friend.handle)}" /> ${escapeHTML(friend.handle)}</label>`).join('');
+    sharePicker.hidden = false;
+  };
+
+  const openSharedTasting = async () => {
+    const id = new URLSearchParams(window.location.search).get('condivisione');
+    if (!id || !form || !slug) return;
+    const response = await fetch(`/api/degustazioni-condivise?id=${encodeURIComponent(id)}`, { headers: { Accept: 'application/json' } });
+    if (!response.ok) return;
+    const data = await response.json() as { tasting: { id: string; producerSlug: string; wine: string; drunkAt: string; place: string; price?: number; owner: { handle: string } } };
+    if (data.tasting.producerSlug !== slug) return;
+    sharedTastingId = data.tasting.id;
+    (form.elements.namedItem('wine') as HTMLInputElement).value = data.tasting.wine;
+    (form.elements.namedItem('drunkAt') as HTMLInputElement).value = data.tasting.drunkAt;
+    (form.elements.namedItem('place') as HTMLInputElement).value = data.tasting.place;
+    (form.elements.namedItem('price') as HTMLInputElement).value = typeof data.tasting.price === 'number' ? String(data.tasting.price) : '';
+    ["wine", "drunkAt", "place", "price"].forEach((name) => ((form.elements.namedItem(name) as HTMLInputElement).readOnly = true));
+    const photoField = form.elements.namedItem('photo') as HTMLInputElement;
+    photoField.disabled = true;
+    if (sharePicker) sharePicker.hidden = true;
+    if (status) status.textContent = `Degustazione condivisa da ${data.tasting.owner.handle}: inserisci la tua impressione e il tuo voto.`;
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const startEditing = (id: string) => {
@@ -365,6 +406,9 @@ const producerStory = maisonStories[maison.name];
         currentUserId = user.id;
         await loadTastings();
         await loadPersonalContext();
+        const selfHandle = typeof user.userMetadata?.handle === 'string' ? user.userMetadata.handle.trim().toLowerCase() : String(user.name || '').trim().toLowerCase();
+        await loadShareFriends(selfHandle);
+        await openSharedTasting();
         gate.hidden = true;
         privateArea.hidden = false;
         const editId = new URLSearchParams(window.location.search).get('modifica');
@@ -397,14 +441,18 @@ const producerStory = maisonStories[maison.name];
       experience: ['maturity', 'structure', 'tension', 'complexity'].reduce((ratings, key) => ({ ...ratings, [key]: Number(fields.get(key)) }), {}),
       sensory: { body: Number(fields.get('structure')), tannin: 50, sweetness: 50, acidity: Number(fields.get('tension')) },
       photo: photo instanceof File && photo.size ? await readPhoto(photo) : undefined,
+      sharedWith: fields.getAll('sharedWith').map(String),
     };
     try {
       const response = await fetch(`/api/cantine/${encodeURIComponent(slug)}/bevute`, {
-        method: editingId ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(editingId ? { ...payload, id: editingId } : payload),
+        method: editingId ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(editingId ? { ...payload, id: editingId } : { ...payload, sharedTastingId }),
       });
       if (!response.ok) throw new Error();
       form.reset();
       editingId = undefined;
+      sharedTastingId = undefined;
+      ['wine', 'drunkAt', 'place', 'price'].forEach((name) => ((form.elements.namedItem(name) as HTMLInputElement).readOnly = false));
+      (form.elements.namedItem('photo') as HTMLInputElement).disabled = false;
       if (saveButton) saveButton.innerHTML = 'Salva la bevuta <span aria-hidden="true">→</span>';
       status.textContent = 'Bevuta salvata nel tuo taccuino e nell’archivio condiviso.';
       await loadTastings();
@@ -502,6 +550,7 @@ const producerStory = maisonStories[maison.name];
   :global(.entry-rating) { margin: 10px 0 0; color: var(--gold); font: 600 12px var(--sans); }
   :global(.entry-rating span) { color: var(--sage); }
   :global(.entry-author) { margin: 6px 0 0; color: var(--sage); font: 600 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+  :global(.entry-shared) { margin: 7px 0 0; color: var(--terre); font: 700 9px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
   :global(.entry-notes) { margin: 12px 0 0; line-height: 1.58; white-space: pre-line; }
   .tasting-form { padding: 30px; background: rgba(255,255,255,.34); border: 1px solid var(--line); }
   .form-heading { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
@@ -512,6 +561,12 @@ const producerStory = maisonStories[maison.name];
   .repurchase { display: flex; flex-wrap: wrap; gap: 12px 21px; align-items: center; margin: 0; padding: 0; border: 0; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .09em; text-transform: uppercase; }
   .repurchase legend { width: 100%; padding: 0 0 3px; }
   .repurchase label { display: inline-flex; gap: 7px; align-items: center; color: var(--ink); font: 500 15px var(--serif); letter-spacing: 0; text-transform: none; }
+  .share-picker { margin: 0; padding: 17px 0 0; border: 0; border-top: 1px solid var(--line); }
+  .share-picker legend { padding: 0; color: var(--terre); font: 700 10px var(--sans); letter-spacing: .09em; text-transform: uppercase; }
+  .share-picker > p { max-width: 590px; margin: 9px 0 0; color: var(--sage); font: 400 15px/1.45 var(--serif); text-transform: none; }
+  .share-friends { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
+  .share-friends label { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 6px 9px; border: 1px solid var(--line); color: var(--terre); background: rgba(255,255,255,.24); font: 600 10px var(--sans); letter-spacing: .03em; text-transform: none; cursor: pointer; }
+  .share-friends input { width: auto; accent-color: var(--terre); }
   input:not([type='range']), select, textarea { width: 100%; padding: 11px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; outline: none; color: var(--ink); background: transparent; font: 400 17px var(--serif); text-transform: none; }
   input:not([type='range']):focus, select:focus, textarea:focus { border-color: var(--gold); }
   input[type='file'] { font-size: 14px; }
