@@ -381,6 +381,29 @@ export const catalogWines: CatalogWine[] = [
   { producer: 'Élise Bougy', name: 'Le Mont-Chainqueux', family: 'Blanc de Noirs' },
   { producer: 'Élise Bougy', name: 'Les Coullemets', family: 'Blanc de Blancs' },
   { producer: 'Élise Bougy', name: 'Chétillon de Haut', family: 'Blanc de Blancs' },
+
+  { producer: 'Alexandre Bonnet', name: 'Blanc de Noirs', family: 'Blanc de Noirs' },
+  { producer: 'Alexandre Bonnet', name: 'Blanc de Blancs', family: 'Blanc de Blancs' },
+  { producer: 'Alexandre Bonnet', name: 'Rosé', family: 'Rosé' },
+  { producer: 'Alexandre Bonnet', name: 'Blanc de Noirs Les Vignes Blanches', family: 'Parcella' },
+  { producer: 'Alexandre Bonnet', name: 'Blanc de Noirs Hardy', family: 'Parcella' },
+  { producer: 'Alexandre Bonnet', name: 'Blanc de Noirs La Forêt', family: 'Parcella' },
+  { producer: 'Alexandre Bonnet', name: 'Les Contrées Rosé de Macération', family: 'Rosé' },
+  { producer: 'Alexandre Bonnet', name: 'Les Contrées 7 Cépages', family: 'Parcella' },
+
+  { producer: 'Baron Dauvergne', name: 'Fine Fleur de Bouzy', family: 'Blanc de Noirs' },
+  { producer: 'Baron Dauvergne', name: 'Rosé', family: 'Rosé' },
+  { producer: 'Baron Dauvergne', name: 'Sweet Vintage', family: 'Demi-Sec' },
+
+  { producer: 'Bertrand-Delespierre', name: 'Enfant de la Montagne', family: 'Firma della maison' },
+  { producer: 'Bertrand-Delespierre', name: 'L’Âme Millésimé', family: 'Millesimato' },
+  { producer: 'Bertrand-Delespierre', name: 'Autour de la Creusette', family: 'Parcella' },
+
+  { producer: 'Oto', name: 'Blanc de Noirs', family: 'Blanc de Noirs' },
+  { producer: 'Oto', name: 'Blanc de Noirs Brut Nature', family: 'Extra Brut' },
+  { producer: 'Oto', name: 'Blanc de Blancs', family: 'Blanc de Blancs' },
+  { producer: 'Oto', name: 'Rosé', family: 'Rosé' },
+  { producer: 'Oto', name: 'Millésime 2019', family: 'Millesimato' },
   ...leRecoltantWines,
 ];
 
@@ -420,6 +443,15 @@ const editorialNotes: Record<string, string> = {
   'Aurore Casanova|Les Petites Vignes Pinot Noir': 'Una lettura parcellare del Grand Cru di Puisieulx.',
   'Élise Bougy|Le Mont-Chainqueux': "Parcella familiare di Les Mesneux: il nome è la sua precisa carta d'identità.",
   'Élise Bougy|Les Coullemets': 'Blanc de Blancs da Le Mesnil-sur-Oger, nel cuore gessoso della Côte des Blancs.',
+  'Alexandre Bonnet|Blanc de Noirs Les Vignes Blanches': 'Una Contrée esposta a est a Les Riceys: il nome identifica il luogo prima ancora dello stile.',
+  'Alexandre Bonnet|Blanc de Noirs Hardy': 'Hardy è una parcella rivolta a nord, il cui nome richiama le difficoltà del lavoro in vigna.',
+  'Alexandre Bonnet|Les Contrées 7 Cépages': 'Una cuvée che riunisce i sette vitigni storicamente autorizzati dalla denominazione.',
+  'Baron Dauvergne|Fine Fleur de Bouzy': 'La bottiglia con le margherite è la firma della maison: Fine Fleur nasce nel 1983 e rende il fiore il suo emblema.',
+  'Baron Dauvergne|Rosé': 'Un Rosé Grand Cru di Bouzy, pensato per conservare un carattere vinoso e fruttato.',
+  'Bertrand-Delespierre|Enfant de la Montagne': 'Il nome porta in primo piano Chamery e la Montagne de Reims, terra della famiglia.',
+  'Bertrand-Delespierre|Autour de la Creusette': 'Il nome indica una lettura parcellare della Montagne de Reims.',
+  'Oto|Blanc de Noirs Brut Nature': 'La versione a dosaggio zero della maison, presente nella fotografia.',
+  'Oto|Millésime 2019': 'Il millesimato è una delle cinque espressioni essenziali della gamma OTO.',
 };
 
 export const winesForMaison = (producer: string) => catalogWines

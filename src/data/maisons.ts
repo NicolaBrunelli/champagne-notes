@@ -1197,7 +1197,7 @@ export const maisons: Maison[] = [
     "name": "Bertrand-Delespierre",
     "area": "Montagne de Reims",
     "website": "https://bertrand-delespierre.fr/",
-    "logo": "https://www.champagneexperience.it/wp-content/uploads/2026/04/Champagne-Bertrand-Delespierre_2026-04-uai-258x258.jpg"
+    "logo": "https://bertrand-delespierre.fr/logo.svg"
   },
   {
     "name": "Sylvie Moreau",
@@ -1723,6 +1723,19 @@ export const maisons: Maison[] = [
     "website": "https://www.instagram.com/elisebougy/",
     "websiteLabel": "Visita il profilo ufficiale",
     "logo": "https://champavin.com/images/producers/logos/logo_elise-bougy.webp"
+  },
+  {
+    "name": "Baron Dauvergne",
+    "area": "Montagne de Reims",
+    "website": "https://baron-dauvergne.fr/fr/",
+    "logo": "https://baron-dauvergne.fr/wp-content/themes/barondauvergne/assets/img/blocMarqueBaronDauvergne.webp"
+  },
+  {
+    "name": "Oto",
+    "area": "Vallée de la Marne",
+    "website": "https://champagneoto.com/",
+    "logo": "https://champagneoto.com/cdn/shop/files/logo_oto_transparent_blanc.png?v=1777302466",
+    "logoTone": "light-on-dark"
   },
   ...leRecoltantMaisons
 ];

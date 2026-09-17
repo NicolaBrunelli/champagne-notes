@@ -200,5 +200,21 @@ export const maisonStories: Record<string, MaisonStory> = {
     history: ["Élise Bougy ha ripreso il piccolo domaine di famiglia a Les Mesneux nel 2016, dopo gli studi di enologia. Il suo lavoro collega la Montagne de Reims con alcune parcelle di Le Mesnil-sur-Oger, nella Côte des Blancs.", "La vigna è il punto di partenza di una produzione artigianale, biologica e sempre più orientata a restituire la precisione di ogni singolo lieu-dit."],
     curiosities: ["Le Mont-Chainqueux è una parcella Premier Cru di Les Mesneux, piantata dai nonni di Élise nel 1965.", "Les Coullemets e Chétillon de Haut raccontano invece due luoghi di Le Mesnil-sur-Oger."],
   },
+  "Alexandre Bonnet": {
+    history: ["Il Domaine Alexandre Bonnet lavora a Les Riceys, nella parte più meridionale della Champagne, al confine con la Borgogna. Qui il Pinot Noir incontra suoli di calcare kimmeridgiano e marne, in un paesaggio molto diverso dalle grandi distese gessose del nord.", "Il domaine costruisce la propria gamma fra cuvée di assemblaggio e Contrées: letture di singoli luoghi che riportano il nome dei versanti e delle parcelle."],
+    curiosities: ["Les Riceys è un caso unico in Champagne: il territorio riunisce tre appellazioni, Champagne, Coteaux Champenois e Rosé des Riceys.", "Les Vignes Blanches è una Contrée esposta a est, da cui nasce il Blanc de Noirs presente nella fotografia."],
+  },
+  "Baron Dauvergne": {
+    history: ["La storia familiare comincia a Bouzy nel 1923 con Fernand Dauvergne e Hubert Baron. Nel 1927 partecipano alla nascita della cooperativa viticola Defynlieu, una delle prime della Champagne.", "Il nome Baron Dauvergne è stato adottato nel 2011 da Vincent Dauvergne come omaggio ai suoi bisnonni. Il centro del racconto rimane Bouzy, Grand Cru della Montagne de Reims."],
+    curiosities: ["La margherita è il segno della maison: nel 1983 Eliane Dauvergne immaginò la cuvée Fine Fleur e la decorò proprio con il fiore oggi riconoscibile sulla bottiglia.", "Fine Fleur de Bouzy è il Blanc de Noirs mostrato nella fotografia."],
+  },
+  "Bertrand-Delespierre": {
+    history: ["Bertrand-Delespierre nasce a Chamery nel 1980 dall'unione di Chantal Delespierre e Didier Bertrand, entrambi figli di viticoltori. Oggi Adrien e Clémence proseguono il lavoro della famiglia.", "Le vigne si trovano nella Montagne de Reims, attorno a Chamery e in altri villaggi Premier Cru: un patrimonio lavorato e vinificato direttamente dal domaine."],
+    curiosities: ["Chamery è un Premier Cru della Montagne de Reims.", "Enfant de la Montagne è la cuvée presente nella fotografia: il nome rende esplicita la sua appartenenza alla sottozona."],
+  },
+  "Oto": {
+    history: ["OTO è una maison contemporanea della Vallée de la Marne. Il progetto lavora con vigneron partner e dichiara una ricerca di precisione, essenzialità e leggibilità della materia prima.", "La gamma è volutamente raccolta: diverse interpretazioni di bianchi, rosé e millesimato riunite sotto un'unica firma grafica contemporanea."],
+    curiosities: ["Il nome OTO compare in minuscolo sulla bottiglia fotografata, accompagnato da un disegno lineare di mani e calici.", "La versione Blanc de Noirs Brut Nature è la cuvée a dosaggio zero presente nella fotografia."],
+  },
   ...leRecoltantStories,
 };
