@@ -1737,5 +1737,22 @@ export const maisons: Maison[] = [
     "logo": "https://champagneoto.com/cdn/shop/files/logo_oto_transparent_blanc.png?v=1777302466",
     "logoTone": "light-on-dark"
   },
+  {
+    "name": "Albert Lebrun",
+    "area": "Côte des Blancs",
+    "website": "https://champagnealbertlebrun.com/",
+    "logoText": "Albert Lebrun"
+  },
+  {
+    "name": "Marie Angèle",
+    "area": "Montagne de Reims",
+    "website": "https://champagne-marie-angele.com/",
+    "logoText": "Marie Angèle"
+  },
+  {
+    "name": "Villa Bon Accueil",
+    "area": "Vallée de la Marne",
+    "logoText": "Villa Bon Accueil"
+  },
   ...leRecoltantMaisons
 ];

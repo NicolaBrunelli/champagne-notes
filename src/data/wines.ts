@@ -1,4 +1,5 @@
 import { leRecoltantWines } from './recoltant-vignerons';
+import { catalogSupplementWines } from './catalog-wines-2026';
 
 export type WineFamily = 'Firma della maison' | 'Rosé' | 'Millesimato' | 'Prestige' | 'Parcella' | 'Stile libero' | 'Extra Brut' | 'Blanc de Blancs' | 'Blanc de Noirs' | 'Demi-Sec' | 'Bio';
 
@@ -15,7 +16,7 @@ export type CatalogWine = {
  * La prima selezione riunisce le Maison già verificate; le annate specifiche
  * vengono aggiunte solo quando indicate dal produttore.
  */
-export const catalogWines: CatalogWine[] = [
+const catalogWineSources: CatalogWine[] = [
   { producer: 'Moët & Chandon', name: 'Brut Impérial', family: 'Firma della maison' },
   { producer: 'Moët & Chandon', name: 'Rosé Impérial', family: 'Rosé' },
   { producer: 'Moët & Chandon', name: 'Ice Impérial', family: 'Stile libero' },
@@ -407,6 +408,17 @@ export const catalogWines: CatalogWine[] = [
   ...leRecoltantWines,
 ];
 
+/**
+ * The event catalog adds named cuvées already available for tasting. Keep one
+ * record per producer/cuvée pair when the editorial archive already knew it.
+ */
+export const catalogWines: CatalogWine[] = Array.from(
+  new Map(
+    [...catalogWineSources, ...catalogSupplementWines]
+      .map((wine) => [`${wine.producer}\u0000${wine.name}`.normalize('NFC').toLocaleLowerCase('it-IT'), wine] as const),
+  ).values(),
+);
+
 const editorialNotes: Record<string, string> = {
   'Moët & Chandon|Grand Vintage': 'Ogni edizione è la lettura libera di un singolo millesimo da parte della Maison.',
   'Veuve Clicquot|La Grande Dame': 'Il nome rende omaggio a Madame Clicquot, figura fondatrice della Maison.',
@@ -455,5 +467,5 @@ const editorialNotes: Record<string, string> = {
 };
 
 export const winesForMaison = (producer: string) => catalogWines
-  .filter((wine) => wine.producer === producer)
+  .filter((wine) => wine.producer.normalize('NFC') === producer.normalize('NFC'))
   .map((wine) => ({ ...wine, note: editorialNotes[`${wine.producer}|${wine.name}`] }));
