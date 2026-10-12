@@ -405,11 +405,30 @@ const catalogWineSources: CatalogWine[] = [
   { producer: 'Oto', name: 'Blanc de Blancs', family: 'Blanc de Blancs' },
   { producer: 'Oto', name: 'Rosé', family: 'Rosé' },
   { producer: 'Oto', name: 'Millésime 2019', family: 'Millesimato' },
+
+  { producer: 'Maurice Choppin', name: 'Les Arpents', family: 'Extra Brut' },
+  { producer: 'Maurice Choppin', name: 'Les Mi-Côtes', family: 'Millesimato' },
+  { producer: 'Maurice Choppin', name: 'Damery', family: 'Millesimato' },
+  { producer: 'Maurice Choppin', name: 'Les Chemins d’Arty', family: 'Millesimato' },
+  { producer: 'Maurice Choppin', name: 'Fils de la Vallée', family: 'Millesimato' },
+  { producer: 'Maurice Choppin', name: 'La Dénrée de l’Âne', family: 'Rosé' },
+  { producer: 'Maurice Choppin', name: 'Les Bas Russelets', family: 'Blanc de Noirs' },
+  { producer: 'Maurice Choppin', name: 'Épinette de Champagne', family: 'Blanc de Blancs' },
+  { producer: 'Maurice Choppin', name: 'L’Âge et la Raison', family: 'Millesimato' },
+
+  { producer: 'Domaine de Bichery', name: 'La Source', family: 'Firma della maison' },
+  { producer: 'Domaine de Bichery', name: 'Les Terres Mêlées', family: 'Blanc de Noirs' },
+  { producer: 'Domaine de Bichery', name: 'Les Fontaines', family: 'Rosé' },
+  { producer: 'Domaine de Bichery', name: 'À l’Envers', family: 'Blanc de Blancs' },
+  { producer: 'Domaine de Bichery', name: 'Les Meuniers', family: 'Parcella' },
+  { producer: 'Domaine de Bichery', name: 'En Val du Clos', family: 'Parcella' },
+  { producer: 'Domaine de Bichery', name: 'Saignée de Meuniers', family: 'Rosé' },
+  { producer: 'Domaine de Bichery', name: 'En Val Ligé', family: 'Stile libero' },
   ...leRecoltantWines,
 ];
 
 /**
- * The event catalog adds named cuvées already available for tasting. Keep one
+ * The supplemental source adds named cuvées already available for tasting. Keep one
  * record per producer/cuvée pair when the editorial archive already knew it.
  */
 export const catalogWines: CatalogWine[] = Array.from(
@@ -464,6 +483,12 @@ const editorialNotes: Record<string, string> = {
   'Bertrand-Delespierre|Autour de la Creusette': 'Il nome indica una lettura parcellare della Montagne de Reims.',
   'Oto|Blanc de Noirs Brut Nature': 'La versione a dosaggio zero della maison, presente nella fotografia.',
   'Oto|Millésime 2019': 'Il millesimato è una delle cinque espressioni essenziali della gamma OTO.',
+  'Maurice Choppin|Les Arpents': 'Una cuvée di ingresso costruita attorno ai vigneti di Damery e dei comuni vicini della Vallée de la Marne.',
+  'Maurice Choppin|Épinette de Champagne': 'Un Blanc de Blancs da una vecchia vigna di Chardonnay nel lieu-dit Épinette de Champagne, a Damery.',
+  'Maurice Choppin|Les Bas Russelets': 'Il nome porta in etichetta una lettura di parcella a Pinot Noir della Vallée de la Marne.',
+  'Domaine de Bichery|La Source': 'La cuvée di partenza del domaine: Pinot Noir e Chardonnay della stessa vendemmia, tra legno e acciaio.',
+  'Domaine de Bichery|Les Fontaines': 'Rosé d’assemblaggio ispirato alla parcella La Fontaine du Noyer e ai suoi Pinot Noir.',
+  'Domaine de Bichery|En Val Ligé': 'Un Coteaux Champenois affinato in legno: la parentesi ferma del domaine accanto alle bollicine.',
 };
 
 export const winesForMaison = (producer: string) => catalogWines

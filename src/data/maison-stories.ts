@@ -216,5 +216,13 @@ export const maisonStories: Record<string, MaisonStory> = {
     history: ["OTO è una maison contemporanea della Vallée de la Marne. Il progetto lavora con vigneron partner e dichiara una ricerca di precisione, essenzialità e leggibilità della materia prima.", "La gamma è volutamente raccolta: diverse interpretazioni di bianchi, rosé e millesimato riunite sotto un'unica firma grafica contemporanea."],
     curiosities: ["Il nome OTO compare in minuscolo sulla bottiglia fotografata, accompagnato da un disegno lineare di mani e calici.", "La versione Blanc de Noirs Brut Nature è la cuvée a dosaggio zero presente nella fotografia."],
   },
+  "Maurice Choppin": {
+    history: ["Maurice Choppin è un domaine familiare di Damery, nella Vallée de la Marne, oggi guidato da Benjamin Choppin. La famiglia coltiva qui da sette generazioni, in un paesaggio dove il Meunier ha un ruolo naturale e centrale.", "Il lavoro in cantina privilegia vini di parcella e tempi distesi, con fermentazioni indigene e affinamenti in legno che rendono ogni cuvée una lettura personale del territorio."],
+    curiosities: ["Damery si trova poco a ovest di Épernay, lungo la Vallée de la Marne.", "Épinette de Champagne prende il nome da un lieu-dit di Damery e nasce da una vecchia vigna di Chardonnay."],
+  },
+  "Domaine de Bichery": {
+    history: ["Hannah e Raphaël Piconnet hanno dato vita al Domaine de Bichery a Neuville-sur-Seine, nel cuore della Côte des Bar. Il progetto parte dalle vigne di famiglia e da un'idea diretta: lasciare che siano i luoghi a raccontare il vino.", "Il domaine lavora in agricoltura biologica e alterna legno e acciaio, con una produzione che include Champagne e Coteaux Champenois. I nomi delle cuvée restano volutamente legati alle parcelle."],
+    curiosities: ["Il motto del domaine, #pasdhistoiredunaturel, privilegia il gesto agricolo alla retorica.", "La Source è la cuvée che il domaine presenta come il proprio punto di partenza."],
+  },
   ...leRecoltantStories,
 };

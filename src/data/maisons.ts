@@ -1738,6 +1738,18 @@ export const maisons: Maison[] = [
     "logoTone": "light-on-dark"
   },
   {
+    "name": "Maurice Choppin",
+    "area": "Vallée de la Marne",
+    "website": "https://champagne-choppin.fr/",
+    "logoText": "Maurice Choppin"
+  },
+  {
+    "name": "Domaine de Bichery",
+    "area": "Côte des Bar",
+    "website": "https://www.domainedebichery.com/fr",
+    "logoText": "Domaine de Bichery"
+  },
+  {
     "name": "Albert Lebrun",
     "area": "Côte des Blancs",
     "website": "https://champagnealbertlebrun.com/",
